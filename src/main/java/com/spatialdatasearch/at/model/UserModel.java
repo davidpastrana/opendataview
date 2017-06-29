@@ -1,5 +1,4 @@
 package com.spatialdatasearch.at.model;
-//test
 
 import java.io.Serializable;
 
