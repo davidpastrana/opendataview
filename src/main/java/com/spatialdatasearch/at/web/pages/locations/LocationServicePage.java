@@ -582,12 +582,12 @@ public class LocationServicePage extends BasePage {
         // log.info("WEB PATH IS" + webAppPath);
         if (obj.getCsvName() != null) {
           item.add(new Label("downloadCsvTag", "Download file: "));
-          item.add(new ExternalLink("downloadOrigCsv", "http://localhost:8080/datasets/"
+          item.add(new ExternalLink("downloadOrigCsv", "/datasets/"
               + obj.getCsvName()));
           item.add(new ExternalLink("downloadEnrichCsv",
-              "http://www.gmap.gdn/datasets/processed/enriched/" + obj.getCsvName()));
+              "/datasets/processed/enriched/" + obj.getCsvName()));
           item.add(new ExternalLink("downloadFormatCsv",
-              "http://www.gmap.gdn/datasets/processed/new_format/" + obj.getCsvName()));
+              "/datasets/processed/new_format/" + obj.getCsvName()));
         } else {
           item.add(new Label("downloadCsvTag").setVisible(false));
         }

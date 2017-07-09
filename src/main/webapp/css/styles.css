@@ -1,14 +1,14 @@
 /*
 Theme Name: City Square Theme
-Author URI: http://webthemez.com/
+Author URI: https://webthemez.com/
 Description: This theme is a pretty versatile, that places the emphasis of the home page. It would be great for a corporate websites, business websites, personal blog.
 License: Free to use for personal and commercial, but you need to place back link in the bottom of the template.
 */
 @import
-	url(http://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700)
+	url(https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,600,700)
 	;
 
-@import url(http://fonts.googleapis.com/css?family=Pacifico);
+@import url(https://fonts.googleapis.com/css?family=Pacifico);
 
 * {
 	margin: 0;
@@ -293,7 +293,7 @@ a:hover {
 .navbar-brand b {
 	color: #fff;
 	font-family: "Gill Sans", "Gill Sans MT", Calibri, sans-serif;
-	font-size: 32px;
+	font-size: 28px;
 	font-style: normal;
 	font-weight: 400;
 }

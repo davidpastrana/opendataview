@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<html xmlns:wicket="http://wicket.apache.org">
+<html itemscope itemtype="https://schema.org/WebPage"
+	xmlns="https://www.w3.org/1999/xhtml"
+	xmlns:wicket="https://wicket.apache.org" lang="en" class="no-js">
 <body>
 	<wicket:extend>
 
@@ -8,29 +10,26 @@
 	   <script>
    $(function() {
      var valMap = [1,5,10,20,50];
+     var activeValue = 3;
      $(".slider").slider({
        range: "min",
-         //min: 1, 
-         //min: 1,
-        max: valMap.length - 1,
-        value: 1,
-       	first: 'pip', 
-      	last: 'pip',
+       max: valMap.length - 1,
+       value: activeValue,
        change: function (event, ui) {
          if (event.originalEvent) {
            console.log("CHANGED DONE!");
+           console.log("the value is "+valMap[ui.value]);
            $('#geoCoordDistance').val(valMap[ui.value]);
            $('#saveGeoCoordinates').trigger('click');
            //getGeolocation();
-       }
-         
-     }
+           }
+        }
      }).slider("pips", {
        rest: "label",
-    	 suffix: 'Km',
-    	 labels: valMap
+    	   suffix: 'Km',
+    	   labels: valMap
    	});
-     $(".slider").slider("option", "value", $('#geoCoordDistance').val());
+    // $(".slider").slider("option", "value", $('#geoCoordDistance').val());
 
    });
    </script>
@@ -39,7 +38,7 @@
       #size1-h { width: 100px; }
    </style>
    			<form class="formSearch" wicket:id="formSearch">		
-				<input id="submit" type="text" wicket:id="textSearch" size="20" />
+				<input id="submit" class="search-loc-name" type="text" wicket:id="textSearch" size="20" />
 				<input type="submit" value="" wicket:id="searchLocation" class="btn btn-lg btn-primary  iconTextSearch button" />
 				<input id="resetInputSubmit" wicket:id="clearSearch" type="submit" value="" class="btn btn-lg btn-primary iconResetForm2" title="Borrar contenido" alt="Delete" />
 				<input type="button" value="" onclick="getGeolocation();" class="btn btn-lg btn-primary iconGeolocateMe" />
@@ -290,7 +289,7 @@
 			<div itemscope itemtype="https://schema.org/GeoCoordinates">
 			<span itemprop="csvName" class="hide notranslate">My position</span>
 			<span itemprop="name" wicket:id="currentPosition" class="notranslate" />
-			<div itemprop="geo" itemscope itemtype="http://schema.org/GeoCoordinates">
+			<div itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates">
 			<span itemprop="latitude" wicket:id="currentLatitude" />
 			<span itemprop="longitude" wicket:id="currentLongitude" />
 			</div>
@@ -330,7 +329,7 @@
 															</td>
 														<td><span wicket:id="ratingPanel" />
 															<div class="existsRating">
-																<span class="displayRating" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">Rating: <span
+																<span class="displayRating" itemprop="aggregateRating" itemscope itemtype="https://schema.org/AggregateRating">Rating: <span
 																	itemprop="ratingValue" wicket:id="ratingValue" />/5 (<span
 																	itemprop="reviewCount" wicket:id="totalVotes" /> rates)
 																</span>
@@ -342,7 +341,7 @@
 													<tr>
 														<td class="notranslate"><span wicket:id="addressTag" />
 															<div itemprop="address" itemscope
-																itemtype="http://schema.org/PostalAddress">
+																itemtype="https://schema.org/PostalAddress">
 																<span itemprop="streetLocality" wicket:id="address" />
 																<span itemprop="streetAddress" wicket:id="street" /> <span
 																	wicket:id="number" /> <span itemprop="postalCode"
@@ -410,7 +409,7 @@
 														<td class="labelDescription">Coordinates:</td>
 														<td class="notranslate">
 															<div itemprop="geo" itemscope
-																itemtype="http://schema.org/GeoCoordinates">
+																itemtype="https://schema.org/GeoCoordinates">
 																<span itemprop="latitude" wicket:id="latitude" />, <span
 																	itemprop="longitude" wicket:id="longitude" />
 															</div>
