@@ -5,11 +5,12 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.Generated;
-import org.hibernate.annotations.GenerationTime;
 
 @Entity(name = "locations")
 @Table(name = "locations")
@@ -18,8 +19,9 @@ public class LocationModel implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @Generated(GenerationTime.INSERT)
-  @Column(name = "id", unique = true)
+  @SequenceGenerator(name = "locations_sequence", sequenceName = "locations_id_seq", allocationSize = 1)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "locations_sequence")
+  @Column(name = "id", updatable = false, nullable = false)
   protected Long id;
   @Column(columnDefinition = "TEXT")
   protected String name;

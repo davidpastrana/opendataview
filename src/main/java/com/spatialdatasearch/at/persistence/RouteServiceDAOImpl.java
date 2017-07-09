@@ -25,7 +25,7 @@ public class RouteServiceDAOImpl implements RouteServiceDAO {
     return entityManager;
   }
 
-  @PersistenceContext(unitName = "opendata")
+  @PersistenceContext(unitName = "spatialdatasearch")
   public void setEntityManager(EntityManager entityManager) {
     this.entityManager = entityManager;
   }

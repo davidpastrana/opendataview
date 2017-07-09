@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity(name = "users")
@@ -17,8 +16,7 @@ public class UserModel implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @SequenceGenerator(name = "users_sequence", sequenceName = "users_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "users_sequence")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", updatable = false, nullable = false)
   protected Long id;
   @Column(columnDefinition = "TEXT", nullable = false, length = 10)

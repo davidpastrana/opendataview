@@ -25,7 +25,7 @@ public class UserServiceDAOImpl implements UserServiceDAO {
     return entityManager;
   }
 
-  @PersistenceContext(unitName = "opendata")
+  @PersistenceContext(unitName = "spatialdatasearch")
   public void setEntityManager(EntityManager entityManager) {
     this.entityManager = entityManager;
   }

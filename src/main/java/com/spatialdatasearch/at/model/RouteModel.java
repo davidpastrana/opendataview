@@ -8,7 +8,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity(name = "routes")
@@ -18,8 +17,7 @@ public class RouteModel implements Serializable {
   private static final long serialVersionUID = 1L;
 
   @Id
-  @SequenceGenerator(name = "routes_sequence", sequenceName = "routes_id_seq", allocationSize = 1)
-  @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "routes_sequence")
+  @GeneratedValue(strategy = GenerationType.SEQUENCE)
   @Column(name = "id", updatable = false, nullable = false)
   protected Long id_route;
   @Column(name = "id_marker", nullable = false)

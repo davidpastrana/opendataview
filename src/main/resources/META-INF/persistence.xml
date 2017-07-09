@@ -6,7 +6,7 @@
                                  http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
 	version="2.1">
 
-	<persistence-unit name="opendata" transaction-type="RESOURCE_LOCAL">
+	<persistence-unit name="spatialdatasearch" transaction-type="RESOURCE_LOCAL">
 		<provider>org.hibernate.ejb.HibernatePersistence</provider>
 		<properties>
 			<property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQLDialect" />
@@ -14,7 +14,7 @@
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.connection.driver_class" value="org.postgresql.Driver" />
-			<property name="hibernate.connection.url" value="jdbc:postgresql:opendata" />
+			<property name="hibernate.connection.url" value="jdbc:postgresql:spatialdatasearch" />
 			<!--<property name="hibernate.connection.username" value="postgres" /> 
 				<property name="hibernate.connection.password" value="postgres" /> -->
 			<property name="hibernate.connection.pool_size" value="2" />
