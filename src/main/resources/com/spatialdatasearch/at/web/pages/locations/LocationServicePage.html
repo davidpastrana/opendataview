@@ -37,12 +37,16 @@
 
       #size1-h { width: 100px; }
    </style>
-   			<form class="formSearch" wicket:id="formSearch">		
-				<input id="submit" class="search-loc-name" type="text" wicket:id="textSearch" size="20" />
-				<input type="submit" value="" wicket:id="searchLocation" class="btn btn-lg btn-primary  iconTextSearch button" />
-				<input id="resetInputSubmit" wicket:id="clearSearch" type="submit" value="" class="btn btn-lg btn-primary iconResetForm2" title="Borrar contenido" alt="Delete" />
-				<input type="button" value="" onclick="getGeolocation();" class="btn btn-lg btn-primary iconGeolocateMe" />
+   			<form class="formSearch" wicket:id="formSearch">
+				<input value="Search by name" id="submit" class="search-loc-name" type="text" wicket:id="textSearch" size="20" />
+				<input type="submit" value="" wicket:id="searchLocation" class="btn btn-lg btn-primary  iconTextSearch button" title="" alt="Search" />
+				<input id="resetInputSubmit" wicket:id="clearSearch" type="submit" value="" class="btn btn-lgbtn-primary iconResetForm2" title="Map reset to initial state" alt="Map reset" />
+				<input type="button" value="" onclick="getGeolocation();" class="btn btn-lg btn-primary iconGeolocateMe" title="Identify data near your present location" alt="Geolocation" />
    				<div class="slider_wrapper"><div class="slider"></div></div>
+			</form>
+			<form class="formSearch2" wicket:id="formSearchExtraInfo">
+				<input value="Search by extra info" id="submit2" class="search-loc-name" type="text" wicket:id="textSearch2" size="20" />
+				<input type="submit" value="" wicket:id="searchLocation2" class="btn btn-lg btn-primary  iconTextSearch button" title="" alt="Search" />
 			</form>
 		<div wicket:id="data">
 			<ul id="menu" class="mfb-component--br mfb-zoomin"
@@ -129,7 +133,7 @@
 					title="Hide locations" />
 
 				<div id="hideLocation">
-					<h4 class="list-route">Locations:</h4>
+					<h4 class="list-route">Imported datasets (scroll and tick the desired one!):</h4>
 					<div class="radio" wicket:id="locations"></div>
 				</div>
 			</form>
@@ -400,9 +404,9 @@
 													<tr>
 														<td class="labelDescription"><span
 															wicket:id="downloadCsvTag" /></td>
-														<td><a itemprop="url" wicket:id="downloadOrigCsv" target="_blank">Download original</a></td>
-														<td><a itemprop="url" wicket:id="downloadEnrichCsv" target="_blank">Download enriched</a></td>
-														<td><a itemprop="url" wicket:id="downloadFormatCsv" target="_blank">Download formatted</a></td>
+														<td>Download: <a itemprop="url" wicket:id="downloadOrigCsv" target="_blank">original</a> | <a itemprop="url" wicket:id="downloadEnrichCsv" target="_blank">enriched</a> | <a itemprop="url" wicket:id="downloadFormatCsv" target="_blank">formatted</a></td>
+														<td></td>
+														<td></td>
 														
 													</tr>
 													<tr class="hide">

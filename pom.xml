@@ -32,7 +32,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<wicket.version>7.3.0</wicket.version>
+	<!-- 		<wicket.version>7.8.0</wicket.version>
 		<jetty.version>9.2.10.v20150310</jetty.version>
 		<jetty-all-server.version>8.1.17.v20150415</jetty-all-server.version>
 		<spring.version>4.3.1.RELEASE</spring.version>
@@ -40,6 +40,18 @@
 		<postgresql.version>9.4-1206-jdbc42</postgresql.version>
 		<dbcp.version>1.4</dbcp.version>
 		<wordutils.version>3.4</wordutils.version>
+		<slf4j.version>1.7.21</slf4j.version>
+		<log4j.version>1.2.17</log4j.version>
+		<junit.version>4.12</junit.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
+		<wicket.version>7.8.0</wicket.version>
+		<jetty.version>9.4.6.v20170531</jetty.version>
+		<jetty-all-server.version>8.2.0.v20160908</jetty-all-server.version>
+		<spring.version>4.3.9.RELEASE</spring.version>
+		<hibernate.version>5.2.10.Final</hibernate.version>
+		<postgresql.version>42.1.1</postgresql.version>
+		<dbcp.version>1.4</dbcp.version>
+		<wordutils.version>3.6</wordutils.version>
 		<slf4j.version>1.7.21</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>

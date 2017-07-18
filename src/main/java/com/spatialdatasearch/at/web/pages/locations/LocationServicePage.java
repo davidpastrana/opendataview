@@ -142,7 +142,8 @@ public class LocationServicePage extends BasePage {
     wmc.add(currentLongitude);
 
     origList = locationServiceDAO.readLocationModel();
-    final PageableListView<LocationModel> lview = displayList("rows", list, 50);
+    //final PageableListView<LocationModel> lview = displayList("rows", list, 50);
+    final PageableListView<LocationModel> lview = displayList("rows", list, 1000);
     lview.setOutputMarkupId(true);
     wmc.add(lview);
 
@@ -216,6 +217,9 @@ public class LocationServicePage extends BasePage {
 
     final Form<String> formSearch = new Form<String>("formSearch");
     add(formSearch);
+    
+    final Form<String> formSearchExtraInfo = new Form<String>("formSearchExtraInfo");
+    add(formSearchExtraInfo);
 
     final AutoCompleteTextField<String> inputField =
         new AutoCompleteTextField<String>("textSearch", new Model<String>()) {
@@ -246,6 +250,36 @@ public class LocationServicePage extends BasePage {
 
         };
     formSearch.add(inputField);
+    
+    final AutoCompleteTextField<String> inputField2 =
+            new AutoCompleteTextField<String>("textSearch2", new Model<String>()) {
+
+              private static final long serialVersionUID = 1L;
+
+              @Override
+              protected Iterator<String> getChoices(String input) {
+                if (Strings.isEmpty(input)) {
+                  List<String> emptyList = Collections.emptyList();
+                  return emptyList.iterator();
+                }
+
+                List<String> choices = new ArrayList<String>(10);
+
+                for (final LocationModel loc : origList) {
+                  final String name = loc.getOther();
+                  if (name.intern().toUpperCase().contains(input.toUpperCase().intern())) {
+                    choices.add(name);
+                    if (choices.size() == 10) {
+                      break;
+                    }
+                  }
+                }
+
+                return choices.iterator();
+              }
+
+            };
+        formSearchExtraInfo.add(inputField2);
 
     // final AjaxButton closeEdit = new AjaxButton("closeEdit") {
     // private static final long serialVersionUID = 1L;
@@ -311,6 +345,38 @@ public class LocationServicePage extends BasePage {
       }
 
     });
+    
+    formSearchExtraInfo.add(new AjaxButton("searchLocation2") {
+
+        private static final long serialVersionUID = 1L;
+
+        @Override
+        public void onSubmit(AjaxRequestTarget target, Form<?> form) {
+          super.onSubmit(target, form);
+
+
+          String other = inputField2.getModelObject();
+          log.debug("the name isssss " + other);
+          if (other != null) {
+            for (LocationModel loc : origList) {
+              // log.debug("the name isssss " + loc.getName() + " and the input is " + name);
+              if (loc.getOther().trim().contentEquals(other)) {
+                list.clear();
+                list.add(loc);
+                String pos = loc.getLatitude() + "," + loc.getLongitude();
+                log.info("the panto is aaaaaaaa " + pos);
+                // setResponsePage(getPage());
+                target
+                    .appendJavaScript("map.gmap('get', 'map').panTo(new google.maps.LatLng("
+                        + pos
+                        + "));google.maps.event.trigger(map, 'resize');map.gmap('get', 'map').setZoom(17);initIds();initMarkers();");
+              }
+            }
+          }
+          target.add(wmc);
+        }
+
+      });
 
     final TextField<String> geoCoordDistance =
         new TextField<String>("geoCoordDistance", Model.of(""));
@@ -409,8 +475,7 @@ public class LocationServicePage extends BasePage {
           // +
           // "));google.maps.event.trigger(map, 'resize');map.gmap('get', 'map').setZoom(15);initIds();initMarkers();");
 
-          target
-              .appendJavaScript("google.maps.event.trigger(map, 'resize');initIds();initMarkers();initMyPosition();");
+          target.appendJavaScript("google.maps.event.trigger(map, 'resize');initIds();initMarkers();initMyPosition();");
 
 
           // setResponsePage(LocationServicePage.class);
@@ -572,7 +637,7 @@ public class LocationServicePage extends BasePage {
           item.add(new Label("schedule", obj.getSchedule()).setVisible(false));
         }
         if (obj.getOther() != null) {
-          item.add(new Label("otherTag", "Other info: "));
+          item.add(new Label("otherTag", "Extra info: "));
           item.add(new Label("other", obj.getOther()));
         } else {
           item.add(new Label("otherTag").setVisible(false));
