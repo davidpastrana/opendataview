@@ -434,6 +434,10 @@ public class LocationServicePage extends BasePage {
 
           modelLat.setObject(att[0]);
           modelLng.setObject(att[1]);
+          
+          
+          
+          
           // wmc.add(modelLat);
 
 
@@ -448,8 +452,10 @@ public class LocationServicePage extends BasePage {
                       .getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
               // log.info("La distancia es : " + dist);
               if (dist < distanceKm) {
-                log.info("La distancia 2 es : " + dist);
-                log.info("La distancia KM es : " + distanceKm);
+                //log.info("La distancia 2 es : " + dist);
+                //log.info("La distancia KM es : " + distanceKm);
+                
+                
                 list.add(loc);
                 // setResponsePage(LocationServicePage.class);
                 // datacontainer.add(displayList("rows", list, 1000000000));

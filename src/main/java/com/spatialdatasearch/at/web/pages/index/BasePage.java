@@ -16,6 +16,7 @@ import com.spatialdatasearch.at.web.pages.upload.UploadFilePage;
 import com.spatialdatasearch.at.web.pages.user.LoginUserPage;
 import com.spatialdatasearch.at.web.pages.user.LogoutUserPage;
 import com.spatialdatasearch.at.web.pages.user.RegisterUserPage;
+import com.spatialdatasearch.at.web.pages.properties.SetPropertiesPage;
 import com.spatialdatasearch.at.web.panels.CopyRightPanel;
 import com.spatialdatasearch.at.web.panels.FooterPanel;
 import com.spatialdatasearch.at.web.panels.TopBarPanel;
@@ -57,7 +58,7 @@ public class BasePage extends WebPage {
     add(locationsLink);
 
     final BookmarkablePageLink<Object> uploadFileLink =
-        new BookmarkablePageLink<Object>("uploadFileLink", UploadFilePage.class);
+        new BookmarkablePageLink<Object>("uploadFileLink", SetPropertiesPage.class);
     if (uploadFileLink.linksTo(getPage())) {
       uploadFileLink.add(new AttributeModifier("class", "active"));
     }

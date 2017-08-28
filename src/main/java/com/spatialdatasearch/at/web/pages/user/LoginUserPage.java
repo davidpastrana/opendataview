@@ -17,6 +17,7 @@ import com.spatialdatasearch.at.model.UserModel;
 import com.spatialdatasearch.at.persistence.UserServiceDAO;
 import com.spatialdatasearch.at.web.pages.index.BasePage;
 import com.spatialdatasearch.at.web.pages.locations.LocationServicePage;
+import com.spatialdatasearch.at.web.pages.properties.SetPropertiesPage;
 import com.spatialdatasearch.at.web.pages.upload.UploadFilePage;
 
 public class LoginUserPage extends BasePage {
@@ -54,7 +55,7 @@ public class LoginUserPage extends BasePage {
           if (u.getUsername().contentEquals(usr) && u.getPassword().contentEquals(pwd)) {
 
             if (usr.contentEquals("admin")) {
-              setResponsePage(UploadFilePage.class);
+              setResponsePage(SetPropertiesPage.class);
             } else {
               setResponsePage(LocationServicePage.class);
             }

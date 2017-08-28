@@ -37,17 +37,54 @@
 
       #size1-h { width: 100px; }
    </style>
+   
+   	<div id="searchView"
+				data-intro="Use this filter to select the type of locations you want to see."
+				data-position="left">
+				
+           				<img
+					onclick="$('#display-form-search').slideToggle();$('#hide-form-search').show();$('#display-form-search2').hide()"
+					src="/images/drop-down-icon.png" id="display-form-search2"
+					title="Display locations" /> <img
+					onclick="$('#display-form-search').slideToggle();$('#hide-form-search').hide();$('#display-form-search2').show()"
+					src="/images/drop-up-icon.png" id="hide-form-search"
+					title="Hide locations" />
+        <div id="display-form-search">
+        <table class="table-search">
+        
+        
+        <tr>
+        <th>
    			<form class="formSearch" wicket:id="formSearch">
 				<input value="Search by name" id="submit" class="search-loc-name" type="text" wicket:id="textSearch" size="20" />
 				<input type="submit" value="" wicket:id="searchLocation" class="btn btn-lg btn-primary  iconTextSearch button" title="" alt="Search" />
 				<input id="resetInputSubmit" wicket:id="clearSearch" type="submit" value="" class="btn btn-lgbtn-primary iconResetForm2" title="Map reset to initial state" alt="Map reset" />
 				<input type="button" value="" onclick="getGeolocation();" class="btn btn-lg btn-primary iconGeolocateMe" title="Identify data near your present location" alt="Geolocation" />
-   				<div class="slider_wrapper"><div class="slider"></div></div>
+   				
 			</form>
+		</th>
+		</tr>
+		<tr>
+		<th>
+		<div class="slider_wrapper"><div class="slider"></div></div>
+		</th>
+		</tr>
+		<tr>
+		<th>
 			<form class="formSearch2" wicket:id="formSearchExtraInfo">
 				<input value="Search by extra info" id="submit2" class="search-loc-name" type="text" wicket:id="textSearch2" size="20" />
 				<input type="submit" value="" wicket:id="searchLocation2" class="btn btn-lg btn-primary  iconTextSearch button" title="" alt="Search" />
 			</form>
+			</th>
+			</tr>
+		</table>
+		
+		 </div>
+		 </div>
+			        <!--  <div class="slider_wrapper"><div class="slider"></div></div>-->
+			        
+			        
+			        
 		<div wicket:id="data">
 			<ul id="menu" class="mfb-component--br mfb-zoomin"
 				data-mfb-toggle="hover"
@@ -77,6 +114,7 @@
 					</ul></li>
 			</ul>
 
+<!-- TO-DO -->
 			<form wicket:id="coordGeoForm">
 			<input id="geoCoordDistance" wicket:id="geoCoordDistance" type="text" />
 				<input id="geoCoordInput" wicket:id="geoCoordInput" type="text" />
@@ -133,7 +171,7 @@
 					title="Hide locations" />
 
 				<div id="hideLocation">
-					<h4 class="list-route">Imported datasets (scroll and tick the desired one!):</h4>
+					<h4 class="list-route">Imported datasets (scroll to the desired one):</h4>
 					<div class="radio" wicket:id="locations"></div>
 				</div>
 			</form>
