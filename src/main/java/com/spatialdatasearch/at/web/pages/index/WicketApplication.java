@@ -12,6 +12,7 @@ import com.spatialdatasearch.at.web.pages.contact.AboutUsPage;
 import com.spatialdatasearch.at.web.pages.contact.ContactPage;
 import com.spatialdatasearch.at.web.pages.error.ErrorPage404;
 import com.spatialdatasearch.at.web.pages.locations.LocationServicePage;
+import com.spatialdatasearch.at.web.pages.properties.SetPropertiesPage;
 import com.spatialdatasearch.at.web.pages.upload.UploadFilePage;
 import com.spatialdatasearch.at.web.pages.user.LoginUserPage;
 import com.spatialdatasearch.at.web.pages.user.LogoutUserPage;
@@ -39,7 +40,7 @@ public class WicketApplication extends AuthenticatedWebApplication {
   public void init() {
     super.init();
     mountPage("/", LocationServicePage.class);
-    mountPage("/upload", UploadFilePage.class);
+    mountPage("/config", SetPropertiesPage.class);
     mountPage("/about", AboutUsPage.class);
     mountPage("/contact", ContactPage.class);
     mountPage("/register", RegisterUserPage.class);

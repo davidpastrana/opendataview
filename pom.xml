@@ -55,6 +55,17 @@
 		<slf4j.version>1.7.21</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
+		
+		<geonames.version>1.0</geonames.version>
+		<nominatim.version>1.9.4</nominatim.version>
+  		<fileutils.version>2.4</fileutils.version>
+  		<validator.version>1.5.1</validator.version>
+  		<geotools.version>15-RC1</geotools.version>
+  		<libphonenumber.version>7.6.0</libphonenumber.version>
+		<wordutils.version>3.4</wordutils.version>
+		<json.version>20141113</json.version>
+		<jena.version>3.1.0</jena.version>
+		
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
@@ -155,6 +166,92 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${wordutils.version}</version>
 		</dependency>
+		
+		
+		<!-- HEURISTIC SERACH -->
+		
+		<!-- JSON -->
+      	<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>${json.version}</version>
+		</dependency>
+		<!-- Geonames -->
+		<dependency>
+		    <groupId>org.geonames</groupId>
+		    <artifactId>geonames</artifactId>
+		    <version>${geonames.version}</version>
+		</dependency>
+		<!-- Jena SPARQL -->
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-arq</artifactId>
+            <version>${jena.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.jena</groupId>
+            <artifactId>jena-core</artifactId>
+            <version>${jena.version}</version>
+        </dependency>
+		<!-- Nominatim -->
+		<dependency>
+		    <groupId>org.codehaus.jackson</groupId>
+		    <artifactId>jackson-jaxrs</artifactId>
+		    <version>${nominatim.version}</version>
+		</dependency>
+		<!-- GeoTools -->
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-shapefile</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-swing</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.geotools</groupId>
+			<artifactId>gt-geometry</artifactId>
+			<version>${geotools.version}</version>
+		</dependency>
+		<!-- Email and URL Validator -->
+		<dependency>
+		    <groupId>commons-validator</groupId>
+		    <artifactId>commons-validator</artifactId>
+		    <version>${validator.version}</version>
+		</dependency>
+		<!-- Phone Validator -->
+		<dependency>
+		    <groupId>com.googlecode.libphonenumber</groupId>
+		    <artifactId>libphonenumber</artifactId>
+		    <version>${libphonenumber.version}</version>
+		</dependency>
+		<!-- FileUtils -->
+		<dependency>
+		    <groupId>commons-io</groupId>
+		    <artifactId>commons-io</artifactId>
+		    <version>${fileutils.version}</version>
+		</dependency>
+		<!-- other -->
+		<dependency>
+		    <groupId>javassist</groupId>
+		    <artifactId>javassist</artifactId>
+		    <version>3.12.1.GA</version>
+		</dependency>
+		<!-- ScriptRunner for reading SQL file -->
+		<dependency>
+		    <groupId>org.apache.ibatis</groupId>
+		    <artifactId>ibatis-sqlmap</artifactId>
+		    <version>2.3.4.726</version>
+		</dependency>
+		<!-- END HEURISTIC SEARCH -->
+		
+		
+		
+		
+		
+		
 		<!-- log4j -->
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -299,5 +396,10 @@
 				<enabled>false</enabled>
 			</snapshots>
 		</repository>
+		<repository>
+	        <id>osgeo</id>
+	        <name>Open Source Geospatial Foundation Repository</name>
+	        <url>http://download.osgeo.org/webdav/geotools/</url>
+	    </repository>
 	</repositories>
 </project>

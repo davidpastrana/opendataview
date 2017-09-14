@@ -57,13 +57,13 @@ public class BasePage extends WebPage {
     }
     add(locationsLink);
 
-    final BookmarkablePageLink<Object> uploadFileLink =
-        new BookmarkablePageLink<Object>("uploadFileLink", SetPropertiesPage.class);
-    if (uploadFileLink.linksTo(getPage())) {
-      uploadFileLink.add(new AttributeModifier("class", "active"));
+    final BookmarkablePageLink<Object> configLink =
+        new BookmarkablePageLink<Object>("configLink", SetPropertiesPage.class);
+    if (configLink.linksTo(getPage())) {
+      configLink.add(new AttributeModifier("class", "active"));
     }
-    uploadFileLink.setVisible(false);
-    add(uploadFileLink);
+    configLink.setVisible(false);
+    add(configLink);
 
     final BookmarkablePageLink<Object> aboutLink =
         new BookmarkablePageLink<Object>("aboutUsLink", AboutUsPage.class);
@@ -109,7 +109,7 @@ public class BasePage extends WebPage {
       logoutLink.setVisible(true);
 
       if (session.getAttribute("user_name").toString().contentEquals("admin")) {
-        uploadFileLink.setVisible(true);
+        configLink.setVisible(true);
       }
     } else {
       logoutLink.setVisible(false);
