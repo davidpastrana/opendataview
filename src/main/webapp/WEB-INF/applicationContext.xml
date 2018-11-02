@@ -9,7 +9,7 @@ http://www.springframework.org/schema/context/spring-context-3.0.xsd
 http://www.springframework.org/schema/tx
         http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
 
-	<context:component-scan base-package="com.spatialdatasearch.at" />
+	<context:component-scan base-package="xyz.spatialdata.flo" />
 
 	<bean id="jpaVendorAdapter"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
@@ -57,10 +57,9 @@ http://www.springframework.org/schema/tx
 	<bean id="dataSource"
 		class="org.springframework.jdbc.datasource.LazyConnectionDataSourceProxy">
 		<property name="targetDataSource">
-			<ref local="mainDataSource" />
+			<ref bean="mainDataSource" />
 		</property>
 	</bean>
-	<context:annotation-config />
 
 	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
 		<property name="entityManagerFactory" ref="entityManagerFactory" />
@@ -68,7 +67,8 @@ http://www.springframework.org/schema/tx
 
 	<bean id="persistenceExceptionTranslationPostProcessor"
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
-
+		
 	<tx:annotation-driven />
+
 
 </beans>
