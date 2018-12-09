@@ -12,17 +12,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>com.client-spatialdatasearch</groupId>
-	<artifactId>client-spatialdatasearch</artifactId>
-	<packaging>jar</packaging>
+	<groupId>com.opendataview</groupId>
+	<artifactId>opendataview</artifactId>
+	<packaging>war</packaging>
 	<version>1.0-SNAPSHOT</version>
 	<!-- Properties -->
-	<name>SpatialDataSearch</name>
-	<url>http://www.spatialdatasearch.gdn</url>
-	<description>SpatialDataSearch</description>
+	<name>OpenDataView</name>
+	<url>http://www.opendataview.com</url>
+	<description>OpenDataView to share data</description>
 	<organization>
-		<name>SpatialDataSearch</name>
-		<url>http://www.spatialdatasearch.com</url>
+		<name>OpenDataView</name>
+		<url>http://www.opendataview.com</url>
 	</organization>
 	<licenses>
 		<license>
@@ -68,7 +68,9 @@
 		<jena.version>3.1.0</jena.version> -->
 		
 		<java.version>1.8</java.version>
-		<wicket.version>8.1.0</wicket.version>
+		<wicket.version>8.2.0</wicket.version>
+		<agilecodersbootstrap.version>2.0.6</agilecodersbootstrap.version>
+		<wicketbootstrap.version>2.0.6</wicketbootstrap.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<jetty-all-server.version>8.2.0.v20160908</jetty-all-server.version>
 		<spring.version>5.1.2.RELEASE</spring.version>
@@ -90,6 +92,16 @@
 		<maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		
+		
+		
+		
+
+		<bootstrap.version>4.1.2</bootstrap.version>
+		  <wicket-webjars.version>0.5.6</wicket-webjars.version>
+        <wicket-jquery-selectors.version>0.2.6</wicket-jquery-selectors.version>
+        <jquerypp.version>1.0.1</jquerypp.version>
+         <jquery.version>2.2.4</jquery.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -119,10 +131,74 @@
 			<version>${wicket.version}</version>
 		</dependency>
 		<dependency>
-		    <groupId>org.wicketstuff</groupId>
-		    <artifactId>wicketstuff-html5</artifactId>
-		    <version>${wicket.version}</version>
+			<groupId>org.wicketstuff</groupId>
+			<artifactId>wicketstuff-htmlcompressor</artifactId>
+			<version>${wicket.version}</version>
 		</dependency>
+		<!-- 
+		            <dependency>
+                <groupId>de.agilecoders.wicket</groupId>
+                <artifactId>jquery-selectors</artifactId>
+                <version>${wicket-jquery-selectors.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>de.agilecoders.wicket.webjars</groupId>
+                <artifactId>wicket-webjars</artifactId>
+                <version>${wicket-webjars.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>bootstrap</artifactId>
+                <version>${bootstrap.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>jquerypp</artifactId>
+                <version>${jquerypp.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.webjars</groupId>
+                        <artifactId>jquery</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>jquery</artifactId>
+                <version>${jquery.version}</version>
+            </dependency>-->
+            <dependency>
+                <groupId>org.webjars</groupId>
+                <artifactId>bootstrap</artifactId>
+                <version>${bootstrap.version}</version>
+            </dependency>
+
+<dependency>
+    <groupId>de.agilecoders.wicket</groupId>
+    <artifactId>wicket-bootstrap-core</artifactId>
+    <version>${agilecodersbootstrap.version}</version>
+</dependency>
+ <dependency>
+    <groupId>de.agilecoders.wicket</groupId>
+    <artifactId>wicket-bootstrap-extensions</artifactId>
+    <version>${agilecodersbootstrap.version}</version>
+</dependency>
+
+<!--<dependency>
+    <groupId>de.agilecoders.wicket</groupId>
+    <artifactId>wicket-bootstrap-themes</artifactId>
+    <version>0.10.17</version>
+</dependency>
+<dependency>
+    <groupId>de.agilecoders.wicket</groupId>
+    <artifactId>wicket-bootstrap-less</artifactId>
+    <version>0.10.17</version>
+</dependency>-->
+
 		<!-- Spring -->
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -194,6 +270,12 @@
 			<artifactId>commons-lang3</artifactId>
 			<version>${wordutils.version}</version>
 		</dependency>
+		<!-- escapeHtml -->
+		<dependency>
+            <groupId>commons-lang</groupId>
+            <artifactId>commons-lang</artifactId>
+            <version>2.6</version>
+        </dependency>
 		
 		
 		<!-- HEURISTIC SERACH -->
@@ -324,22 +406,23 @@ same package
                       </exclusions>
 			<scope>provided</scope>
 		</dependency>
-		<!-- Bootstrap -->
+		<!-- Bootstrap 
 		<dependency>
 			<groupId>de.agilecoders.wicket</groupId>
 			<artifactId>wicket-bootstrap-core</artifactId>
-			<version>2.0.2</version>
+			<version>${wicketbootstrap.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.agilecoders.wicket</groupId>
 			<artifactId>wicket-bootstrap-extensions</artifactId>
-			<version>2.0.2</version>
+			<version>${wicketbootstrap.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.agilecoders.wicket</groupId>
 			<artifactId>wicket-bootstrap-themes</artifactId>
-			<version>2.0.2</version>
-		</dependency>
+			<version>${wicketbootstrap.version}</version>
+		</dependency>-->
+		
 	</dependencies>
 	<build>
 		<resources>
@@ -385,7 +468,15 @@ same package
 		</testResources>
 
 		<plugins>
+			<!-- plugin for agilecoders fileupload -->
 			<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.2</version>
+                <inherited>true</inherited>
+            </plugin>
+            
+            <plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>

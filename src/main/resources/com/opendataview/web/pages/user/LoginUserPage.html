@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html itemscope itemtype="https://schema.org/WebPage"
+	xmlns="https://www.w3.org/1999/xhtml"
+	xmlns:wicket="https://wicket.apache.org" lang="en" class="no-js">
+<body>
+	<wicket:extend>
+		<!-- container start -->
+	    <div class="login-bg">
+	        <div class="container">
+	            <div class="form-wrapper">
+		            <pre class="error" wicket:id="feedback" />
+		            <form wicket:id="userForm" autocomplete="on" class="form-signin wow fadeInUp">
+			            <h2 for="usernamesignup" class="form-signin-heading">Sign in now</h2>
+			            <div class="login-wrap">
+			                <input wicket:id="username" name="usernamesignup" required="required" type="text" class="form-control" placeholder="User ID" autofocus>
+			                <input wicket:id="password" name="passwordsignup" required="required" type="password" class="form-control" placeholder="Password">
+							<label for="passwordsignup" class="checkbox">
+			                    <input type="checkbox" value="remember-me"> Remember me
+			                    <span class="pull-right">
+			                        <a data-toggle="modal" href="#myModal"> Forgot Password?</a>
+			                    </span>
+			                </label>
+			                <button class="btn btn-lg btn-primary" type="submit">Sign in</button>
+			                
+			                <div class="registration" style="margin-top: 8px;">
+			                    Don't have an account yet?
+			                    <span class="pull-right">
+				                    <a class="" href="/register">
+				                        Create an account
+				                    </a>
+			                	</span>
+			                </div>
+			            </div>
+			
+						<!-- Modal -->
+						<div aria-hidden="true" aria-labelledby="myModal" role="dialog" tabindex="-1" id="myModal" class="modal fade">
+						    <div class="modal-dialog">
+						        <div class="modal-content">
+						            <div class="modal-header">
+						                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						                <h4 class="modal-title">Forgot Password ?</h4>
+						            </div>
+						            <div class="modal-body">
+						                <p>Enter your e-mail address below to reset your password.</p>
+						                <input type="text" name="email" placeholder="Email" autocomplete="off" class="form-control placeholder-no-fix">
+						
+						            </div>
+						            <div class="modal-footer">
+						                <button data-dismiss="modal" class="btn btn-default" type="button">Cancel</button>
+						                <button class="btn btn-success" type="button">Submit</button>
+						            </div>
+						        </div>
+						    </div>
+						</div>
+						<!-- /.Modal -->
+					</form>
+	         	</div>
+	       	</div>
+		</div>
+		<!-- /.container end -->	
+	
+		<!-- Footer -->        
+		<wicket:panel wicket:id="footer"/>
+		<!-- /.Footer -->
+	</wicket:extend>
+</body>
+</html>

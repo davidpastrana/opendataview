@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html xmlns:wicket="https://wicket.apache.org">
+<body>
+	<wicket:panel>
+		<table>
+			<tr>
+				<td>
+					<table id="directionLocation" class="directionTable">
+						<tr>
+							<td>
+								<table
+									class="directionTableHeader gradient ui-corner-all shadow-all">
+									<!-- 										<tr> -->
+									<!-- 											<td><label for="from">From: </label></td> -->
+									<!-- 											<td>							 -->
+									<!-- 												<input id="from" class="input" type="text" placeholder="Initial Address" /> -->
+									<!-- 												<img src="/images/geolocation-icon.png" class="submitFindPosition iconGeolocation" alt="Find my current location" title="Find my current location" /> -->
+									<!-- 												<img id="resetInputFrom" src="/images/delete-icon-form.png" onclick="resetForm('from','resetInputFrom');" class="iconResetForm" alt="Delete content" title="Delete" /> -->
+									<!-- 											</td> -->
+									<!-- 										</tr> -->
+
+									<tr>
+										<td>
+											<h6 for="from">From:</h6>
+										</td>
+										<td><input type="text" class="form-control" id="from"
+											placeholder="Initial Address"></td>
+										<td>
+										<button type="button" class="submitFindPosition iconGeolocation fa fa-crosshairs btn btn-lg btn-primary"></button>
+										<button type="button" id="resetInputFrom" class="fa fa-times-circle btn btn-lg btn-primary" onclick="resetForm('from','resetInputFrom');"></button>
+										
+										<!--  <img src="/images/geolocation-icon.png"
+											class="submitFindPosition iconGeolocation"
+											alt="Find my current location"
+											title="Find my current location" /> <img id="resetInputFrom"
+											src="/images/delete-icon-form.png"
+											onclick="resetForm('from','resetInputFrom');"
+											class="iconResetForm" alt="Delete content" title="Delete" />-->
+										</td>
+									</tr>
+
+
+									<tr>
+										<td>
+											<h6 for="to">Until:</h6>
+										</td>
+										<td style="padding-left: 5px;"><input type="text"
+											class="form-control" id="to"
+											placeholder="Destination Address"></td>
+										<td>
+										<button type="button" id="submitFindDirection" class="fa fa-search btn btn-lg btn-primary"></button>
+										
+										<!--  <img src="/images/search-icon.png"
+											class="iconSearch button" id="submitFindDirection"
+											title="Search" alt="Search" /> --><!-- 												<img id="resetInputTo" src="/images/delete-icon-form.png" onclick="resetForm('to','resetInputTo');" class="iconResetForm" title="Delete content" alt="Delete" /> -->
+										</td>
+									</tr>
+
+
+									<tr>
+										<td>
+											<h6 for="mode">Mode:</h6>
+										</td>
+										<td><select class="form-control" id="mode"
+											onchange="submitFindDirection">
+											    <option value="TRANSIT">Public transport</option>
+												<option value="WALKING">Walking</option>
+												<option value="BICYCLING">Cycling</option>
+												<option value="DRIVING">Driving</option>
+										</select></td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div id="distance"></div>
+								<div id="duration"></div>
+								<div id="directions"></div>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</wicket:panel>
+</body>
+</html>

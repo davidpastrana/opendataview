@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html itemscope itemtype="https://schema.org/WebPage"
+	xmlns="https://www.w3.org/1999/xhtml"
+	xmlns:wicket="https://wicket.apache.org" lang="en" class="no-js">
+<body>
+	<wicket:extend>
+		<!--container start-->
+	    <div class="login-bg">
+	        <div class="container">
+	        	<div class="form-wrapper">
+	            <pre class="error" wicket:id="feedback" />		
+	            <form wicket:id="userForm" autocomplete="on" class="form-signin wow fadeInUp">
+		        	<h2 for="usernamesignup" class="form-signin-heading">Register now</h2>
+		            <div class="login-wrap">
+			            <p for="emailsignup"> Enter personal details</p>
+		                <input wicket:id=username name="usernamesignup" required="required" type="text" class="form-control" placeholder="User ID" autofocus>
+		                <input wicket:id="email" name="emailsignup" required="required" type="email" class="form-control" placeholder="Email">
+		                <input wicket:id="password" name="passwordsignup" required="required" type="password" class="form-control" maxlength="20" placeholder="Password">
+						<input wicket:id="cpassword" id="passwordsignup_confirm" name="passwordsignup_confirm" required="required" type="password" class="form-control" maxlength="20" placeholder="Please Confirm Password">			
+		               	<label for="passwordsignup" class="checkbox">
+			                <input type="checkbox" value="value=agree this condition"> 
+			                </input> I agree to the Terms of Service and Privacy Policy  
+		                </label>
+		                <button class="btn btn-lg btn-primary" type="submit">Submit</button>	                
+		                <div class="registration" style="margin-top: 8px;">
+		                    Already Registered ?
+		                    <span class="pull-right">
+			                    <a class="" href="/login">
+			                        Login
+			                    </a>
+		                    </span>
+		                </div>
+		            </div>
+	          </form>
+	          </div>
+	        </div>
+	    </div>
+		<!--  container end -->
+	    
+	    <!-- Footer -->        
+		<wicket:panel wicket:id="footer"/>
+		<!-- /.Footer -->
+	</wicket:extend>
+</body>
+</html>
