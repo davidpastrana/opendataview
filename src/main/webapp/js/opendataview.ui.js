@@ -820,7 +820,7 @@ function typeIcon(csvName) {
 function markerProperties(result, item, index) {
 
   var name = result.name;
-  var csvName = result.csvName;
+  var csvName = result.alternateName;
   user = result.user_name;
 
   var id = result.id;
@@ -1289,7 +1289,7 @@ function initMyPosition() {
 
       markerOptions1 = {
         'zIndex': 1300,
-        'animation': google.maps.Animation.DROP,
+        //'animation': google.maps.Animation.DROP,
         'bounds': false,
         'position': latlng,
         'draggable': true,
@@ -1615,7 +1615,7 @@ function resetForm(id, img) {
 }
 
 function hideTable() {
-
+console.log("Table is hidden? "+hideLocationTable);
 		$('#arrowHideLocationsTable').hide();
 		$('.tableNavigator').hide();
 		$('.showHideNavigator').hide();
@@ -1798,6 +1798,17 @@ $(function() {
   
   var polyOption = {
 		  zIndex: 1300,
+		    fillColor: 'rgba(255,255,255,.87)',
+		    fillOpacity: 0.4,
+		    strokeWeight: 1,
+		    clickable: true,
+		    editable: true,
+		    draggable: false,
+	        flat: true,
+		};
+  
+  var polyOption2 = {
+		  zIndex: 1300,
 		   animation: google.maps.Animation.DROP,
 		    icon: new google.maps.MarkerImage('/images/markers/icon-gmap-start.png'),
 		    fillColor: 'rgba(255,255,255,.87)',
@@ -1820,17 +1831,19 @@ $(function() {
         position: google.maps.ControlPosition.TOP_CENTER,
         drawingModes: [
             google.maps.drawing.OverlayType.MARKER,
-            google.maps.drawing.OverlayType.CIRCLE,
-            google.maps.drawing.OverlayType.POLYGON,
+            google.maps.drawing.OverlayType.RECTANGLE,
+            google.maps.drawing.OverlayType.POLYGON
+            //google.maps.drawing.OverlayType.CIRCLE,
+
             //google.maps.drawing.OverlayType.POLYLINE,
-            google.maps.drawing.OverlayType.RECTANGLE
+
           ]
       },
       circleOptions: polyOption,
       rectangleOptions: polyOption,
       polygonOptions: polyOption,
       polylineOptions: polyOption,
-      markerOptions: polyOption
+      markerOptions: polyOption2
     });
     drawingManager.setMap(getmap);
     
@@ -1885,6 +1898,7 @@ $(function() {
             $(".slider_wrapper").show();
             $('#savePolygonCoordinates').trigger('click');
             drawingManager.setDrawingMode(null);
+            hideTable();
         });
         $('#polygonCoordInput').val('');
         $('#polygonCoordInput').val(marker.getPosition());

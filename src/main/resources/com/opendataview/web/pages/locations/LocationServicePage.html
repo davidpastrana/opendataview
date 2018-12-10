@@ -21,6 +21,10 @@
            console.log("the value is "+valMap[ui.value]);
            $('#geoCoordDistance').val(valMap[ui.value]);
            $('#saveGeoCoordinates').trigger('click');
+           
+           $(".slider_wrapper").show();
+           $('#savePolygonCoordinates').trigger('click');
+           drawingManager.setDrawingMode(null);
            //getGeolocation();
            }
         }
@@ -185,11 +189,11 @@
 					<i id="hideLocations" class="fa fa-chevron-circle-up fa-2x" onclick="$('#hideLocations').hide();$('#displayLocations').show();$('#hideLocation').slideToggle();" />
 
 				<div id="hideLocation">
-					<h4 class="list-route">Imported datasets (scroll to the desired one):</h4>
-					<div class="radio" wicket:id="locations"></div>
-					<h4 class="list-route">Files to remove:</h4>
+					<p class="h3 list-route">Imported datasets:</p>
+					<div class="radio" wicket:id="listLocations"></div><br />
+					<p class="h3 list-route">Files to remove:</p>
 					<div class="radio" wicket:id="removeLocations"></div>
-					<input type="submit" value="Remove" />
+					<button class="btn btn-lg btn-primary" type="submit">Remove selected</button>
 				</div>
 			</form>
 
@@ -413,11 +417,18 @@
 													<tr>
 														<td class="titleName"><span itemprop="id"
 															wicket:id="id_location" class="id_DB hide notranslate" />
+											
+															<!-- Do not touch - necessary to show the markers 
 															<span itemprop="csvName" wicket:id="csvName"
-															class="hide notranslate" /> <span itemprop="name"
-															wicket:id="name" class="notranslate" /> <span
-															itemprop="user_name" wicket:id="userName"
-															class="notranslate hide" />
+															class="hide notranslate" />-->
+															
+															<span itemprop="name"
+															wicket:id="name" class="h4 notranslate" /><br />
+															
+															<span itemprop="labelDescription"
+															wicket:id="userPublishedTag" class="notranslate" /> <span
+															itemprop="user_name" wicket:id="userPublished"
+															class="h5 notranslate" />
 															<img
 															wicket:id="image" class="imageURL" />
 															</td>
@@ -491,6 +502,22 @@
 															wicket:id="otherTag" /></td>
 														<td><span wicket:id="other" /></td>
 													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="datePublishedTag" /></td>
+														<td><span wicket:id="datePublished" /></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="dateUpdatedTag" /></td>
+														<td><span wicket:id="dateUpdated" /></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="sourcePublishedTag" /></td>
+														<td><span wicket:id="sourcePublished" /></td>
+													</tr>
+													
 													<tr>
 														<td class="labelDescription"><span
 															wicket:id="downloadCsvTag" /></td>

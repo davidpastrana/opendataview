@@ -69,7 +69,7 @@
 		
 		<java.version>1.8</java.version>
 		<wicket.version>8.2.0</wicket.version>
-		<agilecodersbootstrap.version>2.0.6</agilecodersbootstrap.version>
+		<agilecodersbootstrap.version>3.0.0-M7</agilecodersbootstrap.version>
 		<wicketbootstrap.version>2.0.6</wicketbootstrap.version>
 		<jetty.version>9.4.12.v20180830</jetty.version>
 		<jetty-all-server.version>8.2.0.v20160908</jetty-all-server.version>
@@ -170,18 +170,22 @@
                 <groupId>org.webjars</groupId>
                 <artifactId>jquery</artifactId>
                 <version>${jquery.version}</version>
-            </dependency>-->
-            <dependency>
+            </dependency>
+            
+
+            -->
+            <!--  <dependency>
                 <groupId>org.webjars</groupId>
                 <artifactId>bootstrap</artifactId>
                 <version>${bootstrap.version}</version>
             </dependency>
 
-<dependency>
+            <dependency>
     <groupId>de.agilecoders.wicket</groupId>
     <artifactId>wicket-bootstrap-core</artifactId>
     <version>${agilecodersbootstrap.version}</version>
-</dependency>
+</dependency>-->
+
  <dependency>
     <groupId>de.agilecoders.wicket</groupId>
     <artifactId>wicket-bootstrap-extensions</artifactId>
@@ -477,13 +481,28 @@ same package
             </plugin>
             
             <plugin>
+			  <artifactId>maven-resources-plugin</artifactId>
+			  <version>3.1.0</version>
+			  <configuration>
+			    <encoding>UTF-8</encoding>
+			    <nonFilteredFileExtensions>
+			    			<nonFilteredFileExtension>eot</nonFilteredFileExtension>
+			    			<nonFilteredFileExtension>svg</nonFilteredFileExtension>
+				            <nonFilteredFileExtension>ttf</nonFilteredFileExtension>
+				            <nonFilteredFileExtension>woff</nonFilteredFileExtension>
+				            <nonFilteredFileExtension>woff2</nonFilteredFileExtension>
+			    </nonFilteredFileExtensions>
+			  </configuration>
+			</plugin>
+            <plugin>
 				<inherited>true</inherited>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.0</version>
 				<configuration>
-				      <source>${java.version}</source>
-      <target>${java.version}</target>
+
+					<source>${java.version}</source>
+				      <target>${java.version}</target>
 				</configuration>
 			</plugin>
 			

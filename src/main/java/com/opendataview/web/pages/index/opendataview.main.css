@@ -76,16 +76,6 @@ h5 {
     color: #443E53;
 }*/
 
-h4 {
-	font-size: 15px;
-	overflow: hidden;
-	white-space: nowrap;
-	display: block;
-	/*font-size: 8px;*/
-    font-weight: 200;
-    color: #443E53;
-    margin-left: 9px;
-}
 
 #header {
 	text-align: center;
@@ -163,16 +153,8 @@ margin-top: 262px;
 }
 
 #map_wrapper {
+	top: 42px;
 	position: fixed;
-	top: 32px;
-	height:100%;
-	left: 0px;
-	right: 0px;
-	width: auto;
-}
-#map_wrapper {
-	position: fixed;
-	top: 48px;
 	height:100%;
 	left: 0px;
 	right: 0px;
@@ -205,6 +187,7 @@ margin-top: 262px;
 }
 .table-search {
 	position: relative;
+	left: 4px;
 
 }
 .displayOptions input[type="text"],.displayOptions input[type="submit"] {
@@ -754,33 +737,35 @@ table {
 	background: #2196F3 !important;
 	color: #FFFFFF !important;
 }
-.titleName,.labelDescription {
+/*.titleName,.labelDescription {
    	padding: 1px;
    	max-width: 150px;
-}
+}*/
 
 .selectMarkersTable > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(2) {
 	left: 167px;
 	position: absolute;
 }
-.selectMarkersTable > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) {
+
+.selectMarkersTable > tbody:nth-child(1) > tr:nth-child(1) {
+	min-height: 84px;
+}
+
+/*.selectMarkersTable > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) > table:nth-child(1) > tbody:nth-child(1) > tr:nth-child(1) > td:nth-child(1) {
 	width: 150px;
 	font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
 	font-size: 14px;
 	padding-left: 0px
-}
-.selectMarkersTable > tbody:nth-child(1) > tr:nth-child(1) {
-	min-height: 84px;
-}
+}*/
 /* high resolution displays */
 @media only screen and (min-width: 1025px) {
-
+/*
 	.titleName {
 		font-size: 16px !important;
 		font-family: Helvetica Neue !important;
 		padding-left: 7px;
 		letter-spacing: 0.2px;
-	}
+	}*/
 	#arrowHideMainMenu, #arrowShowMainMenu {
 	    display: none !important;
 	}
@@ -1457,8 +1442,8 @@ div#goog-gt-tt {
 	color: #333;
 }
 #locationView input, #tourView input {
-
 	cursor: pointer;
+	margin-right: 5px;
 }
 #createTour {
 	position: fixed;
@@ -1536,20 +1521,16 @@ div#goog-gt-tt {
 	max-height: 323px;
 	overflow: scroll;
 }
-#saveCoordinates, #filterTours, #saveEdit, #displayLocations{
-	margin-left: 40px;
-
-}
 #hideTour, #hideTourButton, #displayTours {
 	display: none;
 }
 #hideLocation {
 	overflow-y: scroll;
-    /*max-height: 300px;*/
+    padding: 8px 12px;
 }
 #display-form-search {
-	min-width: 350px;
-	padding: 5px 0px;
+	min-width: 362px;
+	padding: 7px 25px 6px;
 }
 #displayLocations,#display-form-search2 {
 	display:none;
@@ -2050,11 +2031,7 @@ ol.unstyled {
        max-height: 170px;
        overflow: scroll;
 }
-#saveEdit {
-	margin-top: 12px;
-	margin-bottom: 9px;
-	margin-left: 12px;
-}
+
 #editInfo .radioFilter {
 	min-height: 0px;
 	padding:0px;

@@ -1,9 +1,15 @@
 package com.opendataview.web.heuristicsearch;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -15,23 +21,25 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class RunSqlScript extends MainClass {
+public class RunSqlScript {
 	private static final long serialVersionUID = 1L;
-   public RunSqlScript(PageParameters parameters) throws IOException {
-		super(parameters);
-		// TODO Auto-generated constructor stub
-	}
+//   public RunSqlScript(PageParameters parameters) throws IOException {
+//		super(parameters);
+//		// TODO Auto-generated constructor stub
+//	}
 
 private final static Logger log = LoggerFactory.getLogger(RunSqlScript.class);
    private static int new_id=0;
    
-  public static void runSqlScript() throws ClassNotFoundException, SQLException {
+  public static void runSqlScript(File source, Connection conn, boolean removeExistingBData) throws ClassNotFoundException, SQLException, IOException {
 
     //String sqlScriptFilePath = sqlinserts_file;
 
-    Class.forName(web_dbdriver);
-    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
-
+	    BufferedReader br =
+	            new BufferedReader(new InputStreamReader(new FileInputStream(source), "utf-8"));
+    log.info("line0 "+br.readLine());
+    log.info("line1 "+br.readLine());
+    log.info("line2 "+br.readLine());
     try {
     	
     	Statement st = conn.createStatement();
@@ -41,7 +49,7 @@ private final static Logger log = LoggerFactory.getLogger(RunSqlScript.class);
     		st.executeUpdate("TRUNCATE locations CASCADE;");
     		log.info("ok");
     }
-    	
+
     	// we return the greatest id or 0 as the starting id
     	String sql = "SELECT coalesce(max(id), 0) FROM locations";
     	PreparedStatement ps = conn.prepareStatement(sql);
@@ -55,14 +63,16 @@ private final static Logger log = LoggerFactory.getLogger(RunSqlScript.class);
     		log.info("new id "+new_id);
     	}
     	rs.close();
+    	log.info("PATH SQL FILE 5: "+source.getAbsoluteFile());
+    	log.info("we are here "+new_id);
+    	
+        log.info("file taken: "+source.getAbsolutePath());
+        log.info("line "+br.readLine());
 
-    	
-    	BufferedReader br = new BufferedReader(new FileReader("sql"));
-    	
     	String line = br.readLine();
     	
     	if (line == null) {
-    	    log.info("File empty! No inserts to execute.\nYou must first create the SQL inserts (executeSQLqueries=false)");
+    	    log.info("File empty! No inserts to execute.");
     	}
         
     	while (line != null) {

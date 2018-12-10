@@ -90,7 +90,7 @@ public class LocationModel implements Serializable {
     return csvName;
   }
   
-  public String geSource() {
+  public String getSource() {
 	    return source;
   }
   

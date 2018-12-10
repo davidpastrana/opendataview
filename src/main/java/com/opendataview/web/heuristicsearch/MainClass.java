@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -1313,10 +1314,10 @@ public class MainClass extends SetPropertiesPage {
     br.close();
 
     if (dest.getAbsolutePath().contains(tmp_dir)) {
-      GenerateCSVFiles.CreateEnrichedCSV(source, dest, new_format);
+      GenerateFile.CreateEnrichedCSV(source, dest, new_format);
     }
 
-    GenerateCSVFiles.CreateFormattedCSV(dest, new_format);
+    GenerateFile.CreateFormattedCSV(dest, new_format);
 
   }
 
@@ -1600,16 +1601,24 @@ private static EntityManagerFactory entityManagerFactory;
             if(sqlFile.exists()) {
                 bw_sql_inserts = new BufferedWriter(new FileWriter(sqlFile));
                 log.info(">>>>>>>> before processedFile path  : " + processedFile.getAbsoluteFile());
-                GenerateSQLStatements.createSQLInserts(processedFile,bw_sql_inserts);
+                GenerateFile.createSQLInserts(processedFile,bw_sql_inserts);
                 sqlfile = sqlFile.getAbsoluteFile().toString();
                 log.info(">>>>>>>> after sqlfile path  : " + sqlFile.getAbsoluteFile());
+                
+                if (executeSQLqueries) {
+                    //sqlinserts_file = sqlfile;
+
+                    Class.forName(web_dbdriver);
+                    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
+                    RunSqlScript.runSqlScript(sqlFile.getAbsoluteFile(), conn, removeExistingBData);
+                  }
             } else {
             	log.info("No existing SQL file!!!");
             }
-
+            bw_sql_inserts.close();
             
             //String sqlfile = sqlFile.getAbsoluteFile().getPath();
-            bw_sql_inserts.close();
+            //bw_sql_inserts.close();
            //DownloadLink downloadFile = new DownloadLink("downloadFile", sqlFile);
             //wmc.add(downloadFile);
             
@@ -1626,29 +1635,27 @@ private static EntityManagerFactory entityManagerFactory;
 
         if (!testmode) {
         	
+        	log.info("NOT IN TEST MODE");
+        	
             for (File file : folderToSearch.listFiles()) {
 
                 name = file.getName();
 
                 if (name.contains(".csv")) {
           findFieldTypes(csvfiles_dir, name, textResult);
-          GenerateCSVFiles.copyFile(file, new File(tmp_dir + name));
+          GenerateFile.copyFile(file, new File(tmp_dir + name));
           generateLocationAndFile(file, new File(newformat_dir + name));
-          GenerateSQLStatements.createSQLInserts(new File(newformat_dir + name),
+          GenerateFile.createSQLInserts(new File(newformat_dir + name),
               bw_sql_inserts);
             }
             }
         }
       
 
-    bw_sql_inserts.close();
+    
  // }
 
-    if (executeSQLqueries) {
-      //sqlinserts_file = sqlfile;
-      log.info("PATH SQL FILE: "+sqlfile);
-      RunSqlScript.runSqlScript();
-    }
+
     
     if (rs != null) 
         rs.close(); 

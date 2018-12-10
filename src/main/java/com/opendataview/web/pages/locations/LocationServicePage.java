@@ -888,6 +888,20 @@ public class LocationServicePage extends BasePage {
             item.add(new Label("datePublishedTag").setVisible(false));
             item.add(new Label("datePublished", obj.getDatePublished()).setVisible(false));
           }
+        if (obj.getUser() != null) {
+            item.add(new Label("userPublishedTag", "Published by: "));
+            item.add(new Label("userPublished", obj.getUser()));
+          } else {
+            item.add(new Label("userPublishedTag").setVisible(false));
+            item.add(new Label("userPublished", obj.getUser()).setVisible(false));
+          }
+        if (obj.getSource() != null) {
+            item.add(new Label("sourcePublishedTag", "Source published by: "));
+            item.add(new Label("sourcePublished", obj.getSource()));
+          } else {
+            item.add(new Label("sourcePublishedTag").setVisible(false));
+            item.add(new Label("sourcePublished", obj.getSource()).setVisible(false));
+          }
         
         // String webAppPath = System.getProperty("catalina.base") + "/webapp";
         // log.info("WEB PATH IS" + webAppPath);
@@ -1394,12 +1408,14 @@ public class LocationServicePage extends BasePage {
     final CheckBoxMultipleChoice<String> listRemoveLocations = 
     		new CheckBoxMultipleChoice<String>("removeLocations", new Model<ArrayList<String>>(namesRemoveSelect),
     	            names);
+    listRemoveLocations.setSuffix("<br />");
     
     locationsForm.add(listRemoveLocations);
     
     CheckBoxMultipleChoice<String> listLocations =
-        new CheckBoxMultipleChoice<String>("locations", new Model<ArrayList<String>>(namesSelect),
+        new CheckBoxMultipleChoice<String>("listLocations", new Model<ArrayList<String>>(namesSelect),
             names); 
+    listLocations.setSuffix("<br />");
     
     //add(new FeedbackPanel("feedbackCheckboxes"));
     

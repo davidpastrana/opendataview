@@ -63,8 +63,11 @@ $(function() {
 							<button wicket:id="saveCSV" class="btn btn-lg btn-primary" type="submit">Save File</button>				
 						</form>
 	         		</div>-->  
-	                <div class="row">
+
 	                <form wicket:id="propertiesForm">
+	                
+	                
+	                <!--  
 	                <table>
 	                			<tr>
 	                			<td><label class="col-md skilltitle" wicket:id="selFile2">Single CSV file:</label></td>
@@ -88,17 +91,20 @@ $(function() {
 								</tr>
 								
 				</table>
+				-->
 
 						<button class="btn btn-lg btn-primary" wicket:id="saveProperties"
-						id="saveEdit" type="submit" value="Save">Save All</button>
+						id="saveEdit" type="submit" value="Save">Save Configuration</button>
+						
+						<!--  
 						<button class="btn btn-lg btn-primary" wicket:id="executeSearch"
-						id="executeSearch" type="submit" value="Execute Search">Run Imported File</button>
+						id="executeSearch" type="submit" value="Execute Search">Run Imported File</button>-->
 						<button class="btn btn-lg btn-primary" wicket:id="retrieveCKAN"
 						id="retrieveCKAN" type="submit" value="Retrieve CKAN data">Retrieve CKAN data</button>
 						<button class="btn btn-lg btn-primary" wicket:id="runCKAN"
 						id="runCKAN" type="submit" value="Run CKAN data">Run CKAN data</button>
-	                <div wicket:id="editProperties">
-						<table class="properties-table">
+	                <div wicket:id="editProperties" class="table-responsive">
+						<table class="table properties-table">
 								<tr><td><br /></td></tr>
 								<tr><td><h3>Main configuration</h3></td></tr>
 								<tr><td>Country code: </td><td><select wicket:id="countrycode" class="form-control" /></td></tr>
@@ -162,7 +168,7 @@ $(function() {
 					</form>
 					
        
-		            </div>     
+		       
 	 
    
 	              </div>            

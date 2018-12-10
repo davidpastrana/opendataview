@@ -189,8 +189,12 @@ a:hover {
 }
 
 .header .navbar {
-	margin: 0;
-	background: transparent !important;
+
+	background-color: #CC4646 !important;
+}
+.container {
+    padding-right: 0 !important;
+    padding-left: 0 !important;
 }
 
 .navbar-inverse .navbar-toggle .icon-bar {
@@ -365,8 +369,11 @@ a:hover {
 .darkBg .fa {
 	color: #CC4646;
 }
+
+
 /*--- Banner ----*/
 .banner-container {
+	margin-top: 45px;
 	width: 100%;
 	position: relative;
 	padding: 0px;
@@ -374,7 +381,6 @@ a:hover {
 	/*background: url("../images/banner-bg.jpg") no-repeat;*/
 	background-size: 100% 100%;
 	background-size: cover;
-	margin-top: 48px;
 	position: relative;
 }
 
@@ -1197,12 +1203,41 @@ footer {
 .mapTypeId {
     position: absolute;
     bottom: 10px;
+    left: 5px;
 }
 
+.row {
+    margin-right: 0;
+    margin-left: 0;
+}
 
+.btn {
+    padding: 0.9rem 1.2rem !important;
+    color: white;
+    font-size: 13px;
+}
 
+select.form-control:not([size]):not([multiple]), .form-control {
+    min-height: 32px !important;
+}
 
+.table td, .table th {
+    padding: 0px !important;
+    vertical-align: top;
+    border-top: 0px solid #dee2e6;
+}
 
+.properties-table tr td:nth-child(1) {
+    min-width: 155px !important;
+}
 
+#zoomOut {
+	margin-left: 5px;
+}
 
-
+.kv-preview-thumb {
+    width: 99%;
+}
+.krajee-default.file-preview-frame .kv-file-content, .file-preview-text {
+	width: 100% !important;
+}

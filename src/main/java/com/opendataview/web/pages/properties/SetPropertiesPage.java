@@ -102,7 +102,7 @@ public class SetPropertiesPage extends BasePage {
   //protected static String csvfiles_dir = "file: config.properties";
   //protected static String processed_dir = "file: config.properties";
   //protected static String sqlinserts_file = "file: config.properties";
-  protected File sqlFile = null;
+  protected static File sqlFile = null;
   // csv file name
   protected static String name = "";
   
@@ -562,7 +562,7 @@ public class SetPropertiesPage extends BasePage {
        sqlFile = new File(upload_folder + "/processed/sql/" + name);// sqlinserts_file + "/" + "name");
 
      sqlFile.getParentFile().mkdirs();
-     sqlFile.createNewFile();
+     //sqlFile.createNewFile();
      DownloadLink downloadFile = new DownloadLink("downloadFile", sqlFile);
      wmc.add(downloadFile);
      
@@ -846,17 +846,18 @@ public class SetPropertiesPage extends BasePage {
 	
 
 
+
 	@Override
       protected void onSubmit(AjaxRequestTarget target) {
           super.onSubmit(target);
           
-     	  log.info("Uploaded0: " );
-     	 info("Uploaded1: "  );
-           success("Uploaded2: " );
-            feedbackPanel.add(AttributeModifier.append("class", "success"));
-            feedbackPanel.setVisible(true);
-            
-            target.add(feedbackPanel);
+     	  //log.info("Uploaded0: " );
+     	 //info("Uploaded1: "  );
+//           success("Files successfully processed: " );
+//           feedbackPanel.add(AttributeModifier.append("class", "success"));
+//            feedbackPanel.setVisible(true);
+//            
+//            target.add(feedbackPanel);
             
           List<FileUpload> fileUploads = model.getObject();
           if (fileUploads != null) {
@@ -864,44 +865,46 @@ public class SetPropertiesPage extends BasePage {
 
                   
                   
-//    			  MainClass mc = null;
-//				try {
-//					mc = new MainClass(null);
-//					mc.initialize();
-//				} catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-// 		    	log.info("file type:"+upload.getContentType());
-// 		    	log.info("file size:"+upload.getSize()); 		                
-// 		        	 
-// 		             log.info("file to execute is: " + upload.getClientFileName());
-// 		            log.info("file directory: " + upload.toString());
-// 		            
-// 		        	File folder = new File(upload_folder + "/uploads/");
-// 		        	if(!folder.exists()){
-// 		        		folder.mkdir();
-// 		        	}
-// 		        	
-// 		            File newFile = new File(folder + "/" + upload.getClientFileName());
-// 		        	if(newFile.exists()){
-// 		        		newFile.delete();
-// 		        	}
-// 		            try {
-//						upload.writeTo(newFile);
-//						mc.start(upload_folder + "/uploads/",newFile, feedbackPanel, textResult);
-//					} catch (Exception e) {
-//						// TODO Auto-generated catch block
-//						e.printStackTrace();
-//					}
+    			  MainClass mc = null;
+				try {
+					mc = new MainClass(null);
+					mc.initialize();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+ 		    	log.info("file type:"+upload.getContentType());
+ 		    	log.info("file size:"+upload.getSize()); 		                
+ 		        	 
+ 		             log.info("file to execute is: " + upload.getClientFileName());
+ 		            log.info("file directory: " + upload.toString());
+ 		            
+ 		        	File folder = new File(upload_folder + "/uploads/");
+ 		        	if(!folder.exists()){
+ 		        		folder.mkdir();
+ 		        	}
+ 		        	
+ 		            File newFile = new File(folder + "/" + upload.getClientFileName());
+ 		        	if(newFile.exists()){
+ 		        		newFile.delete();
+ 		        	}
+ 		            try {
+						upload.writeTo(newFile);
+						mc.start(upload_folder + "/uploads/",newFile, feedbackPanel, textResult);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
  		
- 	            	  log.info("Uploaded: " + upload.getClientFileName());
- 	            	 info("Uploaded1: " + upload.getClientFileName());
- 	                  success("Uploaded2: " + upload.getClientFileName());
+// 	            	  log.info("Uploaded: " + upload.getClientFileName());
+// 	            	 info("Uploaded1: " + upload.getClientFileName());
+ 	                  success("Uploaded: " + upload.getClientFileName());
+  	                 feedbackPanel.setVisible(true);
+
  	                 feedbackPanel.add(AttributeModifier.append("class", "success"));
- 	                 feedbackPanel.setVisible(true);
  	                //target.add(feedbackPanel);
+ 	                wmc.modelChanged();
                   
               }
           } else {
@@ -914,7 +917,7 @@ public class SetPropertiesPage extends BasePage {
       }
   };
   bootstrapFileInput.getConfig()
-  .allowedFileExtensions(Arrays.asList("csv", "zip"))
+  .allowedFileExtensions(Arrays.asList("csv"))
   //.maxFileCount(5)
   .showUpload(true)
   .showRemove(true);
@@ -1004,16 +1007,16 @@ public class SetPropertiesPage extends BasePage {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-          //sqlinserts_file = newFile.getAbsolutePath();
-          try {
-			RunSqlScript.runSqlScript();
-		} catch (ClassNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (SQLException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+//          //sqlinserts_file = newFile.getAbsolutePath();
+//          try {
+//			RunSqlScript.runSqlScript(sqlFile);
+//		} catch (ClassNotFoundException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		} catch (SQLException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
           if (newFile.exists()) {
               newFile.delete();
             }
