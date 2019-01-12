@@ -7,7 +7,7 @@ DBUSER="postgres"
 
 export PGPASSWORD='postgres';
 
-#psql -U $DBUSER -h $DBHOST -p $DBPORT -c "CREATE DATABASE geonames WITH TEMPLATE = template0 ENCODING = 'UTF8';"
+psql -U $DBUSER -h $DBHOST -p $DBPORT -c "CREATE DATABASE geonames WITH TEMPLATE = template0 ENCODING = 'UTF8';"
 
 echo "--------- Removing existing tables..."
 psql -U $DBUSER -h $DBHOST -p $DBPORT geonames <<EOT
@@ -62,7 +62,7 @@ echo "DONE"
 echo "--------- Copying data into database, please wait..."
 psql -e -U $DBUSER -h $DBHOST -p $DBPORT geonames <<EOT
 
-copy geoname (geonameid,name,asciiname,alternatenames,latitude,longitude,fclass,fcode,country,cc2,admin1,admin2,admin3,admin4,population,elevation,gtopo30,timezone,moddate) from '${DIR}/geoname/AT.txt' null as '';
+copy geoname (geonameid,name,asciiname,alternatenames,latitude,longitude,fclass,fcode,country,cc2,admin1,admin2,admin3,admin4,population,elevation,gtopo30,timezone,moddate) from '${DIR}/geoname/allCountries.txt' null as '';
 copy postalcodes (country,code,name,admin1name,admin1,admin2name,admin2,admin3name,admin3,latitude,longitude,accuracy) from '${DIR}/postalcodes/AT.txt' null as '';
 
 EOT

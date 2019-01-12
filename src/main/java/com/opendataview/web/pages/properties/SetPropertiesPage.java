@@ -33,6 +33,7 @@ import org.apache.tools.ant.taskdefs.email.EmailTask.Encoding;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -104,7 +105,7 @@ public class SetPropertiesPage extends BasePage {
   //protected static String sqlinserts_file = "file: config.properties";
   protected static File sqlFile = null;
   // csv file name
-  protected static String name = "";
+  protected static String file_name = "";
   
   @SpringBean
   private PropertiesServiceDAO propertiesServiceDAO;
@@ -191,6 +192,9 @@ public class SetPropertiesPage extends BasePage {
 
 
   public SetPropertiesPage(final PageParameters parameters) throws IOException {
+	  
+	  //new MainClass(null);
+	  
 	  ServletContext servletContext = WebApplication.get().getServletContext();
 
 	  
@@ -294,10 +298,10 @@ public class SetPropertiesPage extends BasePage {
     rowsCsv.setVisible(false);
     wmc.add(rowsCsv);
 
-    final Label exampleRowsLabel =
-        new Label("exampleRowsLabel", "First 3 rows of the CSV file: ");
-    exampleRowsLabel.setVisible(false);
-    wmc.add(exampleRowsLabel);
+//    final Label exampleRowsLabel =
+//        new Label("exampleRowsLabel", "First 3 rows of the CSV file: ");
+//    exampleRowsLabel.setVisible(false);
+//    wmc.add(exampleRowsLabel);
 
     final Form<?> form = new Form<Void>("propertiesForm") {
 
@@ -346,6 +350,8 @@ public class SetPropertiesPage extends BasePage {
 //                    "sqlinserts_file")));
 //    item.add(new TextField<String>("newformat_dir",new PropertyModel<String>(item.getModelObject(),
 //                    "newformat_dir")));
+            item.add(new DropDownChoice<String>("processed_dir",new PropertyModel<String>(item.getModelObject(), "processed_dir"), Arrays.asList("true","false")));
+
     item.add(new TextArea<String>("enriched_dir",new PropertyModel<String>(item.getModelObject(),
                     "enriched_dir")));
     item.add(new DropDownChoice<String>("nrowchecks",new PropertyModel<String>(item.getModelObject(), "nrowchecks"), Arrays.asList("2","3","4","5","6","7","8","9","10","15","20","25","30","35","40","45","50")));
@@ -421,6 +427,31 @@ public class SetPropertiesPage extends BasePage {
         }
       };
       form.add(editPropList);
+      
+      
+      
+      final AjaxButton saveLogDetails = new AjaxButton("saveLogDetails") {
+
+		private static final long serialVersionUID = 1L;
+		
+		@Override
+		protected void onSubmit(AjaxRequestTarget target) {
+	        target.appendJavaScript(
+	            "	    $(this).click(function(e) {"
+	            + "		var data = document.getElementById('logDetails').value;\r\n" + 
+	            "	    var data = 'data:application/csv;charset=utf-8,' + encodeURIComponent(data);\r\n" + 
+	            "	    var el = e.currentTarget;\r\n" + 
+	            "	    el.href = data;\r\n" + 
+	            "	    el.target = '_blank';\r\n" + 
+	            "	    el.download = 'data.csv';"
+	            + "		});");
+	    }
+    	  
+      };
+      saveLogDetails.setOutputMarkupId(true);
+      saveLogDetails.setVisible(false);
+      form.add(saveLogDetails);
+
     
     final Button saveProperties = new Button("saveProperties") {
 
@@ -477,9 +508,9 @@ public class SetPropertiesPage extends BasePage {
              try {
           	   
           	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
-          			  MainClass mc = new MainClass(null);
-          			  mc.initialize();
-  			mc.start(upload_folder, newFile, feedbackPanel, textResult);
+          		
+          			MainClass.initialize();
+          			MainClass.start(upload_folder, newFile, feedbackPanel, textResult);
   			} else {
   				info("Error. No properties defined in database table.");
   				feedbackPanel.setVisible(true);
@@ -557,285 +588,282 @@ public class SetPropertiesPage extends BasePage {
     	    admin_user_visibility.setVisible(false);
        }
      
-     //sqlFile = new File(upload_folder + "/" + processed_dir + "/" + sqlinserts_file);
-     //sqlFile = new File(upload_folder + "/" + processed_dir + "/" + sqlinserts_file + "/" + name);// sqlinserts_file + "/" + "name");
-       sqlFile = new File(upload_folder + "/processed/sql/" + name);// sqlinserts_file + "/" + "name");
+
+       sqlFile = new File(upload_folder + "/processed/sql/" + file_name);
 
      sqlFile.getParentFile().mkdirs();
      //sqlFile.createNewFile();
-     DownloadLink downloadFile = new DownloadLink("downloadFile", sqlFile);
-     wmc.add(downloadFile);
+
      
 
-     final Button executeSearch = new Button("executeSearch") {
-
-         private static final long serialVersionUID = 1L;
-
-         @Override
-         public void onSubmit() {
-           try {
-        	   
-        	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
-        			  MainClass mc = new MainClass(null);
-        			  mc.initialize();
-			mc.start(upload_folder, newFile, feedbackPanel, textResult);
-			} else {
-				info("Error. No properties defined in database table.");
-				feedbackPanel.setVisible(true);
-			}
-		} catch (CQLException | ClassNotFoundException | IOException | ParseException | InterruptedException
-				| InvalidParameterException | SQLException | ExecutionException | NumberParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-         }
-       };
-       form.add(executeSearch);
-      // executeSearch.setVisible(true);
-    
-
-    final Label selFile1 = new Label("selFile1", "Select Zip file (with all csv files inside): ");
-    form.add(selFile1);
-
-
-
-    
-    
-
-    
-    Button uploadFile1 = new Button("uploadFile1") {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void onSubmit() {
-        
-        log.info("DIRECTORIO1 " + upload_folder);
-        
-
-
-        uploadedFile1 = fileUpload1.getFileUpload();
-        
-        
-        if (uploadedFile1 != null) {
-
-
-        	File folder = new File(upload_folder + "/compressed_files/");
-        	if(!folder.exists()){
-        		folder.mkdir();
-        	}
-        	
-			newFile1 = new File(folder + uploadedFile1.getClientFileName());
-
-			
-			
-			//newFileTmp = new File(upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName());
-
-          //newFile1.getParentFile().mkdirs();
-          //destiantion..getParentFile().mkdirs();
-
-
-          log.info(">> File is (test mode): " + uploadedFile1.getClientFileName());
-          
-
-//          if (newFile1.exists()) {
-//            newFile1.delete();
+//     final Button executeSearch = new Button("executeSearch") {
+//
+//         private static final long serialVersionUID = 1L;
+//
+//         @Override
+//         public void onSubmit() {
+//           try {
+//        	   
+//        	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
+//        			 
+//        			  MainClass.initialize();
+//        			  MainClass.start(upload_folder, newFile, feedbackPanel, textResult);
+//			} else {
+//				info("Error. No properties defined in database table.");
+//				feedbackPanel.setVisible(true);
+//			}
+//		} catch (CQLException | ClassNotFoundException | IOException | ParseException | InterruptedException
+//				| InvalidParameterException | SQLException | ExecutionException | NumberParseException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (Exception e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//         }
+//       };
+//       form.add(executeSearch);
+//      // executeSearch.setVisible(true);
+//    
+//
+//    final Label selFile1 = new Label("selFile1", "Select Zip file (with all csv files inside): ");
+//    form.add(selFile1);
+//
+//
+//
+//    
+//    
+//
+//    
+//    Button uploadFile1 = new Button("uploadFile1") {
+//
+//      private static final long serialVersionUID = 1L;
+//
+//      @Override
+//      public void onSubmit() {
+//        
+//        log.info("DIRECTORIO1 " + upload_folder);
+//        
+//
+//
+//        uploadedFile1 = fileUpload1.getFileUpload();
+//        
+//        
+//        if (uploadedFile1 != null) {
+//
+//
+//        	File folder = new File(upload_folder + "/compressed_files/");
+//        	if(!folder.exists()){
+//        		folder.mkdir();
+//        	}
+//        	
+//			newFile1 = new File(folder + uploadedFile1.getClientFileName());
+//
+//			
+//			
+//			//newFileTmp = new File(upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName());
+//
+//          //newFile1.getParentFile().mkdirs();
+//          //destiantion..getParentFile().mkdirs();
+//
+//
+//          log.info(">> File is (test mode): " + uploadedFile1.getClientFileName());
+//          
+//
+////          if (newFile1.exists()) {
+////            newFile1.delete();
+////          }
+//
+//          try {
+////            newFile1.createNewFile();
+//            
+//            log.info("were here ");
+//           // String zipFile = upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName();
+//            
+//            //ZipFile zipFile = null;
+//
+//           // String outputFolder = upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName().substring(0, uploadedFile1.getClientFileName().length() - 4);
+//            //zipFile = fileUpload1.getFileUpload();
+//			//newFile1.extractAll(destination);
+//
+//            
+//            
+//            uploadedFile1.writeTo(new File(folder + "/" + uploadedFile1.getClientFileName()));
+//            
+//            
+//            byte[] buffer = new byte[1024];
+//            
+//            
+//          //get the zip file content
+//        	ZipInputStream zis = 
+//        		new ZipInputStream(new FileInputStream(new File(folder + "/" + uploadedFile1.getClientFileName())));
+//        	//get the zipped file list entry
+//        	ZipEntry ze = zis.getNextEntry();
+//        		
+//        	while(ze!=null){
+//        			
+//        	   String fileName = ze.getName();
+//               File newFile = new File(folder + File.separator + fileName);
+//                    
+//               System.out.println("file unzip : "+ newFile.getAbsoluteFile());
+//                    
+//                //create all non exists folders
+//                //else you will hit FileNotFoundException for compressed folder
+//                new File(newFile.getParent()).mkdirs();
+//                  
+//                FileOutputStream fos = new FileOutputStream(newFile);             
+//
+//                int len;
+//                while ((len = zis.read(buffer)) > 0) {
+//           		fos.write(buffer, 0, len);
+//                }
+//            		
+//                fos.close();   
+//                ze = zis.getNextEntry();
+//        	}
+//        	
+//            zis.closeEntry();
+//        	zis.close();
+//            log.info("files have been extracted ");
+//            
+//            
+//            
+//            
+//            
+//            
+//            
+//            //uploadedFile1.writeTo(newFile1);
+//            info("Saved file: \"" + folder + "/" + uploadedFile1.getClientFileName() + "\"");
+//            //feedbackPanel.add(AttributeModifier.replace("error", ""));
+//            feedbackPanel.add(AttributeModifier.append("class", "success"));
+//            feedbackPanel.setVisible(true);
+//            
+//     	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
+//     		   
+//    			
+//    			  MainClass.initialize();
+//
+//     		    File list[] = folder.listFiles();
+//     		   long fileSize = folder.length();
+//     		  System.out.println("Directory size in MB is :" + (double)fileSize/(1024*1024));
+//     		    for(int i=0; i<list.length; i++){
+//     		        //String substring = list[i].getName().substring(0, list[i].getName().indexOf("."));
+//     		    	log.info("file type:"+list[i].getName().substring(list[i].getName().length() - 4));
+//     		        if(list[i].isFile() && list[i].getName().substring(list[i].getName().length() - 4).contentEquals(".csv")){
+//     		                
+//     		        	 
+//     		             log.info("file to execute is: " + list[i].getName());
+//     		            log.info("file directory: " + list[i].getAbsolutePath());
+//
+//    
+//     		           MainClass.start(upload_folder + "/compressed_files/",list[i].getAbsoluteFile(), feedbackPanel, textResult);
+//     		                
+//
+//     		         }
+//     		    }
+//     		   
+//     		   
+//
+//		
+//		
+//		} else {
+//			info("Error. No properties defined in database table.");
+//			feedbackPanel.setVisible(true);
+//		}
+//     	   
+//     	   
+//     	   
+//          } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
 //          }
-
-          try {
-//            newFile1.createNewFile();
-            
-            log.info("were here ");
-           // String zipFile = upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName();
-            
-            //ZipFile zipFile = null;
-
-           // String outputFolder = upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName().substring(0, uploadedFile1.getClientFileName().length() - 4);
-            //zipFile = fileUpload1.getFileUpload();
-			//newFile1.extractAll(destination);
-
-            
-            
-            uploadedFile1.writeTo(new File(folder + "/" + uploadedFile1.getClientFileName()));
-            
-            
-            byte[] buffer = new byte[1024];
-            
-            
-          //get the zip file content
-        	ZipInputStream zis = 
-        		new ZipInputStream(new FileInputStream(new File(folder + "/" + uploadedFile1.getClientFileName())));
-        	//get the zipped file list entry
-        	ZipEntry ze = zis.getNextEntry();
-        		
-        	while(ze!=null){
-        			
-        	   String fileName = ze.getName();
-               File newFile = new File(folder + File.separator + fileName);
-                    
-               System.out.println("file unzip : "+ newFile.getAbsoluteFile());
-                    
-                //create all non exists folders
-                //else you will hit FileNotFoundException for compressed folder
-                new File(newFile.getParent()).mkdirs();
-                  
-                FileOutputStream fos = new FileOutputStream(newFile);             
-
-                int len;
-                while ((len = zis.read(buffer)) > 0) {
-           		fos.write(buffer, 0, len);
-                }
-            		
-                fos.close();   
-                ze = zis.getNextEntry();
-        	}
-        	
-            zis.closeEntry();
-        	zis.close();
-            log.info("files have been extracted ");
-            
-            
-            
-            
-            
-            
-            
-            //uploadedFile1.writeTo(newFile1);
-            info("Saved file: \"" + folder + "/" + uploadedFile1.getClientFileName() + "\"");
-            feedbackPanel.add(AttributeModifier.append("class", "success"));
-            feedbackPanel.setVisible(true);
-            
-     	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
-     		   
-    			  MainClass mc = new MainClass(null);
-	    			  mc.initialize();
-
-     		    File list[] = folder.listFiles();
-     		   long fileSize = folder.length();
-     		  System.out.println("Directory size in MB is :" + (double)fileSize/(1024*1024));
-     		    for(int i=0; i<list.length; i++){
-     		        //String substring = list[i].getName().substring(0, list[i].getName().indexOf("."));
-     		    	log.info("file type:"+list[i].getName().substring(list[i].getName().length() - 4));
-     		        if(list[i].isFile() && list[i].getName().substring(list[i].getName().length() - 4).contentEquals(".csv")){
-     		                
-     		        	 
-     		             log.info("file to execute is: " + list[i].getName());
-     		            log.info("file directory: " + list[i].getAbsolutePath());
-
-    
-     		   		mc.start(upload_folder + "/compressed_files/",list[i].getAbsoluteFile(), feedbackPanel, textResult);
-     		                
-
-     		         }
-     		    }
-     		   
-     		   
-
-		
-		
-		} else {
-			info("Error. No properties defined in database table.");
-			feedbackPanel.setVisible(true);
-		}
-     	   
-     	   
-     	   
-          } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-
-
-//          List<String> sampleRows = showSampleCSV(uploadedFile1);
+//
+//
+////          List<String> sampleRows = showSampleCSV(uploadedFile1);
+////          if (sampleRows != null) {
+////            exampleRowsLabel.setVisible(true);
+////            rowsCsv.setList(sampleRows);
+////            rowsCsv.setVisible(true);
+////            fileUpload1.setVisible(true);
+////            selFile1.setVisible(true);
+////            //Component setVisible = this.setVisible(false);
+////          }
+//
+//
+//        } else {
+//        	info("You must upload a file with ZIP format.");
+//        	feedbackPanel.setVisible(true);
+//        }
+//      }
+//    };
+//
+//    form.add(uploadFile1);
+//    
+//    final Label selFile2 = new Label("selFile2", "Select CSV file to test: ");
+//    form.add(selFile2);
+//
+//    Button uploadFile2 = new Button("uploadFile2") {
+//
+//      private static final long serialVersionUID = 1L;
+//
+//      @Override
+//      public void onSubmit() {
+//
+//          log.info("DIRECTORIO2 " + upload_folder);
+////          new BufferedReader(new InputStreamReader(new FileInputStream(datasetFile),
+////                  StandardCharsets.ISO_8859_1));
+//
+//        uploadedFile2 = fileUpload2.getFileUpload();
+//       
+//
+//        if (uploadedFile2 != null) {
+//        	
+//        	File folder = new File(upload_folder);
+//        	if(!folder.exists()){
+//        		folder.mkdir();
+//        	}
+//        	
+//        	
+//          // write to a new file
+//          newFile = new File(folder +"/"+ uploadedFile2.getClientFileName());
+//          //newFile2.getParentFile().mkdirs();
+//          
+//          log.info(">> File nam222 (test mode): " +  uploadedFile2.getClientFileName());
+//
+//          
+//          if (newFile.exists()) {
+//            newFile.delete();
+//          }
+//          try {
+//            newFile.createNewFile();
+//            uploadedFile2.writeTo(newFile);
+//            log.info("Saved file: \"" + uploadedFile2.getClientFileName() + "\"");
+//            log.info("Saved newFile2: \"" + newFile.getAbsolutePath() + "\"");
+//          } catch (IOException e) {
+//            e.printStackTrace();
+//          } catch (Exception e) {
+//            // TODO Auto-generated catch block
+//            e.printStackTrace();
+//          }
+//          
+//          List<String> sampleRows = showSampleCSV(uploadedFile2);
 //          if (sampleRows != null) {
 //            exampleRowsLabel.setVisible(true);
+//            feedbackPanel.setVisible(false);
 //            rowsCsv.setList(sampleRows);
 //            rowsCsv.setVisible(true);
-//            fileUpload1.setVisible(true);
-//            selFile1.setVisible(true);
+//            fileUpload2.setVisible(true);
+//            selFile2.setVisible(true);
 //            //Component setVisible = this.setVisible(false);
 //          }
-
-
-        } else {
-        	info("You must upload a file with ZIP format.");
-        	feedbackPanel.setVisible(true);
-        }
-      }
-    };
-
-    form.add(uploadFile1);
-    
-    final Label selFile2 = new Label("selFile2", "Select CSV file to test: ");
-    form.add(selFile2);
-
-    Button uploadFile2 = new Button("uploadFile2") {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void onSubmit() {
-
-          log.info("DIRECTORIO2 " + upload_folder);
-//          new BufferedReader(new InputStreamReader(new FileInputStream(datasetFile),
-//                  StandardCharsets.ISO_8859_1));
-
-        uploadedFile2 = fileUpload2.getFileUpload();
-       
-
-        if (uploadedFile2 != null) {
-        	
-        	File folder = new File(upload_folder);
-        	if(!folder.exists()){
-        		folder.mkdir();
-        	}
-        	
-        	
-          // write to a new file
-          newFile = new File(folder +"/"+ uploadedFile2.getClientFileName());
-          //newFile2.getParentFile().mkdirs();
-          
-          log.info(">> File nam222 (test mode): " +  uploadedFile2.getClientFileName());
-
-          
-          if (newFile.exists()) {
-            newFile.delete();
-          }
-          try {
-            newFile.createNewFile();
-            uploadedFile2.writeTo(newFile);
-            log.info("Saved file: \"" + uploadedFile2.getClientFileName() + "\"");
-            log.info("Saved newFile2: \"" + newFile.getAbsolutePath() + "\"");
-          } catch (IOException e) {
-            e.printStackTrace();
-          } catch (Exception e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-          }
-          
-          List<String> sampleRows = showSampleCSV(uploadedFile2);
-          if (sampleRows != null) {
-            exampleRowsLabel.setVisible(true);
-            feedbackPanel.setVisible(false);
-            rowsCsv.setList(sampleRows);
-            rowsCsv.setVisible(true);
-            fileUpload2.setVisible(true);
-            selFile2.setVisible(true);
-            //Component setVisible = this.setVisible(false);
-          }
-
-        } else {
-        	info("You must upload a file with CSV format.");
-        	feedbackPanel.setVisible(true);
-        }
-      }
-    };
-    form.add(uploadFile2);
-//    FileUploadPanel fileUpload2 = new FileUploadPanel("fileUpload");
-//    form.add(fileUpload2);
+//
+//        } else {
+//        	info("You must upload a file with CSV format.");
+//        	feedbackPanel.setVisible(true);
+//        }
+//      }
+//    };
+//    form.add(uploadFile2);
     
     
     final IModel<List<FileUpload>> model = new ListModel<FileUpload>();
@@ -861,13 +889,13 @@ public class SetPropertiesPage extends BasePage {
             
           List<FileUpload> fileUploads = model.getObject();
           if (fileUploads != null) {
+	          success("Successful file imports (below you can check the logged details):");
+	          int countfile = 1;
               for (FileUpload upload : fileUploads) {
 
-                  
-                  
-    			  MainClass mc = null;
 				try {
-					mc = new MainClass(null);
+      			  MainClass mc = new MainClass(null);
+
 					mc.initialize();
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -879,34 +907,62 @@ public class SetPropertiesPage extends BasePage {
  		             log.info("file to execute is: " + upload.getClientFileName());
  		            log.info("file directory: " + upload.toString());
  		            
- 		        	File folder = new File(upload_folder + "/uploads/");
- 		        	if(!folder.exists()){
- 		        		folder.mkdir();
- 		        	}
- 		        	
- 		            File newFile = new File(folder + "/" + upload.getClientFileName());
- 		        	if(newFile.exists()){
- 		        		newFile.delete();
- 		        	}
- 		            try {
-						upload.writeTo(newFile);
-						mc.start(upload_folder + "/uploads/",newFile, feedbackPanel, textResult);
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-
- 		
-// 	            	  log.info("Uploaded: " + upload.getClientFileName());
-// 	            	 info("Uploaded1: " + upload.getClientFileName());
- 	                  success("Uploaded: " + upload.getClientFileName());
-  	                 feedbackPanel.setVisible(true);
-
- 	                 feedbackPanel.add(AttributeModifier.append("class", "success"));
- 	                //target.add(feedbackPanel);
- 	                wmc.modelChanged();
+ 		            
+ 		            if(upload.getContentType().contentEquals("text/csv")) {
+ 		            
+	 		        	File folder = new File(upload_folder + "/uploads/");
+	 		        	if(!folder.exists()){
+	 		        		folder.mkdir();
+	 		        	}
+	 		        	
+	 		            File newFile = new File(folder + "/" + upload.getClientFileName());
+	 		        	if(newFile.exists()){
+	 		        		newFile.delete();
+	 		        	}
+	 		            try {
+							upload.writeTo(newFile);
+							MainClass.start(upload_folder + "/uploads/",newFile, feedbackPanel, textResult);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+	
+	 		
+	// 	            	  log.info("Uploaded: " + upload.getClientFileName());
+	// 	            	 info("Uploaded1: " + upload.getClientFileName());
+	
+	 	                  success("File "+countfile+": " + upload.getClientFileName());
+	 	               countfile++;
+ 		            }
+ 		           if(upload.getContentType().contentEquals("text/sql")) {
+	 		        	File folder = new File(upload_folder + "/uploads/");
+	 		        	if(!folder.exists()){
+	 		        		folder.mkdir();
+	 		        	}
+	 		        	
+	 		            File newFile = new File(folder + "/" + upload.getClientFileName());
+	 		        	if(newFile.exists()){
+	 		        		newFile.delete();
+	 		        	}
+	 		            try {
+							upload.writeTo(newFile);
+							MainClass.start(upload_folder + "/uploads/",newFile, feedbackPanel, textResult);
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+ 		           }
                   
               }
+               saveLogDetails.setVisible(true);
+               feedbackPanel.setVisible(true);
+               feedbackPanel.add(new AttributeModifier("class", String.valueOf(this.getMarkupAttributes().get("class")).replaceFirst("error", ""))); 
+               feedbackPanel.add(AttributeModifier.append("class", "success"));
+               wmc.modelChanged();
+              
+              //We reload page after printing the result
+              setResponsePage(getPage());
+              
           } else {
           	info("You must upload a file with CSV format.");
           	feedbackPanel.setVisible(true);
@@ -917,12 +973,14 @@ public class SetPropertiesPage extends BasePage {
       }
   };
   bootstrapFileInput.getConfig()
-  .allowedFileExtensions(Arrays.asList("csv"))
+  .allowedFileExtensions(Arrays.asList("csv","sql"))
   //.maxFileCount(5)
   .showUpload(true)
   .showRemove(true);
   bootstrapFileInput.setRenderBodyOnly(true);
   bootstrapFileInput.setOutputMarkupId(true);
+  bootstrapFileInput.add(new AttributeModifier("span", String.valueOf(this.getMarkupAttributes().get("span")).replaceFirst("Upload", "Run Heuristic Analysis")));
+  
   wmc.add(bootstrapFileInput);
   
   
@@ -958,101 +1016,73 @@ public class SetPropertiesPage extends BasePage {
   
   
     
-    final Label selFile3 = new Label("selFile3", "Select SQL file: ");
-    form.add(selFile3);
-
-    Button uploadFile3 = new Button("uploadFile3") {
-
-      private static final long serialVersionUID = 1L;
-
-      @Override
-      public void onSubmit() {
-
-        log.info("DIRECTORIO3 " + upload_folder);
-		  MainClass mc = null;
-		try {
-			mc = new MainClass(null);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		  try {
-			mc.initialize();
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-		  
-		  
-
-        uploadedFile3 = fileUpload3.getFileUpload();
-        if (uploadedFile3 != null) {
-        	
-        	
-        	//File folder = new File(upload_folder + "/"+ sqlinserts_file +"/");
-        	File folder = new File(upload_folder + "/sql/");
-        	if(!folder.exists()){
-        		folder.mkdir();
-        	}
-        	
-
-          // write to a new file
-          newFile = new File(folder + uploadedFile3.getClientFileName());
-          //newFile3.getParentFile().mkdirs();
-          
-          log.info(">> File name333 (test mode): " +  uploadedFile3.getClientFileName());
-          try {
-			uploadedFile3.writeTo(newFile);
-		} catch (Exception e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-		}
-//          //sqlinserts_file = newFile.getAbsolutePath();
+//    final Label selFile3 = new Label("selFile3", "Select SQL file: ");
+//    form.add(selFile3);
+//
+//    Button uploadFile3 = new Button("uploadFile3") {
+//
+//      private static final long serialVersionUID = 1L;
+//
+//      @Override
+//      public void onSubmit() {
+//
+//        log.info("DIRECTORIO3 " + upload_folder);
+//
+//			  try {
+//				MainClass.initialize();
+//			} catch (IOException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+//
+//		  
+//		  
+//
+//        uploadedFile3 = fileUpload3.getFileUpload();
+//        if (uploadedFile3 != null) {
+//        	
+//        	
+//        	//File folder = new File(upload_folder + "/"+ sqlinserts_file +"/");
+//        	File folder = new File(upload_folder + "/sql/");
+//        	if(!folder.exists()){
+//        		folder.mkdir();
+//        	}
+//        	
+//
+//          // write to a new file
+//          newFile = new File(folder + uploadedFile3.getClientFileName());
+//          
+//          log.info(">> File name333 (test mode): " +  uploadedFile3.getClientFileName());
 //          try {
-//			RunSqlScript.runSqlScript(sqlFile);
-//		} catch (ClassNotFoundException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		} catch (SQLException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
+//			uploadedFile3.writeTo(newFile);
+//		} catch (Exception e2) {
+//			e2.printStackTrace();
 //		}
-          if (newFile.exists()) {
-              newFile.delete();
-            }
-
-
-//          try {
-//            newFile3.createNewFile();
-//            uploadedFile3.writeTo(newFile3);
-//            log.info("Saved file: \"" + uploadedFile3.getClientFileName() + "\"");
-//          } catch (IOException e) {
-//            e.printStackTrace();
-//          } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
+//
+//          if (newFile.exists()) {
+//              newFile.delete();
+//            }
+//
+//
+//          List<String> sampleRows = showSampleCSV(uploadedFile3);
+//          if (sampleRows != null) {
+//            exampleRowsLabel.setVisible(true);
+//            feedbackPanel.setVisible(false);
+//            rowsCsv.setList(sampleRows);
+//            rowsCsv.setVisible(true);
+//            fileUpload3.setVisible(true);
+//            selFile3.setVisible(true);
+//            //Component setVisible = this.setVisible(false);
 //          }
-
-
-          List<String> sampleRows = showSampleCSV(uploadedFile3);
-          if (sampleRows != null) {
-            exampleRowsLabel.setVisible(true);
-            feedbackPanel.setVisible(false);
-            rowsCsv.setList(sampleRows);
-            rowsCsv.setVisible(true);
-            fileUpload3.setVisible(true);
-            selFile3.setVisible(true);
-            //Component setVisible = this.setVisible(false);
-          }
-
-
-        } else {
-        	info("You must upload a file with CSV format.");
-        	feedbackPanel.setVisible(true);
-        }
-      }
-    };
-
-    form.add(uploadFile3);
+//
+//
+//        } else {
+//        	info("You must upload a file with CSV format.");
+//        	feedbackPanel.setVisible(true);
+//        }
+//      }
+//    };
+//
+//    form.add(uploadFile3);
   }
 }

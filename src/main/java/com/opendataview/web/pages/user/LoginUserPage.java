@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,7 +68,9 @@ public class LoginUserPage extends BasePage {
             log.info("Session is.... " + session.getId());
             log.info("Size is.... " + session.getSizeInBytes() + " bytes");
             log.info("Session name.... " + session.getAttribute("user_name"));
-            setResponsePage(SetPropertiesPage.class);
+            PageParameters parameters = new PageParameters();
+			parameters.set("usr", usr);
+            setResponsePage(SetPropertiesPage.class,parameters);
           } else {
         	  info("Username or password is not correct. Please try again.");
         	  feedback.setVisible(true);

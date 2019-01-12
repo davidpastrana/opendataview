@@ -7,6 +7,7 @@ $(function() {
 	  $(window).on('load', function() {
           $('#preloader').fadeOut('fast',function(){$(this).remove();});
       });
+
 });
 </script>
 <style>
@@ -42,9 +43,9 @@ $(function() {
 
 	       			<input type="file" wicket:id="bootstrapFileinput" multiple="multiple" />
 	       
-
+<!-- 
 		            <div class="row">	                   
-		         		<label wicket:id="exampleRowsLabel">Here you can see the -->
+		         		<label wicket:id="exampleRowsLabel">Here you can see the 
 							first 3 rows of the CSV file: </label>
 						<table>
 							<tr wicket:id="listview">
@@ -53,10 +54,11 @@ $(function() {
 							</tr>
 						</table>
 	            	</div>
-	            	<textarea class="output" wicket:id="resultsBox"></textarea>
+-->
+	            	<textarea id="logDetails" class="output" wicket:id="resultsBox"></textarea>
 	            	<br /><br />
-	            	<input type="button" wicket:id="downloadFile" value="Generate SQL File" />
-		            <br />
+
+		            
 		            <!--           
 	                <div class="row">
 		            	<form wicket:id="formTypes">
@@ -92,13 +94,14 @@ $(function() {
 								
 				</table>
 				-->
-
+						<button class="btn btn-lg btn-primary" wicket:id="saveLogDetails"
+						id="saveLogToFile" type="submit" value="Save Log Details">Save Log Details</button>
 						<button class="btn btn-lg btn-primary" wicket:id="saveProperties"
-						id="saveEdit" type="submit" value="Save">Save Configuration</button>
+						id="saveEdit" type="submit" value="Save Configuration">Save Configuration</button>
 						
-						<!--  
-						<button class="btn btn-lg btn-primary" wicket:id="executeSearch"
-						id="executeSearch" type="submit" value="Execute Search">Run Imported File</button>-->
+						 
+						<!-- <button class="btn btn-lg btn-primary" wicket:id="executeSearch"
+						id="executeSearch" type="submit" value="Execute Search">Run Import</button> -->
 						<button class="btn btn-lg btn-primary" wicket:id="retrieveCKAN"
 						id="retrieveCKAN" type="submit" value="Retrieve CKAN data">Retrieve CKAN data</button>
 						<button class="btn btn-lg btn-primary" wicket:id="runCKAN"
@@ -113,6 +116,7 @@ $(function() {
 								<tr><td>Execute SQL Queries: </td><td><select wicket:id="executeSQLqueries" class="form-control" /></td></tr>
 								<tr><td>Remove ALL your DB files: </td><td><select wicket:id="removeExistingBData" class="form-control" /></td></tr>
 								<tr><td>Field types debug mode: </td><td><select wicket:id=fieldtypesdebugmode class="form-control" /></td></tr>
+								<tr><td>Database debug mode: </td><td><select wicket:id=geonamesdebugmode class="form-control" /></td></tr>
 								<!--  <tr><td>Processed dir: </td><td><input wicket:id="processed_dir" type="text" class="form-control" /></td></tr>
 								<tr><td>CSV files dir: </td><td><input wicket:id="csvfiles_dir" type="text" class="form-control" /></td></tr>
 								<tr><td>CSV formatted dir: </td><td><input wicket:id="newformat_dir" type="text" class="form-control" /></td></tr>
@@ -122,6 +126,7 @@ $(function() {
 								
 								--><tr><td>Num Rows to check: </td><td><select wicket:id="nrowchecks" class="form-control" /></td></tr>
 								<tr><td>PValue Num Rows check: </td><td><select wicket:id="pvalue_nrowchecks" class="form-control" /></td></tr>
+								<tr><td>Use dictionary: </td><td><select wicket:id=processed_dir class="form-control" /></td></tr>		
 								<tr><td>Dictionary: </td><td><textarea wicket:id="enriched_dir" class="form-control" /></td></tr>
 								<tr><td><br /></td></tr>
 								<tr><td><h3>RegEx configuration</h3></td></tr>

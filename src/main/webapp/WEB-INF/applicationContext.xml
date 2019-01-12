@@ -25,7 +25,7 @@ http://www.springframework.org/schema/tx
 		<property name="dataSource" ref="dataSource" />
 		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
 		<property name="persistenceXmlLocation" value="classpath*:META-INF/persistence.xml" />
-		<property name="persistenceUnitName" value="spatialdatasearch" />
+		<property name="persistenceUnitName" value="opendataview" />
 		<property name="jpaDialect" ref="jpaDialect" />
 		<property name="jpaPropertyMap">
 			<props>
@@ -38,7 +38,7 @@ http://www.springframework.org/schema/tx
 	<bean id="mainDataSource" class="org.apache.commons.dbcp.BasicDataSource"
 		destroy-method="close" lazy-init="false">
 		<property name="driverClassName" value="org.postgresql.Driver" />
-		<property name="url" value="jdbc:postgresql://127.0.0.1/spatialdatasearch" />
+		<property name="url" value="jdbc:postgresql://127.0.0.1/opendataview" />
 		<property name="username" value="postgres" />
 		<property name="password" value="postgres" />
 		<property name="maxActive" value="10" />

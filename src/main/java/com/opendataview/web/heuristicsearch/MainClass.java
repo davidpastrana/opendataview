@@ -67,11 +67,18 @@ import com.opendataview.web.pages.index.BasePage;
 import com.opendataview.web.pages.properties.SetPropertiesPage;
 import com.opendataview.web.persistence.PropertiesServiceDAO;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
+
 
 public class MainClass extends SetPropertiesPage {
 	
 	
 
+
+	public MainClass(PageParameters parameters) throws IOException {
+		super(parameters);
+		// TODO Auto-generated constructor stub
+	}
 
 	private static final long serialVersionUID = 1L;
 
@@ -102,7 +109,7 @@ public class MainClass extends SetPropertiesPage {
   protected static String resul[] = null;
   protected static String dict_match[] = null;
   
-  protected String sqlfile = null;
+  protected static String sqlfile = null;
 
   // Delimiters used in CSV files
   protected static String DELIMITER = ";";
@@ -121,9 +128,9 @@ public class MainClass extends SetPropertiesPage {
   protected static String tmp_dir = "file: config.properties";
 
   protected static String newformat_dir = "file: config.properties";
-  protected static String enriched_dir = "file: config.properties";
+  protected static String dictionary_matches = "file: config.properties";
   protected static String missinggeoreference_dir = "file: config.properties";
-//  protected static String processed_dir = "file: config.properties";
+  protected static String active_dictionary = "file: config.properties";
 //  protected static String sqlinserts_file = "file: config.properties";
 
 
@@ -201,12 +208,10 @@ public class MainClass extends SetPropertiesPage {
 //  }
   
   
-	public MainClass(PageParameters parameters) throws IOException {
-		super(parameters);
-		// TODO Auto-generated constructor stub
-	}
+
 	
-	public void initialize() throws IOException {
+	public static void initialize() throws IOException {
+		
 		  origList = new ArrayList<PropertiesModel>();
 		  origList = propertiesServiceDAO.readPropertiesModel(session);
 		  
@@ -278,8 +283,6 @@ public class MainClass extends SetPropertiesPage {
     //log.info("\n\nLine read: "+line.toString());
     	
       if (i == 0) {
-        log.info("\n--------------------------------------------------------------------------------------------------------");
-        outputinfo.append("\n--------------------------------------------------------------------------------------------------------");
 
         
         //File separator detection (between comma or dot-comma)
@@ -307,9 +310,11 @@ public class MainClass extends SetPropertiesPage {
           log.info(">> NCOLUMNS: " + ncolchecks);
           outputinfo.append("\n>> NCOLUMNS: " + ncolchecks);
           log.info(">> DELIMITER: \"" + DELIMITER + "\"");
-          outputinfo.append("\n>> DELIMITER: \"" + DELIMITER + "\"\n\n");
-          
-          
+          outputinfo.append("\n>> DELIMITER: \"" + DELIMITER + "\"");
+          log.info(">> ACTIVE DICTIONARY: " + active_dictionary);
+          outputinfo.append("\n>> ACTIVE DICTIONARY: " + active_dictionary);
+          log.info(">> DICTIONARY MATCHES: \"" +dictionary_matches);
+          outputinfo.append("\n>> DICTIONARY MATCHES: \"" + dictionary_matches + "\"");
           
           header = new String[ncolchecks];
           String[]  value = new String[ncolchecks];
@@ -346,46 +351,161 @@ public class MainClass extends SetPropertiesPage {
           resul = new String[ncolchecks*2]; //we duplicate the number of columns just to be sure we don't end up with a indexoutofbound fault
           dict_match = new String[ncolchecks*2];
           
-          String uncap_value = "";
+          
+
+          
+          String header_value = "";
+
           //Detect header (row 0) via Regex Dictionary
+
+		  String first,second;
+		  String[] dic_type;
           for (int j = 0; j < value.length; j++) {
         	  if(value[j].length()>0) {
-        		  uncap_value = value[j].toLowerCase();
+
         		  
         		  //capitalize only the first letter of each header value (line 0)
         		  header[j] = value[j].substring(0, 1).toUpperCase() + value[j].substring(1).toLowerCase();
 
-        		  //log.info("VALUE TO CHECK: "+uncap_value);
-	        	  if(uncap_value.matches("^(.*nombre.*|.*titulo.*|.*name.*|.*title.*)$")) {
-	        		  dict_match[j] = "possible names";
-	        		  //log.info("WE HAVE DETECTED NAME: "+resul[j]);
-	        	  }
-	        	  if(uncap_value.matches("^(lat|latitude)$")) {
-	        		  dict_match[j] = "latitudes";
-	        		  //log.info("WE HAVE DETECTED LAT: "+resul[j]);
-	        	  }
-	        	  if(uncap_value.matches("^(lng|lon|long|longitude)$")) {
-	        		  dict_match[j] = "longitudes";
-	        		  //log.info("WE HAVE DETECTED LONG: "+resul[j]);
-	        	  }
-	        	  if(uncap_value.matches("^(tel|telf|telefone|telefono)$")) {
-	        		  dict_match[j] = "phones";
-	        		  //log.info("WE HAVE DETECTED TEL: "+resul[j]);
-	        	  }
-	        	  if(uncap_value.matches("^(email|mail|correo)$")) {
-	        		  dict_match[j] = "emails";
-	        		  //log.info("WE HAVE DETECTED EMAIL: "+resul[j]);
-	        	  }
-	        	  if(uncap_value.matches("^(web|url|site|www)$")) {
-	        		  dict_match[j] = "urls";
-	        		  //log.info("WE HAVE DETECTED EMAIL: "+resul[j]);
-	        	  }
+                  if (Boolean.valueOf(active_dictionary) == true) {
+                	  
+            		  header_value = value[j].toLowerCase();
+	        		  log.info("VALUE TO CHECK!!: "+header_value);
+	        		  
+            		  dic_type = dictionary_matches.trim().split(",");
+            		  for(int w=0; w<dic_type.length; w++) {
+            			  first = dic_type[w].trim().split(":")[0].trim();
+            			  second = dic_type[w].trim().split(":")[1].trim();
+            			  //log.info("value first is "+first);
+            			  //log.info("value second1 issss "+second);
+            			  
+            			  if(second.contains("[") && second.contains("]")) {
+            				  String tmpsecond = second.split("\\[")[0];
+            				  String static_value = second.split("\\]")[0].split("\\[")[1];
+            				  log.info("ALL VALUE "+tmpsecond);
+            				  log.info("STATIC VALUE "+static_value);
+            				  second = tmpsecond;
+            				  if(header_value.contentEquals(first)) {
+            					  dict_match[j] = "static-"+header_value+"-"+static_value;
+            					  log.info("STATIC VALUE SAVED: "+dict_match[j]);
+            				  }
+            			  }
+            			  //log.info("value second2 issss "+second);
+            			  
+
+                
+	        		  
+	        		  
+	        		  if(header_value.contentEquals(first)) {
+	        			  
+
+            			  
+	        			  switch (second) {
+	        			  case "email":
+	        				  dict_match[j] = "emails";
+	                          break;
+	                        case "url":
+	                        	dict_match[j] = "urls";
+	                          break;
+	                        case "phone":
+	                        	dict_match[j] = "phones";
+	                          break;
+	                        case "city":
+	                        	dict_match[j] = "cities";
+	                          break;
+	                        case "postcode":
+	                        	dict_match[j] = "postcodes";
+	                          break;
+	                        case "openhour":
+	                        	dict_match[j] = "opening hours";
+	                          break;
+	                        case "date":
+	                        	dict_match[j] = "dates";
+	                          break;
+	                        case "year":
+	                        	dict_match[j] = "year";
+	                          break;
+	                        case "image":
+	                        	dict_match[j] = "images";
+	                          break;
+	                        case "archive":
+	                        	dict_match[j] = "archives";
+	                          break;
+	                        case "document":
+	                        	dict_match[j] = "documents";
+	                          break;
+	                        case "currency":
+	                        	dict_match[j] = "currencies";
+	                          break;
+	                        case "percentage":
+	                        	dict_match[j] = "percentages";
+	                          break;
+	                        case "shape":
+	                        	dict_match[j] = "shapes";
+	                          break;
+	                        case "latitude":
+	                        	dict_match[j] = "latitudes";
+	                          break;
+	                        case "longitude":
+	                        	dict_match[j] = "longitudes";
+	                          break;
+	                        case "latlng":
+	                        	dict_match[j] = "latlong";
+	                          break;
+	                        case "nuts1":
+	                        	dict_match[j] = "nuts1";
+	                          break;
+	                        case "nuts2":
+	                        	dict_match[j] = "nuts2";
+	                          break;
+	                        case "nuts3":
+	                          dict_match[j] = "nuts3";
+	                          break;
+	                        case "name":
+	                          dict_match[j] = "possible names";
+	                          break;
+	                        case "source":
+		                          dict_match[j] = "source";
+		                          break;
+		        				  
+	        			  }
+	        			  
+
+	        		  }
+//	        		  
+//		        	  if(uncap_value.matches("^(.*nombre.*|.*titulo.*|.*name.*|.*title.*)$")) {
+//		        		  dict_match[j] = "possible names";
+//		        		  //log.info("WE HAVE DETECTED NAME: "+resul[j]);
+//		        	  }
+//		        	  if(uncap_value.matches("^(lat|latitude)$")) {
+//		        		  dict_match[j] = "latitudes";
+//		        		  //log.info("WE HAVE DETECTED LAT: "+resul[j]);
+//		        	  }
+//		        	  if(uncap_value.matches("^(lng|lon|long|longitude)$")) {
+//		        		  dict_match[j] = "longitudes";
+//		        		  //log.info("WE HAVE DETECTED LONG: "+resul[j]);
+//		        	  }
+//		        	  if(uncap_value.matches("^(tel|telf|telefone|telefono)$")) {
+//		        		  dict_match[j] = "phones";
+//		        		  //log.info("WE HAVE DETECTED TEL: "+resul[j]);
+//		        	  }
+//		        	  if(uncap_value.matches("^(email|mail|correo)$")) {
+//		        		  dict_match[j] = "emails";
+//		        		  //log.info("WE HAVE DETECTED EMAIL: "+resul[j]);
+//		        	  }
+//		        	  if(uncap_value.matches("^(web|url|site|www)$")) {
+//		        		  dict_match[j] = "urls";
+//		        		  //log.info("WE HAVE DETECTED EMAIL: "+resul[j]);
+//		        	  }
+                  }
         	  } else {
         		  header[j] = value[j];
         	  }
+     
           }
+        }
           log.info(">> HEADER: \"" + java.util.Arrays.toString(header) + "\"");
-          outputinfo.append("\n>> HEADER: \"" + java.util.Arrays.toString(header) + "\"\n\n");
+          outputinfo.append("\n>> HEADER: \"" + java.util.Arrays.toString(header) + "\"\n");
         }
         
       } else if (i < nrowchecks) {
@@ -531,8 +651,8 @@ public class MainClass extends SetPropertiesPage {
               outputinfo.append("\n");
               log.info("\n");
         	//conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr, geonames_dbpwd);
-            rs = GeonamesSQLQueries.getCityLatLng(i,val, conn, columnTypes, values, country_code);
-            if (rs != null) {
+            result = GeonamesSQLQueries.getCityLatLng(null, rs, val, conn, columnTypes, values, country_code);
+            if (result != false) {
               if (tmp_cities[j] == null) {
             	  log.info("??????????????? we have city in column: "+j);
                 columnTypes[i][j] = "cities";
@@ -999,7 +1119,9 @@ public class MainClass extends SetPropertiesPage {
       }
     }
     
-    outputinfo.append("\nFields detected from the Header\n");
+    if (Boolean.valueOf(active_dictionary) == true) {
+    
+    outputinfo.append("\nFields detected from the Dictionary\n");
 	log.info("\nFields detected from the Header\n");
     for (int n = 0; n < ncolchecks; n++) {
   	  
@@ -1028,7 +1150,7 @@ public class MainClass extends SetPropertiesPage {
           
           }
         }
-    
+    }
 
 
     textResult.setObject(outputinfo.toString());
@@ -1046,7 +1168,7 @@ public class MainClass extends SetPropertiesPage {
 
 
     Pattern patternCsvName = Pattern.compile("([A-Z].*|[a-zA-Z0-9]{2,20}).csv");
-    Matcher matcher = patternCsvName.matcher(name);
+    Matcher matcher = patternCsvName.matcher(file_name);
     String csvname_match = null;
     if (matcher.find()) {
       // log.info("CSV Type: " + matcher.group());
@@ -1113,7 +1235,7 @@ public class MainClass extends SetPropertiesPage {
 	
 	        }
 	
-	        loc.setCsvName(name);
+	        loc.setCsvName(file_name);
 
 	        if (header[j] != null && !value[j].isEmpty()) {
 	            if (loc.getOther() == null) {
@@ -1154,7 +1276,7 @@ public class MainClass extends SetPropertiesPage {
 	              loc.setPhone(value[j]);
 	              break;
 	            case "cities":
-	            	log.info("WE HAVE A CITY TO ADD!! "+value[j]);
+	            	//log.info("WE HAVE A CITY TO ADD!! "+value[j]);
 	
 	              //boolean haslatlng = false;
 	              
@@ -1180,16 +1302,20 @@ public class MainClass extends SetPropertiesPage {
 	//            	  haslatlng = true;
 	//              }
 	//              if (!haslatlng) {
-	            	log.info("Querying city value..." + value[j]);
+	            	
 	            	//conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr, geonames_dbpwd);
-	                rs = GeonamesSQLQueries.getCityLatLng(j,value[j], conn, columnTypes, values, country_code);
-	                if (rs != null) {
-	                  // if (tmp_cities[j] != null) {
-	                  GeonamesSQLQueries.setGeonameResult(loc, rs);
-	//                  rs.close();
-	//                  conn.close();
-	                  // }
-	                }
+	            	
+
+	            		log.info("Querying city value..." + value[j]);
+	            		GeonamesSQLQueries.getCityLatLng(loc, rs, value[j], conn, columnTypes, values, country_code);
+	            	
+//	                if (result != false && rs != null) {
+//	                  // if (tmp_cities[j] != null) {
+//	                  GeonamesSQLQueries.setGeonameResult(loc, rs);
+//	//                  rs.close();
+//	//                  conn.close();
+//	                  // }
+//	                }
 	              }
 	              break;
 	            case "postcodes":
@@ -1288,6 +1414,18 @@ public class MainClass extends SetPropertiesPage {
 	            case "possible names":
 	              loc.setName(value[j]);
 	              break;
+	            default:
+	            	log.info("WE ARE IN DEFAULT FOR "+value[j]);
+	            	if (resul[j].contains("static")) {
+	            		if(resul[j].contains("url")) {
+	            			
+	            			String static_value = resul[j].split("-")[1].split("-")[0];
+	            			log.info(">>>>>STATIC VALUE FOR URL: "+static_value);
+	            			loc.setWebsite(static_value);
+	            		}
+	            	}
+	            	break;
+	            	  
 	          }
 
 
@@ -1325,8 +1463,8 @@ public class MainClass extends SetPropertiesPage {
   static int no_insert_nutsfiles = 0;
   static int no_insert_possiblefiles = 0;
 
-  private static java.sql.ResultSet rs;
-
+  private static java.sql.ResultSet rs = null;
+  private static boolean result = false;
   private static BufferedReader br;
 
 private static EntityManagerFactory entityManagerFactory;
@@ -1345,7 +1483,7 @@ private static EntityManagerFactory entityManagerFactory;
 //  public static void main(String[] args) throws IOException, ParseException, CQLException,
 //  InterruptedException, InvalidParameterException, SQLException, ExecutionException,
 //  NumberParseException, ClassNotFoundException {
-  public void start(String upload_folder, File uploadedFile, FeedbackPanel feedbackPanel, Model<String> textResult) throws Exception {
+  public static void start(String upload_folder, File uploadedFile, FeedbackPanel feedbackPanel, Model<String> textResult) throws Exception {
 
     
 
@@ -1510,6 +1648,8 @@ private static EntityManagerFactory entityManagerFactory;
     log.info("Processing files...");
 
     nrowchecks += 1; // skip header
+    log.info("\n--------------------------------------------------------------------------------------------------------\n");
+    outputinfo.append("\n--------------------------------------------------------------------------------------------------------\n\n");
 
     log.info(">> TEST MODE: " + testmode);
     outputinfo.append(">> TEST MODE: " + testmode);
@@ -1524,139 +1664,142 @@ private static EntityManagerFactory entityManagerFactory;
         if (testmode) {
         	
         	if(uploadedFile != null) {
-        	
-        	//name = servletContext.getRealPath("/") + "temp_files/"+setPropertiesPage.getDefaultModelObjectAsString("hola").uploadedFile2.getClientFileName();
-        	
         		
-        		name = uploadedFile.getName();
-        	
-        	
-        	
-        	
-        	log.info(">> OTHER TEST File name : " + test_file);
-        	
+        	  file_name = uploadedFile.getName();
 
-        	
-         // if (name.contentEquals(test_file)) {
         	  
-        	  if (name.contains(".csv")) {
-
-        		  //csvfiles_dir
-            findFieldTypes(upload_folder, name, textResult);
-            
-            //File f = new File(name);
-            
-//            File csvFile = uploadedFile2.writeToTempFile();
-//            File copyFile = new File(upload_folder + "/" + tmp_dir + "/" + name);
-//            copyFile.getParentFile().mkdirs();
-//            copyFile.createNewFile();
-//            GenerateCSVFiles.copyFile(csvFile, copyFile);
-            
-            log.info(">>>>>>>> upload folder : " + upload_folder);
-            log.info(">>>>>>>> tmp folder : " + tmp_dir);
-            log.info(">>>>>>>> name file : " + name);
-            /*File copiedFile = new File(upload_folder + "/" + tmp_dir + "/" + name);
-            copiedFile.getParentFile().mkdirs();
-            copiedFile.createNewFile();
-            log.info(">>>>>>>> FILE GENERATED name : " + copiedFile.getName());
-            log.info(">>>>>>>> FILE GENERATED path : " + copiedFile.getPath());
-            log.info(">>>>>>>> FILE GENERATED path : " + copiedFile.getAbsolutePath());
-            log.info(">>>>>>>> FILE copied absolute  : " + copiedFile.getAbsoluteFile());
-            log.info(">>>>>>>> FILE uploadedFile2 absolute  : " + upload_folder + uploadedFile2.getAbsolutePath());
-            uploadedFile2.m.writeTo(copiedFile.getAbsoluteFile());*/
-            
-            //File processedFile = new File(upload_folder + "/" + processed_dir + "/" + newformat_dir + "/" + name);
-            File processedFile = new File(upload_folder + "/processed/structured/" + name);
-            processedFile.getParentFile().mkdirs();
-            processedFile.createNewFile();
-            
-            File newFile = new File(upload_folder + "/" + name);
-            
-            log.info(">>>>>>>> newFile path : " + newFile.getAbsolutePath());
-            log.info(">>>>>>>> processedFile path  : " + processedFile.getAbsoluteFile());
-            
-            if(newFile.exists()) {
-            	generateLocationAndFile(newFile, processedFile);
-            }
-            
-            
-
-            
-            
-            
-//            File newFile = new File(upload_folder+"/"+newformat_dir +"/"+ name);
-//            newFile.getParentFile().mkdirs();
-            //newFile.createNewFile();
-            
-            
-            //File sqlFile = new File(upload_folder + "/" + processed_dir + "/" + sqlinserts_file + "/" + name.replace("csv", "sql"));
-            File sqlFile = new File(upload_folder + "/processed/sql/" + name.replace("csv", "sql"));
-
-            log.info(">>>>>>>> newSQLFile path : " + newFile.getAbsolutePath());
-            log.info(">>>>>>>> processedSQLFile path  : " + sqlFile.getAbsoluteFile());
-            
-            sqlFile.getParentFile().mkdirs();
-            sqlFile.createNewFile();
-
-            if(sqlFile.exists()) {
-                bw_sql_inserts = new BufferedWriter(new FileWriter(sqlFile));
-                log.info(">>>>>>>> before processedFile path  : " + processedFile.getAbsoluteFile());
-                GenerateFile.createSQLInserts(processedFile,bw_sql_inserts);
-                sqlfile = sqlFile.getAbsoluteFile().toString();
-                log.info(">>>>>>>> after sqlfile path  : " + sqlFile.getAbsoluteFile());
-                
-                if (executeSQLqueries) {
-                    //sqlinserts_file = sqlfile;
-
-                    Class.forName(web_dbdriver);
-                    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
-                    RunSqlScript.runSqlScript(sqlFile.getAbsoluteFile(), conn, removeExistingBData);
-                  }
-            } else {
-            	log.info("No existing SQL file!!!");
-            }
-            bw_sql_inserts.close();
-            
-            //String sqlfile = sqlFile.getAbsoluteFile().getPath();
-            //bw_sql_inserts.close();
-           //DownloadLink downloadFile = new DownloadLink("downloadFile", sqlFile);
-            //wmc.add(downloadFile);
-            
+        	  if (file_name.contains(".sql")) {
+	                if (executeSQLqueries) {
+	                    Class.forName(web_dbdriver);
+	                    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
+	                    RunSqlScript.runSqlScript(sqlFile.getAbsoluteFile(), conn, removeExistingBData);
+	                }
         	  }
-         // }
+        	  if (file_name.contains(".csv")) {
+		            log.info(">>>>>>>> upload folder : " + upload_folder);
+		            log.info(">>>>>>>> tmp folder : " + tmp_dir);
+		            log.info(">>>>>>>> name file : " + file_name);
+		            
+		            //We search for Geographic field types
+	        		findFieldTypes(upload_folder, file_name, textResult);
+	        		//End search for Geographic field types
+	
+	        		//We create location objects and new structured file format
+		            File processedFile = new File(upload_folder + "/processed/structured/" + file_name);
+		            processedFile.getParentFile().mkdirs();
+		            processedFile.createNewFile();
+		            File newFile = new File(upload_folder + "/" + file_name);
+		            log.info(">>>>>>>> newFile path : " + newFile.getAbsolutePath());
+		            log.info(">>>>>>>> processedFile path  : " + processedFile.getAbsoluteFile());
+		            if(newFile.exists()) {
+		            	generateLocationAndFile(newFile, processedFile);
+		            }
+		            //End create location objects and new structured file format
+
+		            //We create sql file and we execute in case is required
+		            File sqlFile = new File(upload_folder + "/processed/sql/" + file_name.replace("csv", "sql"));
+		            sqlFile.getParentFile().mkdirs();
+		            sqlFile.createNewFile();
+		            log.info(">>>>>>>> newSQLFile path : " + newFile.getAbsolutePath());
+		            log.info(">>>>>>>> processedSQLFile path  : " + sqlFile.getAbsoluteFile());
+		            if(sqlFile.exists()) {
+		                bw_sql_inserts = new BufferedWriter(new FileWriter(sqlFile));
+		                log.info(">>>>>>>> before processedFile path  : " + processedFile.getAbsoluteFile());
+		                
+		                if (executeSQLqueries) {
+		                	GenerateFile.createSQLInserts(processedFile,bw_sql_inserts);
+		                }
+		                sqlfile = sqlFile.getAbsoluteFile().toString();
+		                log.info(">>>>>>>> after sqlfile path  : " + sqlFile.getAbsoluteFile());
+		                
+		                if (executeSQLqueries) {
+		                    Class.forName(web_dbdriver);
+		                    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
+		                    RunSqlScript.runSqlScript(sqlFile.getAbsoluteFile(), conn, removeExistingBData);
+		                }
+		            } else {
+		            	log.info("No existing SQL file!!!");
+		            }
+		            bw_sql_inserts.close();
+		            //End create sql file and we execute in case is required
+        	  }
+
         	} else {
-        		log.info("no test file selected");
+        		log.info("No file has been uploaded! Please try again.");
         		feedbackPanel.info("No file has been uploaded! Please try again.");
         		feedbackPanel.setVisible(true);
         	}
-        	  
-
         }
 
-        if (!testmode) {
-        	
-        	log.info("NOT IN TEST MODE");
-        	
-            for (File file : folderToSearch.listFiles()) {
+//        if (!testmode) {
+//        	if(uploadedFile != null) {
+//        		
+//          	  file_name = uploadedFile.getName();
+//
+//          	  
+//          	  if (file_name.contains(".sql")) {
+//  	                if (executeSQLqueries) {
+//  	                    Class.forName(web_dbdriver);
+//  	                    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
+//  	                    RunSqlScript.runSqlScript(sqlFile.getAbsoluteFile(), conn, removeExistingBData);
+//  	                }
+//          	  }
+//          	  if (file_name.contains(".csv")) {
+//  		            log.info(">>>>>>>> upload folder : " + upload_folder);
+//  		            log.info(">>>>>>>> tmp folder : " + tmp_dir);
+//  		            log.info(">>>>>>>> name file : " + file_name);
+//  		            
+//  		            //We search for Geographic field types
+//  	        		findFieldTypes(upload_folder, file_name, textResult);
+//  	        		//End search for Geographic field types
+//  	
+//  	        		//We create location objects and new structured file format
+//  		            File processedFile = new File(upload_folder + "/processed/structured/" + file_name);
+//  		            processedFile.getParentFile().mkdirs();
+//  		            processedFile.createNewFile();
+//  		            File newFile = new File(upload_folder + "/" + file_name);
+//  		            log.info(">>>>>>>> newFile path : " + newFile.getAbsolutePath());
+//  		            log.info(">>>>>>>> processedFile path  : " + processedFile.getAbsoluteFile());
+//  		            if(newFile.exists()) {
+//  		            	generateLocationAndFile(newFile, processedFile);
+//  		            }
+//  		            //End create location objects and new structured file format
+//
+//  		            //We create sql file and we execute in case is required
+//  		            File sqlFile = new File(upload_folder + "/processed/sql/" + file_name.replace("csv", "sql"));
+//  		            sqlFile.getParentFile().mkdirs();
+//  		            sqlFile.createNewFile();
+//  		            log.info(">>>>>>>> newSQLFile path : " + newFile.getAbsolutePath());
+//  		            log.info(">>>>>>>> processedSQLFile path  : " + sqlFile.getAbsoluteFile());
+//  		            if(sqlFile.exists()) {
+//  		                bw_sql_inserts = new BufferedWriter(new FileWriter(sqlFile));
+//  		                log.info(">>>>>>>> before processedFile path  : " + processedFile.getAbsoluteFile());
+//  		                
+//  		                if (executeSQLqueries) {
+//  		                	GenerateFile.createSQLInserts(processedFile,bw_sql_inserts);
+//  		                }
+//  		                sqlfile = sqlFile.getAbsoluteFile().toString();
+//  		                log.info(">>>>>>>> after sqlfile path  : " + sqlFile.getAbsoluteFile());
+//  		                
+//  		                if (executeSQLqueries) {
+//  		                    Class.forName(web_dbdriver);
+//  		                    Connection conn = DriverManager.getConnection(web_dburl, web_dbusr, web_dbpwd);
+//  		                    RunSqlScript.runSqlScript(sqlFile.getAbsoluteFile(), conn, removeExistingBData);
+//  		                }
+//  		            } else {
+//  		            	log.info("No existing SQL file!!!");
+//  		            }
+//  		            bw_sql_inserts.close();
+//  		            //End create sql file and we execute in case is required
+//          	  }
+//
+//          	} else {
+//          		log.info("No file has been uploaded! Please try again.");
+//          		feedbackPanel.info("No file has been uploaded! Please try again.");
+//          		feedbackPanel.setVisible(true);
+//          	}
+//        }
 
-                name = file.getName();
-
-                if (name.contains(".csv")) {
-          findFieldTypes(csvfiles_dir, name, textResult);
-          GenerateFile.copyFile(file, new File(tmp_dir + name));
-          generateLocationAndFile(file, new File(newformat_dir + name));
-          GenerateFile.createSQLInserts(new File(newformat_dir + name),
-              bw_sql_inserts);
-            }
-            }
-        }
-      
-
-    
- // }
-
-
-    
     if (rs != null) 
         rs.close(); 
     if (conn != null) 

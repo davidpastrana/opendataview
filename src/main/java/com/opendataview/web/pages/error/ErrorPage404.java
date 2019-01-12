@@ -13,7 +13,7 @@ public class ErrorPage404 extends BasePage {
   private final IModel<String> errorModel = new Model<String>();
 
   public ErrorPage404() {
-    errorModel.setObject("The page does not exist.");
+    errorModel.setObject("The page does not exist!!!!");
   }
 
   public ErrorPage404(final Exception e) {

@@ -18,13 +18,19 @@ import com.opendataview.web.persistence.LocationServiceDAO;
 import com.opendataview.web.persistence.PropertiesServiceDAO;
 
 public class ReadPropertyValues extends MainClass {
-	private static final long serialVersionUID = 1L;
-	
-	
-	  public ReadPropertyValues(PageParameters parameters) throws IOException {
+	public ReadPropertyValues(PageParameters parameters) throws IOException {
 		super(parameters);
 		// TODO Auto-generated constructor stub
 	}
+
+
+
+
+
+	private static final long serialVersionUID = 1L;
+	
+	
+
 
 
   public static void getPropValues() throws IOException {
@@ -88,9 +94,9 @@ public class ReadPropertyValues extends MainClass {
         //sqlinserts_file = origList.get(0).getSqlinserts_file();
 //        csvfiles_dir = origList.get(0).getCsvfiles_dir();
 //        tmp_dir = origList.get(0).getTmp_dir();
-//        processed_dir = origList.get(0).getProcessed_dir();
+        active_dictionary = origList.get(0).getProcessed_dir();
 //        newformat_dir = origList.get(0).getNewformat_dir();
-//        enriched_dir = origList.get(0).getEnriched_dir();
+        dictionary_matches = origList.get(0).getEnriched_dir();
 //        missinggeoreference_dir = origList.get(0).getMissinggeoreference_dir();
 
 

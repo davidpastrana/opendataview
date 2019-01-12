@@ -34,16 +34,20 @@
        <!-- 
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
                  -->
-                 <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
        
     <!-- CSS  -->
 	<link rel="stylesheet" href="/css/mfb.min.css" />
-	<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
 	<!--<link rel="stylesheet" href="/css/spatialdatasearch.main.css" />-->
 	
 	<!-- Favicons -->
 	<link rel="apple-touch-icon" href="/images/cvienna-touch-icon.png">
 	<link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64" href="/images/cvienna-touch-icon.ico">
+	
+	<!-- Cloudfare -->
+	<link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+	<link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">
+		
+	
 </head>
 <body>
 	<!-- Wicket Head Scripts -->
@@ -70,15 +74,15 @@
 	    <!--  <script src="/js/owl-carousel/owl.carousel.js"></script>-->
 	    <script src="https://cdnjs.cloudflare.com/ajax/libs/owl-carousel/1.3.3/owl.carousel.min.js"></script>
 		<script src="https://maps.googleapis.com/maps/api/js?v=3.35&amp;key=AIzaSyAuG68cs1GRaFl-SqO-wRIfa2B0LAGp0tw&amp;libraries=places,drawing&amp;language=en&amp;"></script>
-		<script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+		<!--  <script src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script> -->
 		<!--<script src="/js/html2canvas.min.js"></script>
 		  <script src="/js/jspdf.min.js"></script>-->
 		<script src="/js/moment.min.js"></script>
 		<script src="/js/jquery.ui.map.min.js"></script>
 		<script src="/js/jquery.ui.map.services.js"></script>
 		<script src="/js/jquery.ui.map.microdata.min.js"></script>
-		<!-- <script src="/js/jquery.ui.map.extensions.js"></script> -->
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-map/3.0-rc1/jquery.ui.map.extensions.min.js"></script>
+		<script src="/js/jquery.ui.map.extensions.js"></script>
+		<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-ui-map/3.0-rc1/jquery.ui.map.extensions.min.js"></script> -->
 		<!--<script src="/js/markercluster.js"></script>-->
 		<script src="/js/opendataview.ui.js"></script>
 		<script src="/js/chardinjs.min.js"></script>
@@ -122,6 +126,8 @@
         <!--/.container-->
     </header>
     <!--/.header-->
+
+<span wicket:id="menuItem"></span>
 
 	<!-- Wicket extends -->
 	<wicket:child />

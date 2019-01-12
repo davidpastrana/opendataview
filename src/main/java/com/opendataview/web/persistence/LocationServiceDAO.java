@@ -23,4 +23,6 @@ public interface LocationServiceDAO {
 
   void storeLocationModel(List<LocationModel> locationlist);
 
+List<LocationModel> searchLocationModel(String location_value) throws DataAccessException;
+
 }

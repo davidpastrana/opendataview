@@ -26,7 +26,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
     return entityManager;
   }
 
-  @PersistenceContext(unitName = "spatialdatasearch")
+  @PersistenceContext(unitName = "opendataview")
   public void setEntityManager(EntityManager entityManager) {
     this.entityManager = entityManager;
   }
@@ -58,8 +58,19 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
   @Transactional
   public List<LocationModel> readLocationModel() throws DataAccessException {
     Query query =
-        getEntityManager().createQuery("select a from locations a order by rating desc, name asc",
+        getEntityManager().createQuery("select a from locations a order by name asc",
             LocationModel.class);
+    List<LocationModel> resultList = query.getResultList();
+    return resultList;
+  }
+  
+  @Override
+  @Transactional
+  public List<LocationModel> searchLocationModel(String location_value) throws DataAccessException {
+    Query query =
+        getEntityManager().createQuery("select l from locations l where lower(otherinfo) like '%"+location_value+"%'",
+            LocationModel.class);
+    //query.setParameter(1, "%"+location_value+"%");
     List<LocationModel> resultList = query.getResultList();
     return resultList;
   }

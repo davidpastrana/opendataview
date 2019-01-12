@@ -133,7 +133,9 @@
 				<button wicket:id="btnGetMyGeo" id="saveGeoCoordinates" type="submit" value=""></button>
 
 				<input placeholder="Polygon coordinates displayed here" id="polygonCoordInput" wicket:id="polygonCoordInput" type="text" />
-				<button wicket:id="btnGetPolygon" id="savePolygonCoordinates" type="submit" value=""></button>
+				<button wicket:id="savePolygonCoordinates" id="savePolygonCoordinates" type="submit" value=""></button>
+				<button wicket:id="btnDeletePolygon" id="deletePolygonCoordinates" type="submit" value=""></button>
+				
 			</form>
 
 
@@ -218,10 +220,17 @@
             <option value="1">Roadmap</option>
             <option value="2">Terrain</option>
             <option value="3">Satellite</option>
-            <option value="4">My Theme</option>
-            <option value="5">RouteXL</option>
+            <option value="4">White</option>
+            <option value="5">Route</option>
         </select>
     </div>
+    <div id="panel">
+	  <div id="color-palette"></div>
+	  <div id="buttons-delete">
+	    <button class="btn btnmap" id="delete-button">Delete Shape</button>
+	    <button class="btn btnmap" id="delete-all-button">Delete All</button>
+	  </div>
+	</div>
 					
 	<!-- 		<form wicket:id="coordForm" id="createTour" autocomplete="off"
 				data-intro="Use this menu to create a new Tour."

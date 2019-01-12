@@ -30,6 +30,11 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
 			<distribution>repo</distribution>
 		</license>
+		<license>
+            <name>GNU Lesser General Public License, v3</name>
+            <url>http://www.gnu.org/licenses/lgpl-3.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
 	</licenses>
 	<properties>
 	<!-- 		<wicket.version>7.8.0</wicket.version>
@@ -110,6 +115,7 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<!-- Wicket -->
+		
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-core</artifactId>
@@ -131,10 +137,20 @@
 			<version>${wicket.version}</version>
 		</dependency>
 		<dependency>
+		    <groupId>org.wicketstuff</groupId>
+		    <artifactId>wicketstuff-rest-lambda</artifactId>
+		    <version>${wicket.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.wicketstuff</groupId>
 			<artifactId>wicketstuff-htmlcompressor</artifactId>
 			<version>${wicket.version}</version>
 		</dependency>
+		<dependency>
+            <groupId>org.wicketstuff</groupId>
+            <artifactId>wicketstuff-sitemap-xml</artifactId>
+            <version>${wicket.version}</version>
+        </dependency>
 		<!-- 
 		            <dependency>
                 <groupId>de.agilecoders.wicket</groupId>
@@ -280,7 +296,12 @@
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-		
+		<!-- Nominatim -->
+		<dependency>
+		  <groupId>me.atlis</groupId>
+		  <artifactId>nominatim-api</artifactId>
+		  <version>RELEASE</version>
+		</dependency>
 		
 		<!-- HEURISTIC SERACH -->
 		
@@ -428,6 +449,14 @@ same package
 		</dependency>-->
 		
 	</dependencies>
+	<developers>
+        <developer>
+            <id>dpastrana</id>
+            <name>David Rodriguez-Pastrana Parareda</name>
+            <email>david@dpastrana.com</email>
+            <url>https://dpastrana.com</url>
+        </developer>
+    </developers>
 	<build>
 		<resources>
 			<resource>

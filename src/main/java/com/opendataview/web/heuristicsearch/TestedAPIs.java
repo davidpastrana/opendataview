@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.codehaus.jackson.JsonParseException;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.geonames.InvalidParameterException;
 import org.geonames.ToponymSearchCriteria;
@@ -23,19 +25,17 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.opendataview.web.model.LocationModel;
 
 public class TestedAPIs {
 
-  private final static Logger log = (Logger) LoggerFactory.getLogger(TestedAPIs.class);
+  private final static org.slf4j.Logger log = LoggerFactory.getLogger(TestedAPIs.class);
 
   // Google API for Geocoding
   private static final String GEOCODE_API_V3 =
-      "http://maps.googleapis.com/maps/api/geocode/json?address=";
+      "https://maps.googleapis.com/maps/api/geocode/json?address=";
 
-
-  // Limit the Geolocation by Country
-  private static String country = "+Austria";
 
 
   // NOMINATIM OPEN STREET MAP GET LAT LNG LIMITED TO 2.500 reaquests
@@ -88,23 +88,23 @@ public class TestedAPIs {
     }
   }
 
-  static BigDecimal[] getGoogleCoordinates(LocationModel loc, String location, int nfil) {
+  static LatLng getGoogleCoordinates(String location) {
 
     StringBuilder sb = new StringBuilder();
     sb.append(GEOCODE_API_V3);
     sb.append(location.replace(" ", "+"));
-    sb.append(country.replace(" ", "+"));
-
-    sb.append("&sensor=false");
+    sb.append("&key=AIzaSyDPD9bwB4JPYDqCe9VSrjKJ9q5nXycwtcY");
+    //sb.append("&sensor=false");
+    
     log.info("Google URL:" + sb.toString());
-    if (nfil % 5 == 0) {
-      try {
-        log.info(">>>>>> " + nfil + " requests sent, waiting for next " + nfil + " requests..");
-        Thread.sleep(100);
-      } catch (InterruptedException ex) {
-        Thread.currentThread().interrupt();
-      }
-    }
+//    if (nfil % 5 == 0) {
+//      try {
+//        log.info(">>>>>> " + nfil + " requests sent, waiting for next " + nfil + " requests..");
+//        Thread.sleep(100);
+//      } catch (InterruptedException ex) {
+//        Thread.currentThread().interrupt();
+//      }
+//    }
     try {
       URL url = new URL(sb.toString());
       URLConnection urlConnection = url.openConnection();
@@ -128,7 +128,7 @@ public class TestedAPIs {
         }
 
       } else if (status.equals("ZERO_RESULTS")) {
-        log.info("ZERO RESULTS FOR PLACE " + nfil);
+        log.info("ZERO RESULTS FOR PLACE " + location);
 
       } else {
         log.info(status.toString());
@@ -138,11 +138,16 @@ public class TestedAPIs {
         JSONObject js3 = js2.getJSONObject("geometry");
         JSONObject js4 = js3.getJSONObject("location");
 
-        BigDecimal lat = BigDecimal.valueOf(js4.getDouble("lat"));
-        BigDecimal lng = BigDecimal.valueOf(js4.getDouble("lng"));
+//        BigDecimal lat = BigDecimal.valueOf(js4.getDouble("lat"));
+//        BigDecimal lng = BigDecimal.valueOf(js4.getDouble("lng"));
+//        Double lat = js4.getDouble("lat");
+//        Double lng = js4.getDouble("lng");
 
-        loc.setLatitude(lat);
-        loc.setLongitude(lng);
+         LatLng latlng = new LatLng(js4.getDouble("lat"), js4.getDouble("lng"));
+        
+//        loc.setLatitude(lat);
+//        loc.setLongitude(lng);
+        return latlng;
       }
       resultsReader.close();
       inputResults.close();
@@ -154,15 +159,21 @@ public class TestedAPIs {
 
   // GOOGLE API GET LAT LNG LIMITED TO 2.500 requests per IP
 
-  public void GoogleAPI(LocationModel loc, String name, int row) throws InterruptedException {
+  public static LatLng GoogleAPI(String name) {
 
-    getGoogleCoordinates(loc, name, row);
-    log.info("FOUND CITY: " + name + ": " + loc.getLatitude() + "," + loc.getLongitude());
-    if (loc.getLatitude() == null) {
-      Thread.sleep(100);
-      getGoogleCoordinates(loc, name, row);
-      log.info("REPEAT SEARCH CITY: " + name + ": " + loc.getLatitude() + "," + loc.getLongitude());
+    LatLng result = getGoogleCoordinates(name);
+    if (result != null) {
+        log.info("FOUND CITY: " + name + ": " + result.getLat() + "," + result.getLng());
+        return result;
+    } else {
+    	log.info("CITY NULL NOT FOUND "+name);
+    	return null;
     }
+//    if (loc.getLatitude() == null) {
+//      Thread.sleep(100);
+//      getGoogleCoordinates(loc, name, row);
+//      log.info("REPEAT SEARCH CITY: " + name + ": " + loc.getLatitude() + "," + loc.getLongitude());
+//    }
 
   }
 
@@ -207,27 +218,37 @@ public class TestedAPIs {
     private static final String LATITUDE = "lat";
     private static final String LONGITUDE = "lon";
 
-    public LatLng parse(final InputStream jsonStream) {
+    public LatLng parse(final InputStream jsonStream) throws JsonParseException, JsonMappingException, IOException {
       LatLng coordinate = null;
-      final ObjectMapper mapper = new ObjectMapper();
-      try {
-        final List<Object> dealData = mapper.readValue(jsonStream, List.class);
-        if (dealData != null && dealData.size() == 1) {
-          final Map<String, Object> locationMap = (Map<String, Object>) dealData.get(0);
-          if (locationMap != null && locationMap.containsKey(LATITUDE)
-              && locationMap.containsKey(LONGITUDE)) {
-            final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
-            final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
-            coordinate = new LatLng(lat, lng);
-          }
-        } else {
-          Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
-              "NO RESULTS", "NO RESULTS");
-        }
-      } catch (Exception ex) {
-        Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
-            ex.getMessage(), ex);
-      }
+      ObjectMapper mapper = new ObjectMapper();
+      //StringBuilder stringBuilder = new StringBuilder();
+      JsonNode array =  mapper.readValue(jsonStream, JsonNode.class);
+      JsonNode object = array.get("results").get(0);
+      String reportKey = object.get("formatted_address").textValue();
+
+      
+      System.out.println("KEY IS "+reportKey);
+//      final ObjectMapper mapper = new ObjectMapper();
+//      try {
+//    	  log.info("RETURN BEROFE IS "+mapper.readValue(jsonStream, List.class).toString());
+//        final List<Object> dealData = mapper.readValue(jsonStream, List.class);
+//        log.info("RETURN IS "+dealData);
+//        if (dealData != null && dealData.size() == 1) {
+//          final Map<String, Object> locationMap = (Map<String, Object>) dealData.get(0);
+//          if (locationMap != null && locationMap.containsKey(LATITUDE)
+//              && locationMap.containsKey(LONGITUDE)) {
+//            final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
+//            final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
+//            coordinate = new LatLng(lat, lng);
+//          }
+//        } else {
+//          Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
+//              "NO RESULTS", "NO RESULTS");
+//        }
+//      } catch (Exception ex) {
+//        Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
+//            ex.getMessage(), ex);
+//      }
       return coordinate;
     }
 
@@ -249,6 +270,7 @@ public class TestedAPIs {
           URL geocodeUrl = new URL(formattedUrl);
           is = geocodeUrl.openStream();
           coords = parse(is);
+          
         } catch (IOException ex) {
           Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
               null, ex);
@@ -266,7 +288,7 @@ public class TestedAPIs {
   }
 
 
-  public class LatLng implements Serializable {
+  public static class LatLng {
 
     private static final long serialVersionUID = 16549987563L;
 

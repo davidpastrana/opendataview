@@ -77,13 +77,13 @@ public class RegisterUserPage extends BasePage {
         Pattern p = Pattern.compile("((?=.*\\d)(?=.*[a-z]).{6,20})");
         Matcher m = p.matcher(pwd);
         if (!m.find()) {
-            info("The password must contain a minimum of 6 characters, including at least one number and one letter");
+            error("The password must contain a minimum of 6 characters, including at least one number and one letter");
             feedback.setVisible(true);
         } else if (user_exists) {
-        	info("User \"" + usr + "\" already exists! Please select a different User ID");
+        	error("User \"" + usr + "\" already exists! Please select a different User ID");
         	feedback.setVisible(true);
         } else if (email_exists) {
-        	info("Email \"" + em + "\" already exists! Please select a different Email address");
+        	error("Email \"" + em + "\" already exists! Please select a different Email address");
         	feedback.setVisible(true);
         } else {
             UserModel user = new UserModel();
@@ -93,7 +93,8 @@ public class RegisterUserPage extends BasePage {
             propertiesServiceDAO.createPropertiesModel(usr);
             userServiceDAO.registerUserModel(user);
             this.setVisible(false);
-            info("User \"" + usr + "\" has been successfully created!");
+            success("User \"" + usr + "\" has been successfully created!");
+            feedback.add(new AttributeModifier("class", String.valueOf(this.getMarkupAttributes().get("class")).replaceFirst("error", ""))); 
             feedback.add(AttributeModifier.append("class", "success"));
             feedback.setVisible(true);
         }

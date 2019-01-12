@@ -1,9 +1,13 @@
 package com.opendataview.web.heuristicsearch;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLEncoder;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -11,16 +15,33 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
-import org.slf4j.Logger;
+import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.slf4j.LoggerFactory;
 
+import com.atlis.location.model.impl.Address;
+import com.atlis.location.model.impl.MapPoint;
+import com.atlis.location.nominatim.NominatimAPI;
+import com.opendataview.web.heuristicsearch.TestedAPIs.LatLng;
+import com.opendataview.web.heuristicsearch.TestedAPIs.OpenStreetMapGeoCodeJacksonParser;
 import com.opendataview.web.model.LocationModel;
+import com.opendataview.web.persistence.PropertiesServiceDAO;
 
 public class GeonamesSQLQueries extends MainClass {
 
-	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 2048024953921761333L;
+
 	
 public GeonamesSQLQueries(PageParameters parameters) throws IOException {
 		super(parameters);
@@ -28,8 +49,7 @@ public GeonamesSQLQueries(PageParameters parameters) throws IOException {
 	}
 
 
-
-private final static Logger log = LoggerFactory.getLogger(GeonamesSQLQueries.class);
+private final static org.slf4j.Logger log = LoggerFactory.getLogger(GeonamesSQLQueries.class);
 
   public static void setGeonameResult(LocationModel loc, ResultSet rs)
       throws NumberFormatException, SQLException {
@@ -92,10 +112,123 @@ private final static Logger log = LoggerFactory.getLogger(GeonamesSQLQueries.cla
     return null;
 
   }
+  
+  public class OpenStreetMapGeoCodeJacksonParser {
 
-  public static ResultSet getCityLatLng(int current_row, String name, Connection conn, String[][] columnTypes, String[][] csv_values, String countrycode) throws SQLException, URISyntaxException {
+	    private static final String LATITUDE = "lat";
+	    private static final String LONGITUDE = "lon";
+
+	    public LatLng parse(final InputStream jsonStream) {
+	      LatLng coordinate = null;
+	      final ObjectMapper mapper = new ObjectMapper();
+	      try {
+	    	  final List<Object> dealData = mapper.readValue(jsonStream, List.class);
+	        if (dealData != null && dealData.size() == 1) {
+	          final Map<String, Object> locationMap = (Map<String, Object>) dealData.get(0);
+	          log.info("LOCATION MAPP IS "+locationMap);
+	          if (locationMap != null && locationMap.containsKey(LATITUDE)
+	              && locationMap.containsKey(LONGITUDE)) {
+	            final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
+	            final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
+	            coordinate = new LatLng(lat, lng);
+	          }
+	        } else {
+	          Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
+	              "NO RESULTS", "NO RESULTS");
+	        }
+	      } catch (Exception ex) {
+	        Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
+	            ex.getMessage(), ex);
+	      }
+	      return coordinate;
+	    }
+
+	    public LatLng parse(String rawAddress) {
+	      InputStream is = null;
+	      LatLng coords = null;
+
+	      if (rawAddress != null && rawAddress.length() > 0) {
+	        try {
+	          String address = URLEncoder.encode(rawAddress, "utf-8");
+	          //&countrycodes=at
+	          String geocodeURL ="http://nominatim.openstreetmap.org/search?format=json&limit=1&polygon=0&addressdetails=0&email=contact@EMAIL.ME&q=";
+	          // String geocodeURL =
+	          // "http://open.mapquestapi.com/nominatim/v1/search?key=AjpGVX3AGUvVRX8Km7ohoB3u1YfJPpU7&location=";
+
+	          String formattedUrl = geocodeURL + address;
+	          log.info(formattedUrl);
+
+	          URL geocodeUrl = new URL(formattedUrl);
+	          is = geocodeUrl.openStream();
+	          log.info("RESPONSE NOMINATIM IS "+is.toString());
+	          coords = parse(is);
+	        } catch (IOException ex) {
+	          Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
+	              null, ex);
+	        } finally {
+	          try {
+	            is.close();
+	          } catch (IOException ex) {
+	            Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
+	                null, ex);
+	          }
+	        }
+	      }
+	      return coords;
+	    }
+	  }
+  
+  public class LatLng implements Serializable {
+	  
+	  private static final long serialVersionUID = 16549987563L;
+
+	    private double lat;
+	    private double lng;
+
+	    public LatLng(final double lat, final double lng) {
+	      this.lat = lat;
+	      this.lng = lng;
+	    }
+
+	    public double getLat() {
+	      return lat;
+	    }
+
+	    public void setLat(final double lat) {
+	      this.lat = lat;
+	    }
+
+	    public double getLng() {
+	      return lng;
+	    }
+
+	    public void setLng(final double lng) {
+	      this.lng = lng;
+	    }
+  }
+  
+//  public boolean NominatimAPI(String name, LocationModel loc, String country_code) {
+//
+//	    String address = name;
+//	    log.info("address is " + address);
+//
+//	   OpenStreetMapGeoCodeJacksonParser latlng = new OpenStreetMapGeoCodeJacksonParser();
+//	    //LatLng coord = latlng.parse(address);
+//
+//	    log.info("Nominatim RESULT: LAT "+coord.getLat()+ ", LONG "+ coord.getLng());
+//	    
+//	    if (coord != null) {
+//	        loc.setLatitude(new BigDecimal(coord.getLat()));
+//	        loc.setLongitude(new BigDecimal(coord.getLng()));
+//	        return true;
+//	    }
+//		return false;
+//	  }
+
+  public static boolean getCityLatLng(LocationModel loc, ResultSet rs, String name, Connection conn, String[][] columnTypes, String[][] csv_values, String countrycode) throws SQLException, URISyntaxException {
 	  
 
+	  // check possible domain names if has a country code extension
 	  if(!executed) {
 	  String uri = "";
 	  String pname = "";
@@ -146,7 +279,7 @@ log.info("We have hostname '"+hostname+"' and pname '"+pname+"'");
     PreparedStatement ps = null;
     Statement st = conn.createStatement();
     st.setMaxRows(1);
-    ResultSet rs = null;
+
 
     if (geonamesdebugmode)
       log.info("\nchecking > " + name);
@@ -226,77 +359,100 @@ if (name != null && !name.isEmpty() && !name.matches("\\d+")) {
             name = name.replace(".", "");
           }
 
+
+          com.opendataview.web.heuristicsearch.TestedAPIs.LatLng result = TestedAPIs.GoogleAPI(name);
           
-          
-          // we will query with the last 80% of chars of the city
-          int nchars = (name.length() * 80) / 100;
-          ps = conn.prepareStatement(st2city);
-          ps.setString(1, name.substring(0, 1) + "%" + name.substring(name.length() - nchars));
-          ps.setString(2, name + "%");
-          
-          log.info("st2city: "+ps.toString());
-          outputinfo.append("\nst2city: "+ps.toString());
-          
-          rs = ps.executeQuery();
-
-          if (!rs.next()) {
-
-            // we get the first part from - division
-            if (name.contains("-")) {
-              name = name.replace("-", " ");
-              name = name.replaceAll("\\s+", " ").trim(); // remove more than one empty space
-            }
-
-            String firstTwoWord = "";
-            String lastTwoWord = "";
-            String[] values = name.split(" ");
-
-            // if it has more than 2 words
-            if (values.length > 2) {
-              firstTwoWord = values[0] + "%" + values[1];
-              lastTwoWord = values[values.length - 2] + "%" + values[values.length - 1];
-            } else if (name.length() > 6) {
-              // we get the first and last characters (60%) of the word
-              nchars = (name.length() * 60) / 100;
-              firstTwoWord = name.substring(0, nchars);
-              lastTwoWord = name.substring(name.length() - nchars);
-            } else {
-              return null;
-            }
-
-            // log.info("first words/chars: " + firstTwoWord);
-            // log.info("last words/chars: " + lastTwoWord);
-
-            ps = conn.prepareStatement(st3city);
-            ps.setString(1, "%" + firstTwoWord + "%");
-            ps.setString(2, "%" + lastTwoWord + "%");
-            log.info("st3city: "+ps.toString());
-            outputinfo.append("\nst3city: "+ps.toString());
-
-            rs = ps.executeQuery();
-
-            if (!rs.next()) {
-              if (geonamesdebugmode)
-                DebugError(ps, rs);
-              return null;
-            } else {
-              if (geonamesdebugmode)
-                DebugInfo(ps, rs);
-              return rs;
-            }
-          } else {
-            if (geonamesdebugmode)
-              DebugInfo(ps, rs);
-            return rs;
+          //if we are checking for possible geographic types
+          if (loc == null) {
+        	  if (result == null)
+        		  return false;
+        	  else
+        		  return true;
           }
+          //if we want to find and store the geocoding type found
+          if (loc != null & result != null) {
+        	  loc.setLatitude(BigDecimal.valueOf(result.getLat()));
+        	  loc.setLongitude(BigDecimal.valueOf(result.getLng()));
+          }
+          
+
+          //boolean result = NominatimAPI(name, loc, country_code);
+//          String endpointUrl = "https://nominatim.openstreetmap.org/";
+//          Address address = new Address();
+//          address.setCity(name);
+//          MapPoint mapPoint = NominatimAPI.with(endpointUrl).getMapPointFromAddress(address, 5);
+          
+
+          
+//          // we will query with the last 80% of chars of the city
+//          int nchars = (name.length() * 80) / 100;
+//          ps = conn.prepareStatement(st2city);
+//          ps.setString(1, name.substring(0, 1) + "%" + name.substring(name.length() - nchars));
+//          ps.setString(2, name + "%");
+//          
+//          log.info("st2city: "+ps.toString());
+//          outputinfo.append("\nst2city: "+ps.toString());
+//          
+//          rs = ps.executeQuery();
+
+//          if (!rs.next()) {
+//
+//            // we get the first part from - division
+//            if (name.contains("-")) {
+//              name = name.replace("-", " ");
+//              name = name.replaceAll("\\s+", " ").trim(); // remove more than one empty space
+//            }
+//
+//            String firstTwoWord = "";
+//            String lastTwoWord = "";
+//            String[] values = name.split(" ");
+//
+//            // if it has more than 2 words
+//            if (values.length > 2) {
+//              firstTwoWord = values[0] + "%" + values[1];
+//              lastTwoWord = values[values.length - 2] + "%" + values[values.length - 1];
+//            } else if (name.length() > 6) {
+//              // we get the first and last characters (60%) of the word
+//              nchars = (name.length() * 60) / 100;
+//              firstTwoWord = name.substring(0, nchars);
+//              lastTwoWord = name.substring(name.length() - nchars);
+//            } else {
+//              return false;
+//            }
+//
+//            // log.info("first words/chars: " + firstTwoWord);
+//            // log.info("last words/chars: " + lastTwoWord);
+//
+//            ps = conn.prepareStatement(st3city);
+//            ps.setString(1, "%" + firstTwoWord + "%");
+//            ps.setString(2, "%" + lastTwoWord + "%");
+//            log.info("st3city: "+ps.toString());
+//            outputinfo.append("\nst3city: "+ps.toString());
+//
+//            rs = ps.executeQuery();
+//
+//            if (!rs.next()) {
+//              if (geonamesdebugmode)
+//                DebugError(ps, rs);
+//              return false;
+//            } else {
+//              if (geonamesdebugmode)
+//                DebugInfo(ps, rs);
+//              return true;
+//            }
+//          } else {
+//            if (geonamesdebugmode)
+//              DebugInfo(ps, rs);
+//            return true;
+//          }
         } else {
           if (geonamesdebugmode)
             DebugInfo(ps, rs);
-          return rs;
+          return true;
 
         }
       }
     }
-    return null;
+    return false;
   }
 }

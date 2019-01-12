@@ -5,6 +5,7 @@ import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -32,6 +33,7 @@ public class BasePage extends WebPage {
 
   private final static Logger log = LoggerFactory.getLogger(BasePage.class);
 
+  
   @Override
   public void renderHead(IHeaderResponse response) {
     super.renderHead(response);
@@ -58,6 +60,7 @@ public class BasePage extends WebPage {
 
   public BasePage() {
 
+	add(new Label("menuItem", getMenuPageClass()));
     add(new TopBarPanel("topBar"));
     add(new FooterPanel("footer"));
     add(new CopyRightPanel("copyright"));
@@ -127,4 +130,14 @@ public class BasePage extends WebPage {
       logoutLink.setVisible(false);
     }
   }
+
+protected String getMessage() {
+	// TODO Auto-generated method stub
+	return null;
+}
+
+protected Class<? extends BasePage> getMenuPageClass() {
+    return getClass();
+}
+
 }

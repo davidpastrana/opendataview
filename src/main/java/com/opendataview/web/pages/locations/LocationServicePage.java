@@ -174,7 +174,7 @@ public class LocationServicePage extends BasePage {
 
     origList = locationServiceDAO.readLocationModel();
     //final PageableListView<LocationModel> lview = displayList("rows", list, 50);
-    final PageableListView<LocationModel> lview = displayList("rows", list, 500);
+    final PageableListView<LocationModel> lview = displayList("rows", list, 300);
     lview.setOutputMarkupId(true);
     wmc.add(lview);
 
@@ -201,7 +201,7 @@ public class LocationServicePage extends BasePage {
         // target.add(lview);
         target.add(currentPage);
         target
-            .appendJavaScript("initIds();initMarkers();");
+            .appendJavaScript("initIds();initMarkers();showLocationTableIfNavigatorChange();");
         //initMyPosition();$('.tableNavigator').show();showLocationTableIfNavigatorChange();
       }
     };
@@ -262,7 +262,6 @@ public class LocationServicePage extends BasePage {
 
           private static final long serialVersionUID = 1L;
  
-
           @Override
           protected Iterator<String> getChoices(String input) {
 //            if (Strings.isEmpty(input)) {
@@ -376,20 +375,46 @@ public class LocationServicePage extends BasePage {
 
 
         String name = inputField.getModelObject();
-
+        
         if (name != null) {
+           list.clear();
+           list2.clear();
+           boolean found = false, found2 = false;
+           int total = 0;
           for (LocationModel loc : origList) {
-            log.debug("the name isssss " + loc.getOther() + " and the input is " + name);
+            //log.debug("the name isssss " + loc.getOther() + " and the input is " + name);
             if (loc.getOther() != null && loc.getOther().contentEquals(name)) {
-              list.clear();
               list.add(loc);
-              String pos = loc.getLatitude() + "," + loc.getLongitude();
-              // setResponsePage(getPage());
-              target
-                  .appendJavaScript("map.gmap('get', 'map').panTo(new google.maps.LatLng("
-                      + pos
-                      + "));google.maps.event.trigger(map, 'resize');map.gmap('get', 'map').setZoom(17);initIds();initMarkers();");
+              found = true;
+              break;
             }
+            total++;
+
+            if (!found && total == origList.size()) {
+
+            	list2 = locationServiceDAO.searchLocationModel(name.toLowerCase());
+            	
+            	if (!list2.isEmpty()) {
+
+                list.addAll(list2);
+                found2 = true;
+  
+            	}
+            }
+ 
+
+          }
+          if (found) {
+	          String pos = list.get(0).getLatitude() + "," + list.get(0).getLongitude();
+	          target.appendJavaScript("map.gmap('get', 'map').panTo(new google.maps.LatLng("
+	                  + pos
+	                  + "));google.maps.event.trigger(map, 'resize');map.gmap('get', 'map').setZoom(17);initMarkers();initIds();");
+          }
+          if (found2) {
+	          String pos = list.get(0).getLatitude() + "," + list.get(0).getLongitude();
+	          target.appendJavaScript("map.gmap('get', 'map').panTo(new google.maps.LatLng("
+	                  + pos
+	                  + "));google.maps.event.trigger(map, 'resize');map.gmap('get', 'map').setZoom(11);initMarkers();initIds();");
           }
         }
         target.add(wmc);
@@ -539,8 +564,7 @@ public class LocationServicePage extends BasePage {
       }
     };
     
-    IndicatingAjaxButton btnGetPolygon = new IndicatingAjaxButton("btnGetPolygon") {
-
+    IndicatingAjaxButton btnDeletePolygon = new IndicatingAjaxButton("btnDeletePolygon") {
         private static final long serialVersionUID = 1L;
 
         public void onSubmit(AjaxRequestTarget target) {
@@ -570,7 +594,164 @@ public class LocationServicePage extends BasePage {
 //            distanceKm = Integer.valueOf(polygonCoordDistanceValue);
 //          }
 
-          if (polygonCoordInputValue != null) {
+            log.info("the value to clear2 is "+polygonCoordInputValue);
+            
+            if (polygonCoordInputValue == null) {
+            	list.clear();
+            	
+            } else if (polygonCoordInputValue != null && polygonCoordInputValue.contains(",")) {
+        	  polygonCoordInputValue = polygonCoordInputValue.replaceAll("\\s+","");
+            log.info("the polygon marker coord are " + polygonCoordInputValue.replaceAll("\\s+",""));
+
+            
+            //myPolygon.moveTo(Double.valueOf(att[0].substring(1)), Double.valueOf(att[1].length()-1));
+
+            Path2D myPolygon = new Path2D.Double();
+//            if(polygonCoordInputValue.substring(0,2).contentEquals("((")) {
+//                String[] att = polygonCoordInputValue.substring(2,polygonCoordInputValue.length()-2).split("\\),\\(");
+//                String coordXYA[] = att[0].split(",");
+//                String coordXYB[] = att[1].split(",");
+//                log.info("coordxNewA is " + coordXYA[0]);
+//    			log.info("coordyNewA is " + coordXYA[1]);
+//                log.info("coordxNewB is " + coordXYB[0]);
+//    			log.info("coordyNewB is " + coordXYB[1]);
+//    			myPolygon.moveTo(Double.valueOf(coordXYA[0]), Double.valueOf(coordXYA[1]));
+//    			myPolygon.lineTo(Double.valueOf(coordXYB[0]), Double.valueOf(coordXYB[1]));
+//    			myPolygon.closePath();
+//            } else {
+                String[] att = polygonCoordInputValue.substring(1,polygonCoordInputValue.length()-1).split("\\),\\(");
+                
+                String[] coordXY = null;
+    		for(int i=0; i<att.length; i++){
+    		 coordXY = att[i].split(",");
+    			log.info("coordx is " + att[i]);
+    			
+    			if(i==0) {
+    				myPolygon.moveTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+    			} else {
+    				myPolygon.lineTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+    			}
+    			
+    			//log.info("coordxNew is " + coordXY[0]);
+    			//log.info("coordyNew is " + coordXY[1]);
+                //myPolygon.moveTo(Double.valueOf(att[i].substring(1)), Double.valueOf(att[i+1].length()-1));
+    		}
+    		myPolygon.closePath();
+            
+
+            
+            //log.info("the polygon marker coord are after " + att[0].substring(1) + " and " + (att[1].length()-1) + " and " + att[2].substring(1) + " and " + (att[3].length()-1));
+
+            // if (name != null) {
+
+
+
+
+            // LocationModel myLoc = new LocationModel();
+            // myLoc.setName("My position");
+            // myLoc.setLatitude(new BigDecimal(att[0]));
+            // myLoc.setLongitude(new BigDecimal(att[1]));
+            // myLoc.setCsvName("myPosition");
+
+            // Label currentPosition = new Label("currentPosition", "My position");
+            // currentPosition.setOutputMarkupId(true);
+            // wmc.add(currentPosition);
+            // Label currentLatitude = new Label("currentLatitude", new BigDecimal(att[0]));
+            // currentLatitude.setOutputMarkupId(true);
+            // wmc.add(currentLatitude);
+            // Label currentLongitude = new Label("currentLongitude", new BigDecimal(att[1]));
+            // currentLongitude.setOutputMarkupId(true);
+            // wmc.add(currentLongitude);
+
+//            modelLat.setObject(att[0]);
+//            modelLng.setObject(att[1]);
+            
+            
+            
+            
+            // wmc.add(modelLat);
+
+    		log.info("att length is "+att.length);
+    		
+//    		if(att.length == 1) {
+//    			 list.clear();
+//    		}
+           
+
+
+
+            // target.appendJavaScript("getGeolocation();");
+            for (LocationModel loc : origList) {
+
+              if (!polygonCoordInputValue.isEmpty()) {
+                
+
+            	  
+
+//                  if(att.length == 1) {
+//                      
+//					double dist =
+//                              distance(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]), loc
+//                                  .getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
+//
+//                          if (dist < distanceKm) {
+//
+//                            list.remove(loc);
+//                            //pos = att[0] + "," + att[1];
+//                          }
+//                  } else {
+        		if(myPolygon.contains(loc.getLatitude().doubleValue(),loc.getLongitude().doubleValue())) {
+        			log.info("Coordinate to delete: " + loc.getLatitude().doubleValue() + " , " + loc.getLongitude().doubleValue());
+        			list.remove(loc);
+        			log.info("list size is now:: "+list.size());
+        		}
+                 // }
+
+              }
+            }
+
+          }
+            target.add(wmc);
+            target.appendJavaScript("google.maps.event.trigger(map, 'resize');initIds();initMarkers();");
+
+        }
+      };
+    
+    IndicatingAjaxButton savePolygonCoordinates = new IndicatingAjaxButton("savePolygonCoordinates") {
+
+        private static final long serialVersionUID = 1L;
+
+        public void onSubmit(AjaxRequestTarget target) {
+          super.onSubmit(target);
+
+           String geoCoordDistanceValue = geoCoordDistance.getModelObject();
+            String polygonCoordInputValue = polygonCoordInput.getModelObject();
+            double distanceKm = 0;
+            if (geoCoordDistanceValue != null) {
+              distanceKm = Double.valueOf(geoCoordDistanceValue);
+            }
+            
+//            String coordsArray[] = polygonCoordInputValue.split("\\s+") // Results "0,0","0,1","5,2","7,4","10,5"
+//            		List<Point> points = new ArrayList<Point>();
+//            		for(String s : coordsArray)
+//            		{
+//            		    String coordXY[] = s.split(","); 
+//            		    int x = Integer.parseInt(coordXY[0]);
+//            		    int y = Integer.parseInt(coordXY[1]);
+//            		    points.add(new Point(x,y));
+//            		}
+            
+            
+//          final String polygonCoordDistanceValue = polygonCoordDistance.getModelObject();
+//          int distanceKm = 1;
+//          if (polygonCoordDistanceValue != null) {
+//            distanceKm = Integer.valueOf(polygonCoordDistanceValue);
+//          }
+            
+            if (polygonCoordInputValue == null) {
+            	list.clear();
+            	
+            } else if (polygonCoordInputValue != null && polygonCoordInputValue.contains(",")) {
         	  polygonCoordInputValue = polygonCoordInputValue.replaceAll("\\s+","");
             log.info("the polygon marker coord are " + polygonCoordInputValue.replaceAll("\\s+",""));
 
@@ -642,13 +823,14 @@ public class LocationServicePage extends BasePage {
             
             // wmc.add(modelLat);
 
+    		log.info("att length is "+att.length);
     		
-    		//if(att.length != 1) {
-    			 list.clear();
-    		//}
+//    		if(att.length == 1) {
+//    			 list.clear();
+//    		}
            
     		
-
+    		list.clear();
 
             // target.appendJavaScript("getGeolocation();");
             for (LocationModel loc : origList) {
@@ -687,22 +869,9 @@ public class LocationServicePage extends BasePage {
 
               }
             }
-            // list.add(0, myLoc);
-            // target.add(datacontainer);
-            target.add(wmc);
-
-            // target
-            // .appendJavaScript("map.gmap('get', 'map').panTo(new google.maps.LatLng("
-            // + pos
-            // +
-            // "));google.maps.event.trigger(map, 'resize');map.gmap('get', 'map').setZoom(15);initIds();initMarkers();");
-
-            target.appendJavaScript("google.maps.event.trigger(map, 'resize');initIds();initMarkers();");
-
-
-            // setResponsePage(LocationServicePage.class);
-            // target.appendJavaScript("initMarkers2();");
           }
+            target.add(wmc);
+            target.appendJavaScript("google.maps.event.trigger(map, 'resize');initIds();initMarkers();");
         }
       };
 
@@ -717,8 +886,8 @@ public class LocationServicePage extends BasePage {
     coordGeoForm.add(btnGetMyGeo);
     coordGeoForm.add(polygonCoordInput);
 //    geoCoordInput.add(polygonCoordDistance);
-    coordGeoForm.add(btnGetPolygon);
-
+    coordGeoForm.add(savePolygonCoordinates);
+    coordGeoForm.add(btnDeletePolygon);
     
 //    if (session.getAttribute("user_name") != null) {
 //	  if(session.getAttribute("user_name").toString().contentEquals("admin")) {
@@ -1727,4 +1896,9 @@ public class LocationServicePage extends BasePage {
     displayOpt.add(displayLocations);
     //displayOpt.add(displayTours);
   }
+
+protected String getMessage() {
+	// TODO Auto-generated method stub
+	return null;
+}
 }
