@@ -393,7 +393,7 @@ public class LocationServicePage extends BasePage {
             if (!found && total == origList.size()) {
 
             	list2 = locationServiceDAO.searchLocationModel(name.toLowerCase());
-            	
+            
             	if (!list2.isEmpty()) {
 
                 list.addAll(list2);
