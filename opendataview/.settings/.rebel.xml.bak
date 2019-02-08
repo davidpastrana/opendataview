@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xmlns:xsi="https://www.w3.org/2001/XMLSchema-instance" xmlns="https://www.zeroturnaround.com" xsi:schemaLocation="https://www.zeroturnaround.com https://www.zeroturnaround.com/alderaan/rebel-2_0.xsd">
+
+	<classpath>
+		<dir name="/Users/david/Dropbox/MacBook/workspace/thesis/opendata/web-ui/target/classes">
+		</dir>
+		<dir name="/Users/david/Dropbox/MacBook/workspace/thesis/opendata/web-ui/target/test-classes">
+		</dir>
+	</classpath>
+
+	<web>
+		<link target="/">
+			<dir name="/Users/david/Dropbox/MacBook/workspace/thesis/opendata/web-ui/target/m2e-wtp/web-resources">
+				<exclude name="/"/>
+			</dir>
+		</link>
+		<link target="/">
+			<dir name="/Users/david/Dropbox/MacBook/workspace/thesis/opendata/web-ui/src/main/webapp">
+			</dir>
+		</link>
+	</web>
+
+</application>

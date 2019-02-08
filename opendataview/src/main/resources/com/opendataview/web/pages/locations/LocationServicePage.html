@@ -1,0 +1,674 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<html
+	itemscope
+	itemtype="https://schema.org/WebPage"
+	xmlns="https://www.w3.org/1999/xhtml"
+	xmlns:wicket="https://wicket.apache.org"
+	lang="en"
+	class="no-js"
+>
+<body>
+	<wicket:extend>
+		<div
+			id="searchView"
+			data-intro="Use this filter to select the type of locations you want to see."
+			data-position="left"
+		>
+			<i
+				id="display-form-search2"
+				class="fa fa-chevron-circle-down fa-2x"
+				onclick="$('#display-form-search').slideToggle();$('#hide-form-search').show();$('#display-form-search2').hide();$('#viewHidePanels').val('false')"
+			/> <i
+				id="hide-form-search"
+				class="fa fa-chevron-circle-up fa-2x"
+				onclick="$('#display-form-search').slideToggle();$('#hide-form-search').hide();$('#display-form-search2').show();$('#viewHidePanels').val('true')"
+			/>
+			<div id="display-form-search">
+				<table class="table-search">
+					<tr>
+						<th>
+							<form
+								class="formSearch"
+								wicket:id="formSearch"
+							>
+								<input
+									placeholder="Search any name, zip, web .."
+									type="text"
+									wicket:id="textSearch"
+									id="textsearch"
+									class="search-loc-name"
+									size="20"
+								/>
+								<button
+									type="submit"
+									wicket:id="searchLocation"
+									class="fa fa-search btn btn-lg btn-primary"
+								/>
+								<button
+									type="button"
+									class="fa fa-crosshairs btn btn-lg btn-primary"
+									onclick="getGeolocation();"
+								/>
+								<button
+									wicket:id="clearSearch"
+									id="resetInputSubmit"
+									class="fa fa-refresh btn btn-lg btn-primary"
+								/>
+								
+								
+												<input
+					placeholder="Hide panels true or false"
+					id="viewHidePanels"
+					wicket:id="viewPanels"
+					type="text"
+				/>
+				<input
+					placeholder="Zoom level displayed here"
+					id="mapZoomLevel"
+					wicket:id="mapZoomLevel"
+					type="text"
+				/>
+				<input
+
+					placeholder="Distance in KM displayed here"
+					id="geoCoordDistance"
+					wicket:id="geoCoordDistance"
+					type="text"
+				/>
+				<input
+					placeholder="Copy & paste polygon search here"
+					id="polygonCoordInput"
+					wicket:id="polygonCoordInput"
+					type="text"
+				/>
+				<button
+					wicket:id="savePolygonCoordinates"
+					id="savePolygonCoordinates"
+					type="submit"
+					value=""
+				></button>
+				<button
+					wicket:id="btnDeletePolygon"
+					class="hide"
+					id="deletePolygonCoordinates"
+					type="submit"
+					value=""
+				></button>
+							</form>
+						</th>
+					</tr>
+					<tr>
+						<th>
+							<div class="slider_wrapper">
+								<div class="slider"></div>
+							</div>
+						</th>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div wicket:id="data">
+		
+
+	
+	<div id="demo-panel" class="wrapper">
+    <div id="container" wicket:id="chart" style="width:350px;"></div>
+</div>
+		
+			<ul
+				id="menu"
+				class="mfb-component--br mfb-zoomin"
+				data-mfb-toggle="hover"
+				data-intro="Hover over here to select the options to display the location details, open the directions tab and export your tour to pdf."
+				data-position="left"
+			>
+				<li class="mfb-component__wrap"><a
+					href="#"
+					class="mfb-component__button--main "
+				> <i
+						class="mfb-component__main-icon--resting ion-plus-round"
+						style="color: rgb(255, 255, 255);"
+					></i> <i
+						class="mfb-component__main-icon--active ion-android-close"
+						style="color: rgb(255, 255, 255);"
+					></i>
+				</a>
+					<ul class="mfb-component__list">
+						<li><a
+							href="#"
+							onclick="displayLocationsTable()"
+							data-mfb-label="Display list"
+							class="mfb-component__button--child"
+						> <i class="mfb-component__child-icon ion-android-list"></i>
+						</a></li>
+						<li><a
+							href="#"
+							onclick="displayDirectionTable()"
+							data-mfb-label="Get directions"
+							class="mfb-component__button--child"
+						> <i class="mfb-component__child-icon ion-location"></i>
+						</a></li>
+						<li><a
+							href="#"
+							onclick="$('body').chardinJs('toggle')"
+							data-mfb-label="Help overlay"
+							class="mfb-component__button--child"
+						> <i class="mfb-component__child-icon ion-help"></i>
+						</a></li>
+					</ul></li>
+			</ul>
+			<!--  <form wicket:id="coordGeoForm">
+
+			</form>-->
+			<form
+				wicket:id="locationsForm"
+				id="locationView"
+				data-intro="Use this filter to select the type of locations you want to see."
+				data-position="left"
+			>
+				<i
+					id="displayLocations"
+					class="fa fa-chevron-circle-down fa-2x"
+					onclick="$('#hideLocation').slideToggle();$('#hideLocations').show();$('#displayLocations').hide()"
+				/> <i
+					id="hideLocations"
+					class="fa fa-chevron-circle-up fa-2x"
+					onclick="$('#hideLocations').hide();$('#displayLocations').show();$('#hideLocation').slideToggle();"
+				/>
+				<div id="hideLocation">
+					<p
+						class="h3 list-route"
+						wicket:id="importedFilesLabel"
+					>Imported datasets:</p>
+					<div
+						class="radio"
+						wicket:id="listLocations"
+					></div>
+					<br />
+					<p
+						class="h3 list-route"
+						wicket:id="removeSelectedLabel"
+					>Files to remove:</p>
+					<div
+						class="radio"
+						wicket:id="removeLocations"
+					></div>
+					<button
+						class="btn btn-lg btn-primary"
+						wicket:id="removeSelected"
+					>Remove selected</button>
+				</div>
+			</form>
+			<div id="map_wrapper">
+				<div
+					id="map_canvas"
+					class="gmap"
+				/>
+			</div>
+			<!--custom controls-->
+			<span id="customZoom"> <span
+				id="zoomIn"
+				class="btn zoom in"
+			> <i class="fa fa-plus" />
+			</span> <span
+				id="zoomOut"
+				class="btn zoom out"
+			> <i class="fa fa-minus" />
+			</span>
+			</span>
+			<div id="panel">
+				<div id="buttons-delete">
+					<form
+						id="saveLocationsForm"
+						wicket:id="saveLocationsForm"
+					>
+						<span
+							id="linkSaveVisibleLoc"
+							class="hide"
+							wicket:id="saveVisibleLoc"
+						/>
+						<button
+							class="btn btnmap"
+							wicket:id="saveVisibleLocFile"
+							type="submit"
+						>Download Search</button>
+						<span
+							id="linkSqlLocBackup"
+							class="hide"
+							wicket:id="sqlLocBackup"
+						/>
+						<button
+							class="btn btnmap"
+							wicket:id="saveSqlLocBackup"
+							type="submit"
+						>Download Backup</button>
+					</form>
+					<span class="mapTypeId"> <select
+						id="mapTypeId"
+						class="form-control"
+					>
+							<option value="1">Roadmap</option>
+							<option value="2">Satellite</option>
+							<option value="3">Terrain</option>
+							<option value="4">Route</option>
+							<option value="5">White</option>
+					</select>
+					</span>
+				</div>
+			</div>
+			<div id="color-palette">
+				<i
+					class="fa fa-eraser"
+					id="delete-all-button"
+					title="Clear everything which is over the map"
+				/> <i
+					class="fa fa-unlink"
+					id="delete-button"
+					title="Clear after selecting a polygon"
+				/>
+			</div>
+			<form wicket:id="editFormTriggerClick">
+				<input
+					id="idInput"
+					wicket:id="idInput"
+					type="text"
+				/> <input
+					id="editInfoButton"
+					wicket:id="editInfoButton"
+					type="submit"
+				/>
+			</form>
+			<form
+				wicket:id="editForm"
+				id="editInfo"
+				autocomplete="off"
+			>
+				<i
+					id="closeEdit"
+					wicket:id="closeEdit"
+					class="fa fa-times-circle fa-2x"
+				/>
+				<table class="editInformation">
+					<tbody class="radioFilter">
+						<tr wicket:id="editRow">
+							<td>Name: <input
+								class="form-control"
+								type="text"
+								wicket:id="name"
+							/></td>
+							<td>Name category: <input
+								class="form-control"
+								type="text"
+								wicket:id="csvName"
+							/></td>
+							<td>Type: <input
+								class="form-control"
+								type="text"
+								wicket:id="type"
+							/></td>
+							<td>Address: <input
+								class="form-control"
+								type="text"
+								wicket:id="address"
+							/></td>
+							<td>Street: <input
+								class="form-control"
+								type="text"
+								wicket:id="street"
+							/></td>
+							<td>Number: <input
+								class="form-control"
+								type="text"
+								wicket:id="number"
+							/></td>
+							<td>District: <input
+								class="form-control"
+								type="text"
+								wicket:id="district"
+							/></td>
+							<td>Latitude: <input
+								class="form-control"
+								type="text"
+								wicket:id="latitude"
+							/></td>
+							<td>Longitude: <input
+								class="form-control"
+								type="text"
+								wicket:id="longitude"
+							/></td>
+							<td>Website: <input
+								class="form-control"
+								type="text"
+								wicket:id="website"
+							/></td>
+							<td>Image URL: <input
+								class="form-control"
+								type="text"
+								wicket:id="image"
+							/></td>
+							<td>Description: <input
+								class="form-control"
+								type="text"
+								wicket:id="description"
+							/></td>
+							<td>Email: <input
+								class="form-control"
+								type="text"
+								wicket:id="email"
+							/></td>
+							<td>Phone: <input
+								class="form-control"
+								type="text"
+								wicket:id="phone"
+							/></td>
+							<td>Date: <input
+								class="form-control"
+								type="text"
+								wicket:id="date"
+							/></td>
+							<td>Schedule: <input
+								class="form-control"
+								type="text"
+								wicket:id="schedule"
+							/></td>
+							<td>Linked data: <textarea
+								id="text-location-edit" class="form-control"
+								wicket:id="otherInfo"
+							/></td>
+						</tr>
+						<tr><td><button
+						class="btn btn-lg btn-primary"
+						wicket:id="saveLocation"
+						id="saveEdit"
+						type="submit"
+						value="Save"
+					>Save changes</button></td></tr>
+					</tbody>
+				</table>
+
+			</form>
+		</div>
+		<div wicket:id="wmc">
+			<span wicket:id="currentPage" />
+			<div itemprop="Place" itemscope itemtype="https://schema.org/Place">
+				<span
+					itemprop="csvName"
+					class="hide"
+				>My position</span> <span
+					itemprop="name"
+					wicket:id="currentPosition"
+					
+				/>
+				<div
+					itemprop="geo"
+					itemscope
+					itemtype="https://schema.org/GeoCoordinates"
+				>
+					<span
+						itemprop="latitude"
+						wicket:id="currentLatitude"
+					/> <span
+						itemprop="longitude"
+						wicket:id="currentLongitude"
+					/>
+				</div>
+			</div>
+			<table class="markersTable">
+				<tr>
+					<td>
+						<table class="markersTableContainer">
+							<!--  <label
+								
+								class="displayLocationsTable"
+								
+							>--><i id="arrowHideLocationsTable"
+								class="arrowHideLocation arrowHideDirection ion-chevron-left" onclick="buttonDisplayLocations();"
+							></i>
+							<!-- </label> -->
+							<!--  <label
+								id="arrowHideDirectionTable"
+								class="displayLocationsTable hidden"
+								onclick="displayDirectionTable();"
+								style="display: initial !important; visibility: visible !important;"
+							> <i class="arrowHideDirection ion-chevron-left"></i>
+							</label>-->
+							<tr
+								class="row"
+								wicket:id="rows"
+							>
+								<td><i
+									class="fa fa-info-circle fa-2x iconInfo"
+									onclick="displayMoreInfo()"
+								/> <i
+									class="fa fa-map fa-2x iconDirection"
+									onclick="displayDirectionTable()"
+								/> <i
+									class="fa fa-street-view fa-2x iconStreetView"
+									onclick="displayStreetView()"
+								/> <i
+									class="fa fa-pencil fa-2x iconEditInfo"
+									onclick="getIdMarker(id)"
+								/>
+									<table
+										class="selectMarkersTable"
+										itemscope
+										itemtype="https://schema.org/location"
+									>
+										<tr>
+											<td>
+												<table>
+													<tr>
+														<td itemscope itemptype="https://schema.org/Place" class="titleName">
+														<!-- Do not touch - necessary to show the markers 
+															<span itemprop="csvName" wicket:id="csvName"
+															class="hide" />-->
+															<span
+															itemprop="name"
+															wicket:id="name"
+															class="h4"
+														/><br /> <span
+															itemprop="labelDescription"
+															wicket:id="userPublishedTag"
+															
+														/> <span
+															itemprop="user_name"
+															wicket:id="userPublished"
+															class="h5"
+														/> <span
+															itemprop="active_user"
+															wicket:id="userSession"
+															class="hide"
+														/> <span
+															itemprop="icon_marker"
+															wicket:id="icon_marker"
+															class="hide"
+														/> <img
+															wicket:id="image"
+															class="imageURL"
+														/></td>
+														<td>
+														</td>
+													</tr>
+													<tr>
+														<td><span
+															itemprop="alternateName"
+															wicket:id="type"
+														/></td>
+													</tr>
+													<tr>
+															<td><span wicket:id="cityTag" />
+															<div
+																itemprop="location"
+																itemscope
+																itemtype="https://schema.org/PostalAddress"
+															>
+																<span
+																	itemprop="addressLocality"
+																	wicket:id="city"
+																/><span
+																	itemprop="postalCode"
+																	wicket:id="postcode"
+																/>
+																<meta
+																	itemprop="addressCountry"
+																	content="Wien"
+																/>
+																<br />
+															</div></td>
+														<!-- <td><span wicket:id="addressTag" />
+															<div
+																itemprop="address"
+																itemscope
+																itemtype="https://schema.org/PostalAddress"
+															>
+																<span
+																	itemprop="streetLocality"
+																	wicket:id="address"
+																/> <span
+																	itemprop="streetAddress"
+																	wicket:id="street"
+																/> <span wicket:id="number" /> <span
+																	itemprop="postalCode"
+																	wicket:id="district"
+																/>
+																<meta
+																	itemprop="addressRegion"
+																	content="Wien"
+																/>
+																<br />
+															</div></td>-->
+													</tr>
+												</table>
+												<table class="streetviewSize">
+													<tr>
+														<td><div class="streetview" /></td>
+													</tr>
+												</table>
+												<table itemprop="Organization" itemscope itemtype="https://schema.org/Organization" class="moreInfo">
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="descriptionTag"
+														/></td>
+														<td><span
+															itemprop="description"
+															wicket:id="description"
+														/></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="scheduleTag"
+														/></td>
+														<td><span
+															itemprop="openingHours"
+															wicket:id="schedule"
+														/></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="phoneTag"
+														/></td>
+														<td><span
+															itemprop="telephone"
+															wicket:id="phone"
+														/></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="emailTag"
+														/></td>
+														<td><a
+															itemprop="email"
+															wicket:id="email"
+														/></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="websiteTag"
+														/></td>
+														<td><a
+															itemprop="url"
+															wicket:id="website"
+															target="_blank"
+														/></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="dateTag"
+														/></td>
+														<td><span wicket:id="date" /></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="otherTag"
+														/></td>
+														<td><span wicket:id="other" /></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="datePublishedTag"
+														/></td>
+														<td><span wicket:id="datePublished" /></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="dateUpdatedTag"
+														/></td>
+														<td><span wicket:id="dateUpdated" /></td>
+													</tr>
+													<tr>
+														<td class="labelDescription"><span
+															wicket:id="sourcePublishedTag"
+														/></td>
+														<td><span wicket:id="sourcePublished" /></td>
+													</tr>
+													<tr itemprop="Place" itemscope itemtype="https://schema.org/Place" ><!-- DO NOT CHANGE itemprop is necesary to position the markers -->
+														<td class="labelDescription"><span
+															wicket:id="coordsTag"
+														/></td>
+														<td>
+														<!-- DO NOT CHANGE - itemprop IS IMPORTANT FOR KNOWING THE lat AND lng OF THE MARKERS -->
+															<span itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates"
+															>Lat: <span itemprop="latitude"
+																	wicket:id="latitude" />
+																	Lng: <span
+																	itemprop="longitude"
+																	wicket:id="longitude"
+																/>
+															</span>
+														</td>
+													</tr>
+													<tr>
+														<td class="labelDescription">Location ID:</td>
+														<td>
+														<!-- DO NOT CHANGE - itemprop IS IMPORTANT FOR EDITING THE MARKERS -->
+															<span
+															itemprop="id"
+															wicket:id="id_location"
+															class="id_DB hide" />
+														</td>
+													</tr>
+												</table>
+											</td>
+										</tr>
+									</table></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td><wicket:panel wicket:id="direction" /></td>
+				</tr>
+				<tr>
+					<td><a
+						class="showHideNavigator"
+						onclick="$('.tableNavigator').slideToggle();"
+					>Show/hide</a> <span
+						class="tableNavigator"
+						wicket:id="navigator"
+					/></td>
+				</tr>
+			</table>
+		</div>
+	</wicket:extend>
+</body>
+</html>

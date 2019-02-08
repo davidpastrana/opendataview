@@ -1,0 +1,786 @@
+<?xml version="1.0" encoding="ISO_8859_1" ?>
+<html
+	itemscope
+	itemtype="https://schema.org/WebPage"
+	xmlns="https://www.w3.org/1999/xhtml"
+	xmlns:wicket="https://wicket.apache.org"
+	lang="en"
+	class="no-js"
+>
+<body>
+	<wicket:extend>
+		<style type="text/css">
+#bysy_indicator {
+	display: none;
+}
+
+.loading-gif {
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background: rgba(255, 255, 255, .8) url(/images/gif/loading.gif) 50% 45%
+		no-repeat;
+	background-size: 47px;
+}
+
+.loading-text {
+	top: 25%;
+	left: 18%;
+	position: relative;
+	color: #999;
+	font-size: 15px;
+}
+/*customizing tooltip color*/
+/*right tooltip*/
+.tooltip.right>.tooltip-arrow {
+	border-right-color: dodgerblue;
+}
+/*tooltip inner*/
+.tooltip>.tooltip-inner {
+	/*background-color: dodgerblue;
+  text-shadow: 0 1px 1px #000;*/
+	font-weight: normal;
+	font-size: 14px;
+}
+</style>
+		<script>
+	$(window).on("load",function(){
+		 if($("#active_dictionary option:selected").text() == "true") {
+		 	$("#dictionary_matches").show();
+		 } else {
+		 	$("#dictionary_matches").hide();
+		 }
+		 if($("#schema_autodetection option:selected").text() == "true") {
+		 	$(".hide_schema_auto").show();
+		 } else {
+		 	$(".hide_schema_auto").hide();
+		 }
+		 setupFunc();
+	});
+
+
+	
+	$(document).ready(function(){
+		
+		$("#active_dictionary select").on("change",function(){
+			 if($("#active_dictionary option:selected").text() == "true") {
+			 	$("#dictionary_matches").show();
+			 } else {
+			 	$("#dictionary_matches").hide();
+			 }
+		});
+		$("#schema_autodetection select").on("change",function(){
+			 if($("#schema_autodetection option:selected").text() == "true") {
+			 	$(".hide_schema_auto").show();
+			 } else {
+			 	$(".hide_schema_auto").hide();
+			 }
+		});
+		
+		
+		  $('[data-toggle="tooltip"]').tooltip(); 
+    });
+
+ function setupFunc() {
+	 //hideBusysign();
+	 $('.fileinput-upload-button').on('click', function()
+	           {
+		 
+	             showBusysign();
+	           }
+	      );
+	 /*document.getElementsByTagName('fileinput-upload-button')[0].onclick = clickFunc;
+         Wicket.Ajax.registerPreCallHandler(showBusysign);
+         Wicket.Ajax.registerPostCallHandler(hideBusysign);
+         Wicket.Ajax.registerFailureHandler(hideBusysign);*/
+ }
+ function hideBusysign() {
+   document.getElementById('bysy_indicator').style.display ='none';
+ }
+ function showBusysign() {
+   document.getElementById('bysy_indicator').style.display ='inline';
+ }
+ /*
+ function clickFunc() {
+	 showBusysign();
+	 
+   var clickedElement = (window.event) ? event.srcElement : eventData.target;
+   if (clickedElement.tagName.toUpperCase() == 'BUTTON' || clickedElement.tagName.toUpperCase() == 'A' || clickedElement.parentNode.tagName.toUpperCase() == 'A'
+     || (clickedElement.tagName.toUpperCase() == 'INPUT' && (clickedElement.type.toUpperCase() == 'BUTTON' || clickedElement.type.toUpperCase() == 'SUBMIT'))) {
+     showBusysign();
+   }
+ }*/
+</script>
+		<div wicket:id="wmc">
+			<div id="bysy_indicator">
+				<span class="loading-gif"><span class="loading-text">Processing
+						files, please wait...<br /> <br />Notice that Option <strong>Upload
+						results into database (production mode)</strong> is not for testing purposes, requiring much more time to create inserts,updates,geocoding all rows, etc.
+				</span></span>
+			</div>
+			<!-- Title -->
+			<div class="breadcrumbs">
+				<div class="container">
+					<div class="row">
+						<div
+							class="col-lg-6 col-sm-6"
+							style="margin-top: 50px;"
+						>
+							<h4>
+								Signed in as: <strong wicket:id="userSigned"></strong>
+							</h4>
+							Bash script to download CKAN data: <a href="/scripts/ckan_data_parser.sh">Download link</a>
+							<h2>
+								Upload your <strong>CSV</strong> or <strong>SQL</strong>backup file <i
+									class="fa fa-question-circle"
+									data-toggle="tooltip"
+									data-placement="right"
+									title="You can upload multiple CSV Open Data files or SQL Backups. For uploading a Backup, create first a search from the top menu Locations and then press button 'Download Backup'."
+								/>:
+								
+							</h2>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- Container -->
+			<div
+				class="container"
+				style="margin-bottom: 56px;"
+			>
+				<div class="row">
+					<div class="col-sm-12 col-lg-12">
+						<pre
+							class="error"
+							wicket:id="feedback"
+						/>
+						<input
+							type="file"
+							wicket:id="bootstrapFileinput"
+							multiple="multiple"
+						/>
+						<textarea
+							id="logDetails"
+							class="output form-control"
+							wicket:id="resultsBox"
+							placeholder="Processed file logs will appear here .."
+						></textarea>
+						<form wicket:id="propertiesForm">
+							<span
+								id="linkSaveLogDetails"
+								class="hide"
+								wicket:id="outputDownload"
+							/>
+							<button
+								class="btn btn-lg btn-primary"
+								wicket:id="downloadLogDetails"
+								type="submit"
+							>Download Log</button>
+							<!-- <button class="btn btn-lg btn-primary" wicket:id="executeSearch"
+						id="executeSearch" type="submit" value="Execute Search">Run Import</button> -->
+							<button
+								class="btn btn-lg btn-primary"
+								wicket:id="retrieveCKAN"
+								id="retrieveCKAN"
+								type="submit"
+								value="Retrieve CKAN data"
+							>Retrieve CKAN data</button>
+							<!-- <button class="btn btn-lg btn-primary" wicket:id="runCKAN"
+						id="runCKAN" type="submit" value="Run CKAN data">Run CKAN data</button> -->
+							<br /> <br />
+							<h3 wicket:id="showFilesUpload">Your Uploads</h3>
+							<span
+								id="removeLocations"
+								class="radio"
+								wicket:id="removeLocations"
+							/>
+							<button
+								class="btn btn-lg btn-primary"
+								wicket:id="removeSelectedFiles"
+							>Remove selected</button>
+							<button
+								class="btn btn-lg btn-primary"
+								wicket:id="deleteAllUploads"
+								id="deleteAllUploads"
+								type="submit"
+								value="Save Configuration"
+							>Remove All files</button>
+							<br /> <br />
+							<button
+								class="btn btn-lg btn-primary pull-right"
+								wicket:id="saveProperties"
+								id="saveEdit"
+								type="submit"
+								value="Save Configuration"
+							>Save changes</button>
+							<div
+								wicket:id="editProperties"
+								class="table-responsive"
+							>
+								<table class="table properties-table">
+									<tr>
+										<td><h3>Main configuration</h3></td>
+									</tr>
+									<tr id="active_dictionary">
+										<td>Enable Schema: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Allows you to manually create header mappings, having relations *:1 where 1 is the dictionary"
+										/></td>
+										<td><select
+											wicket:id="active_dictionary"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr id="dictionary_matches">
+										<td>Dictionary names (right side): <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="You can only do mappings to those available names from your header tag names"
+										/></td>
+										<td>titles, description, latitudes, longitudes, shape, latlong, data_publishers, emails, urls, phones, cities, postal_codes, working_hours, dates, images</td>
+									</tr>
+									<tr id="dictionary_matches">
+										<td><br /><br />Schema mapping for multiple headers to dictionary names (you can add % for any possible matches and multiple names, making sure is of type *:1 and ends in semicolon): <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Rules for *:1 relations: Each line break is ';', key/value separator is ':', keys can be defined with commas, wildcards '%' and commented with '#'"
+										/></td>
+										<td><textarea
+												wicket:id="dictionary_matches"
+												class="form-control schema-relationships"
+											/></td>
+									</tr>
+									<tr>
+										<td>Available Markers: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="You can only do mappings to those available names from your header tag names"
+										/></td>
+										<td>
+										01: <img class="svg-icon" src="/images/markers/svg/01.svg" /> 02: <img class="svg-icon" src="/images/markers/svg/02.svg" /> 03: <img class="svg-icon" src="/images/markers/svg/03.svg" /> 04: <img class="svg-icon" src="/images/markers/svg/04.svg" /> 05: <img class="svg-icon" src="/images/markers/svg/05.svg" /> 
+										06: <img class="svg-icon" src="/images/markers/svg/06.svg" /> 07: <img class="svg-icon" src="/images/markers/svg/07.svg" /> 08: <img class="svg-icon" src="/images/markers/svg/08.svg" /> 09: <img class="svg-icon" src="/images/markers/svg/09.svg" /> 10: <img class="svg-icon" src="/images/markers/svg/10.svg" /> 
+										11: <img class="svg-icon" src="/images/markers/svg/11.svg" /> 12: <img class="svg-icon" src="/images/markers/svg/12.svg" /> 13: <img class="svg-icon" src="/images/markers/svg/13.svg" /> 14: <img class="svg-icon" src="/images/markers/svg/14.svg" /> 15: <img class="svg-icon" src="/images/markers/svg/15.svg" />
+										16: <img class="svg-icon" src="/images/markers/svg/16.svg" /> 17: <img class="svg-icon" src="/images/markers/svg/17.svg" /> 18: <img class="svg-icon" src="/images/markers/svg/18.svg" /> 19: <img class="svg-icon" src="/images/markers/svg/19.svg" /> 20: <img class="svg-icon" src="/images/markers/svg/20.svg" />
+										21: <img class="svg-icon" src="/images/markers/svg/21.svg" /> 22: <img class="svg-icon" src="/images/markers/svg/22.svg" /> 23: <img class="svg-icon" src="/images/markers/svg/23.svg" /> 24: <img class="svg-icon" src="/images/markers/svg/24.svg" /> 25: <img class="svg-icon" src="/images/markers/svg/25.svg" />
+										26: <img class="svg-icon" src="/images/markers/svg/26.svg" /> 27: <img class="svg-icon" src="/images/markers/svg/27.svg" /> 28: <img class="svg-icon" src="/images/markers/svg/28.svg" /> 29: <img class="svg-icon" src="/images/markers/svg/29.svg" /> 30: <img class="svg-icon" src="/images/markers/svg/30.svg" />
+										31: <img class="svg-icon" src="/images/markers/svg/31.svg" /> 32: <img class="svg-icon" src="/images/markers/svg/32.svg" /> 33: <img class="svg-icon" src="/images/markers/svg/33.svg" /> 34: <img class="svg-icon" src="/images/markers/svg/34.svg" /> 35: <img class="svg-icon" src="/images/markers/svg/35.svg" />
+										36: <img class="svg-icon" src="/images/markers/svg/36.svg" /> 37: <img class="svg-icon" src="/images/markers/svg/37.svg" /> 38: <img class="svg-icon" src="/images/markers/svg/38.svg" /> 39: <img class="svg-icon" src="/images/markers/svg/39.svg" /> 40: <img class="svg-icon" src="/images/markers/svg/40.svg" />
+										41: <img class="svg-icon" src="/images/markers/svg/41.svg" /> 42: <img class="svg-icon" src="/images/markers/svg/42.svg" /> 43: <img class="svg-icon" src="/images/markers/svg/43.svg" /> 44: <img class="svg-icon" src="/images/markers/svg/44.svg" /> 45: <img class="svg-icon" src="/images/markers/svg/45.svg" />
+										46: <img class="svg-icon" src="/images/markers/svg/46.svg" /> 47: <img class="svg-icon" src="/images/markers/svg/47.svg" /> 48: <img class="svg-icon" src="/images/markers/svg/48.svg" /> 49: <img class="svg-icon" src="/images/markers/svg/49.svg" /> 50: <img class="svg-icon" src="/images/markers/svg/50.svg" />
+										51: <img class="svg-icon" src="/images/markers/svg/51.svg" /> 52: <img class="svg-icon" src="/images/markers/svg/52.svg" /> 53: <img class="svg-icon" src="/images/markers/svg/53.svg" /> 54: <img class="svg-icon" src="/images/markers/svg/54.svg" /> 55: <img class="svg-icon" src="/images/markers/svg/55.svg" />
+										56: <img class="svg-icon" src="/images/markers/svg/56.svg" /> 57: <img class="svg-icon" src="/images/markers/svg/57.svg" /> 58: <img class="svg-icon" src="/images/markers/svg/58.svg" /> 59: <img class="svg-icon" src="/images/markers/svg/59.svg" /> 60: <img class="svg-icon" src="/images/markers/svg/60.svg" />
+										61: <img class="svg-icon" src="/images/markers/svg/61.svg" /> 62: <img class="svg-icon" src="/images/markers/svg/62.svg" /> 63: <img class="svg-icon" src="/images/markers/svg/63.svg" /> 64: <img class="svg-icon" src="/images/markers/svg/64.svg" /> 65: <img class="svg-icon" src="/images/markers/svg/65.svg" />
+										66: <img class="svg-icon" src="/images/markers/svg/66.svg" /> 67: <img class="svg-icon" src="/images/markers/svg/67.svg" /> 68: <img class="svg-icon" src="/images/markers/svg/68.svg" /> 69: <img class="svg-icon" src="/images/markers/svg/69.svg" /> 70: <img class="svg-icon" src="/images/markers/svg/70.svg" />
+										71: <img class="svg-icon" src="/images/markers/svg/71.svg" /> 72: <img class="svg-icon" src="/images/markers/svg/72.svg" /> 73: <img class="svg-icon" src="/images/markers/svg/73.svg" /> 74: <img class="svg-icon" src="/images/markers/svg/74.svg" /> 75: <img class="svg-icon" src="/images/markers/svg/75.svg" />										
+										76: <img class="svg-icon" src="/images/markers/svg/76.svg" /> 77: <img class="svg-icon" src="/images/markers/svg/77.svg" /> 78: <img class="svg-icon" src="/images/markers/svg/78.svg" /> 79: <img class="svg-icon" src="/images/markers/svg/79.svg" /> 80: <img class="svg-icon" src="/images/markers/svg/80.svg" />										
+										81: <img class="svg-icon" src="/images/markers/svg/81.svg" /> 82: <img class="svg-icon" src="/images/markers/svg/82.svg" /> 83: <img class="svg-icon" src="/images/markers/svg/83.svg" /> 84: <img class="svg-icon" src="/images/markers/svg/84.svg" /> 85: <img class="svg-icon" src="/images/markers/svg/85.svg" />										
+										86: <img class="svg-icon" src="/images/markers/svg/86.svg" /> 87: <img class="svg-icon" src="/images/markers/svg/87.svg" /> 88: <img class="svg-icon" src="/images/markers/svg/88.svg" /> 89: <img class="svg-icon" src="/images/markers/svg/89.svg" /> 90: <img class="svg-icon" src="/images/markers/svg/90.svg" />										
+										91: <img class="svg-icon" src="/images/markers/svg/91.svg" /> 92: <img class="svg-icon" src="/images/markers/svg/92.svg" /> 93: <img class="svg-icon" src="/images/markers/svg/93.svg" /> 94: <img class="svg-icon" src="/images/markers/svg/94.svg" /> 95: <img class="svg-icon" src="/images/markers/svg/95.svg" />										
+										96: <img class="svg-icon" src="/images/markers/svg/96.svg" /> 97: <img class="svg-icon" src="/images/markers/svg/97.svg" /> 98: <img class="svg-icon" src="/images/markers/svg/98.svg" /> 99: <img class="svg-icon" src="/images/markers/svg/99.svg" /> 100: <img class="svg-icon" src="/images/markers/svg/100.svg" />										
+										</td>
+									</tr>
+									<tr>
+										<td>Icon Marker: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Preferred icon to show over the map, otherwise the default one is selected"
+										/></td>
+										<td><select
+											wicket:id="iconmarker"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr id="schema_autodetection">
+										<td>Enable field type detection: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Enables schema auto-detection by an inference solver composed of Probability for X rows, Geonames Querying, Google API Geocoding, URL domain detection, etc."
+										/></td>
+										<td><select
+											wicket:id="autodetectSchema"
+											class="form-control"
+										/></td>
+									</tr>
+
+									<tr class="hide_schema_auto">
+										<td>Country code: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Select a country code to make the geocoding search more accurate and for detecting phone numbers"
+										/></td>
+										<td><select
+											wicket:id="countrycode"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Number of rows to analyze: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Number of rows to execute the detection of field types"
+										/></td>
+										<td><select
+											wicket:id="nrowchecks"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Probability per rows: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Probability value to be added to the search going from 0.01 (less likely to occur, higher number of matches) until 1 (certain to occur, lower number of matches)"
+										/></td>
+										<td><select
+											wicket:id="pvalue_nrowchecks"
+											class="form-control"
+										/></td>
+									</tr>
+									<!--  <tr><td>Test file: </td><td><input wicket:id="testfile" type="text" class="form-control" /></td></tr>-->
+									<!--  <tr><td>Processed dir: </td><td><input wicket:id="processed_dir" type="text" class="form-control" /></td></tr>
+								<tr><td>CSV files dir: </td><td><input wicket:id="csvfiles_dir" type="text" class="form-control" /></td></tr>
+								<tr><td>CSV formatted dir: </td><td><input wicket:id="newformat_dir" type="text" class="form-control" /></td></tr>
+								<tr><td>SQL files dir: </td><td><input wicket:id="sqlinserts_file" type="text" class="form-control" /></td></tr>
+								<tr><td>Temp dir: </td><td><input wicket:id="tmp_dir" type="text" class="form-control" /></td></tr>
+								<tr><td>Missing Georeferences dir: </td><td><input wicket:id="missinggeoreference_dir" type="text" class="form-control" /></td></tr>
+								
+								-->
+									<tr class="hide_schema_auto">
+										<td>Debug mode for field types: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Show logged messages when detecting field types during the search"
+										/></td>
+										<td><select
+											wicket:id="fieldtypesdebugmode"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Debug mode for database queries: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Show logged messages when executing queries or API calls"
+										/></td>
+										<td><select
+											wicket:id="geonamesdebugmode"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Google Maps API Key: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Here you can place your own Google Maps API Key, being a complement to make a more precise search (standard key allows 2.500 free requests per day, higher quotas can be found on the web: Google Geocoding API Billing)"
+										/></td>
+										<td><input
+											wicket:id="mapsAPI"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr>
+										<td><b>Upload results into database (production
+												mode): <i
+												class="fa fa-info-circle"
+												data-toggle="tooltip"
+												data-placement="right"
+												title="Enable this option only when you want to upload the data having some fields that can be georeferenced like: city, latitude, longitude, latlng, ..."
+											/>
+										</b></td>
+										<td><select
+											wicket:id="executeSQLqueries"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td><br /></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td><br /><h3>RegEx configuration</h3></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Title field: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect the main attribute name from the file"
+										/></td>
+										<td><input
+											wicket:id="possiblenameRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Description field: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect any description of the same row"
+										/></td>
+										<td><input
+											wicket:id="descriptionRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>City: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect a city name from the file, could it be a country, metropolis, city, town, village, hamlet ... "
+										/></td>
+										<td><input
+											wicket:id="cityRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Postal code: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect a postcode/zipcode from the file"
+										/></td>
+										<td><input
+											wicket:id="postcodeRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Shape: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect geographic Shapes from the file, could it be a polygon, square, circle, polyline, ..."
+										/></td>
+										<td><input
+											wicket:id="shapeRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>NUTS region codes: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect territorial unit codes from the file in NUTS code representation, could it be NUTS 1 (level one), NUTS 2 (level two), NUTS 3 (level three)"
+										/></td>
+										<td><input
+											wicket:id="nutsRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Latitude: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect a latitude coordinate from the file"
+										/></td>
+										<td><input
+											wicket:id="latitudeRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Longitude: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect a longitude coordinate from the file"
+										/></td>
+										<td><input
+											wicket:id="longitudeRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>LatLng: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect together latitude and longitude coordinates from the file"
+										/></td>
+										<td><input
+											wicket:id="latlngRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Phone: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect a telephone number from the file allowing any local area"
+										/></td>
+										<td><input
+											wicket:id="phoneRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Currency: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect currencies from the file"
+										/></td>
+										<td><input
+											wicket:id="currencyRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Percentage: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect percentages from the file"
+										/></td>
+										<td><input
+											wicket:id="percentageRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Year: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect years from the file"
+										/></td>
+										<td><input
+											wicket:id="yearRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Date: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect dates from the file with a desired format"
+										/></td>
+										<td><input
+											wicket:id="dateRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Image: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect an image from the file with all desired formats"
+										/></td>
+										<td><input
+											wicket:id="imageRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Document: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect a document from the file with all desired formats"
+										/></td>
+										<td><input
+											wicket:id="documentRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Archive: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect an archive from the file with all desired formats"
+										/></td>
+										<td><input
+											wicket:id="archiveRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Working hours: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="Regular expression to detect an image from the file with an opening hours schedule"
+										/></td>
+										<td><input
+											wicket:id="openinghoursRegex"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<!--  <tr><td>Shapes file: </td><td><input wicket:id="shapes_file" type="text" class="form-control" /></td></tr>-->
+									<tr class="hide_schema_auto">
+										<td><br /></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td><br /><h3>Database configuration</h3></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Geonames Postcode Statement: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="To define Only if you have an own Geonames DB where to Query"
+										/></td>
+										<td><input
+											wicket:id="st1postcode"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<!--  <tr><td>Statement2 Postcode: </td><td><input wicket:id="st2postcode" type="text" class="form-control" /></td></tr>-->
+									<tr class="hide_schema_auto">
+										<td>Geonames City Statement: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="To define Only if you have an own Geonames DB where to Query"
+										/></td>
+										<td><input
+											wicket:id="st1city"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Geonames DB Driver: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="To define Only if you have an own Geonames DB where to Query"
+										/></td>
+										<td><input
+											wicket:id="geonames_dbdriver"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Geonames DB URL: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="To define Only if you have an own Geonames DB where to Query"
+										/></td>
+										<td><input
+											wicket:id="geonames_dburl"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Geonames DB User: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="To define Only if you have an own Geonames DB where to Query"
+										/></td>
+										<td><input
+											wicket:id="geonames_dbusr"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide_schema_auto">
+										<td>Geonames DB Password: <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="To define Only if you have an own Geonames DB where to Query"
+										/></td>
+										<td><input
+											wicket:id="geonames_dbpwd"
+											type="text"
+											class="form-control"
+										/></td>
+									</tr>
+									<wicket:enclosure child="admin_user_visibility">
+										<tr>
+											<td>Interface DB Driver:</td>
+											<td><input
+												wicket:id="web_dbdriver"
+												type="text"
+												class="form-control"
+											/></td>
+										</tr>
+										<tr>
+											<td>Interface DB URL:</td>
+											<td><input
+												wicket:id="web_dburl"
+												type="text"
+												class="form-control"
+											/></td>
+										</tr>
+										<tr>
+											<td>Interface DB User:</td>
+											<td><input
+												wicket:id="web_dbusr"
+												type="text"
+												class="form-control"
+											/></td>
+										</tr>
+										<tr>
+											<td>Interface DB Password:</td>
+											<td><input
+												wicket:id="web_dbpwd"
+												type="text"
+												class="form-control"
+											/></td>
+										</tr>
+										<!--  <tr><td>Statement2 City: </td><td><input wicket:id="st2city" type="text" class="form-control" /></td></tr>
+								<tr><td>Statement3 City: </td><td><input wicket:id="st3city" type="text" class="form-control" /></td></tr>-->
+									</wicket:enclosure>
+								</table>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+			<!-- /.Container -->
+		</div>
+		<!-- Footer -->
+		<wicket:panel wicket:id="footer" />
+		<!-- /.Footer -->
+	</wicket:extend>
+</body>
+</html>

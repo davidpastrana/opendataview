@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html
+	itemscope
+	itemtype="https://schema.org/WebPage"
+	xmlns="https://www.w3.org/1999/xhtml"
+	xmlns:wicket="https://wicket.apache.org"
+	lang="en"
+	class="no-js"
+>
+<head>
+<meta charset="utf-8">
+<meta
+	name="theme-color"
+	content="#cc4646"
+>
+<meta
+	name="viewport"
+	content="width=device-width, initial-scale=1, maximum-scale=1"
+>
+<title>OpenDataView - Your visualized data being shared</title>
+<meta
+	name="description"
+	content="Help your city government become a smart city through Open Data. Convey transparency and manage city resources through Location Intelligence."
+/>
+<meta
+	name="keywords"
+	content="open data view, open data visualization, open data shared, geographic data, reasoning data, serialization of data, heuristic search, spatial data, gis data, field type recognition"
+/>
+<meta
+	name="author"
+	content="David Rodriguez-Pastrana Parareda"
+/>
+<meta
+	name="DC.title"
+	content="OpenDataView - Your visualized data being shared"
+/>
+<meta
+	name="DC.description"
+	content="Help your city government become a smart city through Open Data. Convey transparency and manage city resources through Location Intelligence."
+/>
+<meta
+	name="DC.keywords"
+	content="open data view, open data visualization, open data shared, geographic data, reasoning data, serialization of data, heuristic search, spatial data, gis data, field type recognitio"
+/>
+<meta
+	name="DC.creator"
+	content="David Rodriguez-Pastrana Parareda"
+/>
+<meta
+	name="DC.language"
+	content="en"
+/>
+<link
+	href="https://plus.google.com/+openspatialdata"
+	rel="publisher"
+/>
+<!-- Floating button -->
+<link
+	rel="stylesheet"
+	href="/css/mfb.min.css"
+/>
+<!-- Favicons -->
+<link
+	rel="apple-touch-icon"
+	href="/images/favicon/opendataview.ico"
+>
+<link
+	rel="shortcut icon"
+	sizes="16x16 24x24 32x32 48x48 64x64"
+	href="/images/favicon/opendataview.ico"
+>
+<!-- SVG Icons -->
+<link
+	rel="stylesheet"
+	href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
+>
+<link
+	rel="stylesheet"
+	href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"
+>
+</head>
+<body>
+	<!-- Wicket Head Scripts -->
+	<wicket:head>
+<script src="https://maps.googleapis.com/maps/api/js?v=3.36&amp;key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o&amp;libraries=places,drawing&amp;language=en&amp;"></script>
+
+
+		<script src="/js/jquery.ui.map.min.js"></script>
+		<script src="/js/jquery.ui.map.services.js"></script>
+		<script src="/js/jquery.ui.map.microdata.min.js"></script>
+		<script src="/js/jquery.ui.map.extensions.js"></script>
+		<!--<script src="/js/markercluster.js"></script>-->
+		
+		<!-- Distance slider for the locations reload -->
+		<script src="https://code.jquery.com/ui/1.11.1/jquery-ui.js"></script>
+		<script src="/js/jquery-ui-slider-pips.min.js"></script>
+		
+		<script async src="/js/opendataview.ui.js"></script>
+		
+		<!-- Informative messages about functionality -->
+		<script src="/js/chardinjs.min.js"></script>
+
+	</wicket:head>
+	<!-- /.Wicket Head Scripts -->
+	<!-- header -->
+	<header class="header">
+		<div class="container">
+			<nav
+				class="navbar navbar-expand-md navbar-inverse bg-light"
+				role="navigation"
+			>
+				<!--/.navbar-header-->
+				<div
+					class="navbar-collapse collapse w-100 order-1 order-md-0 dual-collapse2"
+					id="navbarSupportedContent"
+				>
+					<ul class="navbar-nav mr-auto">
+						<li class="nav-item activeLink"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="locationsLink"
+						>Locations</a></li>
+						<li class="nav-item"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="aboutUsLink"
+						>About</a></li>
+						<li class="nav-item"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="contactLink"
+						>Contact</a></li>
+					</ul>
+				</div>
+				<div class="mx-auto order-0">
+					<a
+						href="/"
+						class="navbar-brand mx-auto"
+					><b>OpenDataView</b></a>
+					<button
+						class="navbar-toggler"
+						type="button"
+						data-toggle="collapse"
+						data-target=".dual-collapse2"
+					>
+						<span class="navbar-toggler-icon"></span>
+					</button>
+				</div>
+				<div class="navbar-collapse collapse w-100 order-3 dual-collapse2">
+					<ul class="navbar-nav ml-auto">
+						<li class="nav-item"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="configLink"
+						>Config</a></li>
+						<li class="nav-item"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="loginLink"
+						>Sign In</a></li>
+						<li class="nav-item"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="logoutLink"
+						>Sign Out</a></li>
+						<li class="nav-item"><a
+							href="#"
+							class="nav-link scroll-link"
+							itemprop="significantLink"
+							wicket:id="registerLink"
+						>Register</a></li>
+					</ul>
+				</div>
+				<!--/.navbar-collapse-->
+			</nav>
+			<!--/.navbar-->
+		</div>
+		<!--/.container-->
+	</header>
+	<!--/.header-->
+	<span wicket:id="menuItem"></span>
+	<!-- Wicket extends -->
+	<wicket:child />
+	<!-- /.Wicket extends -->
+	
+	
+	<!-- Floating button -->
+	<script src="/js/mfb.js"></script>
+	<!-- 
+	 <script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+	  ga('create', 'UA-64311973-1', 'auto');
+	  ga('send', 'pageview');
+	</script>-->
+	<!-- /.Script -->
+</body>
+</html>
