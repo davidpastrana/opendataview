@@ -10,6 +10,8 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
@@ -37,7 +39,6 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.PageableListView;
-import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebSession;
@@ -52,6 +53,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.opendataview.web.model.LocationModel;
+import com.opendataview.web.model.PieChartModel;
 import com.opendataview.web.pages.index.BasePage;
 import com.opendataview.web.panels.DirectionPanel;
 import com.opendataview.web.persistence.LocationServiceDAO;
@@ -61,17 +63,36 @@ import com.opendataview.web.persistence.UserServiceDAO;
 
 import de.adesso.wickedcharts.highcharts.options.ChartOptions;
 import de.adesso.wickedcharts.highcharts.options.CreditOptions;
+import de.adesso.wickedcharts.highcharts.options.CssStyle;
+import de.adesso.wickedcharts.highcharts.options.DataLabels;
 import de.adesso.wickedcharts.highcharts.options.Events;
 import de.adesso.wickedcharts.highcharts.options.ExportingOptions;
-import de.adesso.wickedcharts.highcharts.options.Legend;
+import de.adesso.wickedcharts.highcharts.options.Function;
+import de.adesso.wickedcharts.highcharts.options.HorizontalAlignment;
 import de.adesso.wickedcharts.highcharts.options.Options;
 import de.adesso.wickedcharts.highcharts.options.SeriesType;
 import de.adesso.wickedcharts.highcharts.options.Title;
+import de.adesso.wickedcharts.highcharts.options.Tooltip;
+import de.adesso.wickedcharts.highcharts.options.color.HexColor;
 import de.adesso.wickedcharts.highcharts.options.functions.RedirectFunction;
 import de.adesso.wickedcharts.highcharts.options.series.Point;
 import de.adesso.wickedcharts.highcharts.options.series.PointSeries;
 import de.adesso.wickedcharts.highcharts.options.series.Series;
 import de.adesso.wickedcharts.wicket8.highcharts.Chart;
+
+//import de.adesso.wickedcharts.highcharts.options.ChartOptions;
+//import de.adesso.wickedcharts.highcharts.options.CreditOptions;
+//import de.adesso.wickedcharts.highcharts.options.Events;
+//import de.adesso.wickedcharts.highcharts.options.ExportingOptions;
+//import de.adesso.wickedcharts.highcharts.options.Legend;
+//import de.adesso.wickedcharts.highcharts.options.Options;
+//import de.adesso.wickedcharts.highcharts.options.SeriesType;
+//import de.adesso.wickedcharts.highcharts.options.Title;
+//import de.adesso.wickedcharts.highcharts.options.functions.RedirectFunction;
+//import de.adesso.wickedcharts.highcharts.options.series.Point;
+//import de.adesso.wickedcharts.highcharts.options.series.PointSeries;
+//import de.adesso.wickedcharts.highcharts.options.series.Series;
+//import de.adesso.wickedcharts.wicket8.highcharts.Chart;
 
 public class LocationServicePage extends BasePage {
 
@@ -108,10 +129,10 @@ public class LocationServicePage extends BasePage {
 		log.info("param coord is: " + polygonCoordInputValue);
 		log.info("param distance dist is: " + polygonDist);
 
-		if (searchValue != null) {
+		if (mapZoomLevel != null || viewPanels != null || polygonDist != null) {
 			log.info("we have a search with zoom " + mapZoomLevel);
-			response.render(OnDomReadyHeaderItem.forScript(
-					"$('#mapZoomLevel').val(" + mapZoomLevel + ");$('#viewPanels').val(" + viewPanels + ")"));
+			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + mapZoomLevel
+					+ ");$('#viewPanels').val(" + viewPanels + ");$('#geoCoordDistance').val(" + polygonDist + ")"));
 		}
 
 		if (polygonCoordInputValue != null) {
@@ -149,9 +170,13 @@ public class LocationServicePage extends BasePage {
 
 	private ArrayList<String> namesRemoveSelect = new ArrayList<String>();
 	private ArrayList<String> namesSelect = new ArrayList<String>();
-	private List<LocationModel> listEdit = new ArrayList<LocationModel>();
+	private List<LocationModel> temp_list = new ArrayList<LocationModel>();
+	private List<LocationModel> temp_list2 = new ArrayList<LocationModel>();
 
 	private static Options chart_options = new Options();
+	private Chart pie_chart = new Chart("chart", chart_options);
+	private List<PieChartModel> pieChartList = new ArrayList<PieChartModel>();
+
 	private List<String> allAttributes = new ArrayList<String>();
 	private List<Integer> allSums = new ArrayList<Integer>();
 	private static Series<Point> series = new PointSeries();
@@ -201,7 +226,14 @@ public class LocationServicePage extends BasePage {
 
 	final TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("8"));
 
+//	Pie pie = new Pie();
+
 	public LocationServicePage(PageParameters parameters) throws IOException {
+
+//		PieChartPanel pieChart = new PieChartPanel("chart", Model.of(pie));
+//		pie.getOptions().setResponsive(true);
+//		pie.getOptions().setMaintainAspectRatio(true);
+//		pie.getOptions().setTooltipTemplate("<%= label %>");
 
 		setStatelessHint(false);
 		setVersioned(false);
@@ -211,7 +243,7 @@ public class LocationServicePage extends BasePage {
 		mapZoomLevel.setOutputMarkupId(true);
 //		final TextField<String> mapIconMarker = new TextField<String>("mapIconMarker", Model.of("10"));
 //		mapIconMarker.setOutputMarkupId(true);
-		final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("10"));
+		final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
 		geoCoordDistance.setOutputMarkupId(true);
 
 		String username = null;
@@ -230,31 +262,42 @@ public class LocationServicePage extends BasePage {
 		chart_options.setChartOptions(new ChartOptions().setType(SeriesType.PIE));
 		chart_options.setCredits(new CreditOptions().setEnabled(false));
 		chart_options.setTitle(new Title("").setEnabled(true));
-//		chart_options.setLabels(new Labels().setEnabled(true));
-		chart_options.setLegend(new Legend().setReversed(true).setWidth(300).setMaxHeight(200));
-//		chart_options.getLegend().setEnabled(true);
+		pie_chart.setVisible(false);
+		// chart_options.setLegend(new
+		// Legend().setReversed(true).setWidth(300).setMaxHeight(200));
+		datacontainer.add(pie_chart);
 
-		// log.info("Page is stateless because: "+setStatelessHint(boolean state));
-
-		// chart_options.setSubtitle(new .setEnabled(false));
-		// chart_options.setTitle(new Title("Fields Percentage").setEnabled(false));
-		datacontainer.add(new Chart("chart", chart_options));
+//		datacontainer.add(pieChart);
 
 		final WebMarkupContainer wmc = new WebMarkupContainer("wmc");
 		wmc.setVersioned(false);
 		wmc.setOutputMarkupId(true);
 		add(wmc);
 
-		Label currentPosition = new Label("currentPosition", "Your position");
+		final WebMarkupContainer wmc2 = new WebMarkupContainer("wmc2");
+		// wmc2.setVersioned(false);
+		wmc2.setOutputMarkupId(true);
+		add(wmc2);
+
+		final Form<?> showMarkerForm = new Form<Void>("showMarkerForm");
+		// showMarkerInfoList.setOutputMarkupId(true);
+
+		showMarkerForm.setOutputMarkupId(true);
+		wmc2.add(showMarkerForm);
+//		wmc.add(showMarkerInfoList);
+//		wmc.add(new DirectionPanel("direction2"));
+//		wmc.setOutputMarkupId(true);
+
+		Label currentPosition = new Label("currentPosition", "");
 		currentPosition.setOutputMarkupId(true);
 		wmc.add(currentPosition);
 
-		final Model<String> modelLat = new Model<String>("0");
+		final Model<String> modelLat = new Model<String>("");
 		Label currentLatitude = new Label("currentLatitude", modelLat);
 		currentLatitude.setOutputMarkupId(true);
 		wmc.add(currentLatitude);
 
-		final Model<String> modelLng = new Model<String>("0");
+		final Model<String> modelLng = new Model<String>("");
 		Label currentLongitude = new Label("currentLongitude", modelLng);
 		currentLongitude.setOutputMarkupId(true);
 		wmc.add(currentLongitude);
@@ -262,13 +305,45 @@ public class LocationServicePage extends BasePage {
 		origList = locationServiceDAO.readLocationModel();
 
 		// restriction to display 300 locations per page (to not overload the browser)
-		final PageableListView<LocationModel> lview = displayList("rows", list, 200, username);
+		final PageableListView<LocationModel> lview = displayList("rows", list, 5000, username);
 		lview.setOutputMarkupId(true);
 		wmc.add(lview);
 
-		final Label currentPage = new Label("currentPage", new Model<String>());
-		currentPage.setOutputMarkupId(true);
-		wmc.add(currentPage);
+		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
+		IndicatingAjaxButton showMarkerInfoBttn = new IndicatingAjaxButton("showMarkerInfoBttn") {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			protected void onSubmit(AjaxRequestTarget target) {
+				super.onSubmit(target);
+
+				String idInputValue2 = idInput2.getModelObject();
+				log.info("YOU JUST CLICKED OVER MARKER: " + idInputValue2);
+				temp_list2.clear();
+
+				temp_list2.addAll(locationServiceDAO.getLocationByID(idInputValue2));
+
+				log.info("TEMP2 NAME IS " + temp_list2.get(0).getName());
+
+				target.add(wmc2);
+
+				// target.add(datacontainer);
+				// setResponsePage(getPage());
+
+			}
+		};
+		final Form<?> showMarkerInfo = new Form<Void>("showMarkerInfo");
+		showMarkerInfo.add(idInput2);
+		datacontainer.add(showMarkerInfo);
+		showMarkerInfo.add(showMarkerInfoBttn);
+		// showMarkerInfoBttn.setDefaultFormProcessing(false);
+
+		/*
+		 * In case we need to display the current page of the Markers navigation final
+		 * Label currentPage = new Label("currentPage", new Model<String>());
+		 * currentPage.setOutputMarkupId(true); wmc.add(currentPage);
+		 */
 
 		if (!parameters.get("id").isNull()) {
 			log.info("we will query id=" + parameters.get("id"));
@@ -364,11 +439,165 @@ public class LocationServicePage extends BasePage {
 
 		}
 
-		final Form<?> formSaveLoc = new Form<Void>("saveLocationsForm") {
+		ListView<LocationModel> showMarkerInfoList = new ListView<LocationModel>("showMarkerInfoList", temp_list2) {
 
 			private static final long serialVersionUID = 1L;
 
+			String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
+			String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
+					.toString();
+
+			@Override
+			public void populateItem(final ListItem<LocationModel> item) {
+
+				log.info("WE DISPLAY THE MARKER LIST WITH " + item.getModelObject().getName());
+				final LocationModel obj = item.getModelObject();
+
+				item.add(new Label("id_location2", obj.getId()));
+
+				log.info("LOCATION ID IS MARKER: " + obj.getId());
+
+				item.add(new Label("icon_marker2", obj.getIconmarker()));
+
+				if (obj.getName() != null && !obj.getName().isEmpty()) {
+					item.add(new Label("name2", obj.getName()));
+				} else {
+					item.add(new Label("name2").setVisible(false));
+				}
+//				if (username != null) {
+//					item.add(new Label("userSession", username));
+//				} else {
+//					item.add(new Label("userSession", "no active user"));
+//				}
+				if (obj.getCsvName() != null && !obj.getCsvName().isEmpty()) {
+					item.add(new Label("csvName2", obj.getCsvName()));
+				} else {
+					item.add(new Label("csvName2").setVisible(false));
+				}
+				if (obj.getType() != null && !obj.getType().isEmpty()) {
+					item.add(new Label("typeTag2", "Type: "));
+					item.add(new Label("type2", obj.getType()));
+				} else {
+					item.add(new Label("typeTag2").setVisible(false));
+					item.add(new Label("type2").setVisible(false));
+				}
+				if (obj.getCity() != null && !obj.getCity().isEmpty()) {
+					item.add(new Label("cityTag2", "Address: "));
+					item.add(new Label("city2", obj.getAddress()));
+				} else {
+					item.add(new Label("cityTag2").setVisible(false));
+					item.add(new Label("city2").setVisible(false));
+				}
+				if (obj.getPostcode() != null && !obj.getPostcode().isEmpty()) {
+					item.add(new Label("postcode2", obj.getPostcode()));
+				} else {
+					item.add(new Label("postcode2").setVisible(false));
+				}
+				if (obj.getLatitude() != null) {
+					item.add(new Label("coordsTag2", "Coords: "));
+					item.add(new Label("latitude2", obj.getLatitude().toString()));
+					item.add(new Label("longitude2", obj.getLongitude().toString()));
+				} else {
+					item.add(new Label("latitude2").setVisible(false));
+					item.add(new Label("longitude2").setVisible(false));
+				}
+				if (obj.getWebsite() != null && !obj.getWebsite().isEmpty()) {
+					item.add(new Label("websiteTag2", "Website: "));
+					item.add(new ExternalLink("website2", obj.getWebsite(), obj.getWebsite()));
+				} else {
+					item.add(new Label("websiteTag2").setVisible(false));
+					item.add(new Label("website2").setVisible(false));
+				}
+				if (obj.getUrlImage() != null && !obj.getUrlImage().isEmpty()) {
+					item.add(new ContextImage("image2", obj.getUrlImage().toString()));
+				} else {
+					item.add(new Image("image2", obj.getUrlImage()).setVisible(false));
+				}
+				if (obj.getDescription() != null && !obj.getDescription().isEmpty()) {
+					item.add(new Label("descriptionTag2", "Description: "));
+					item.add(new Label("description2", obj.getDescription()));
+				} else {
+					item.add(new Label("descriptionTag2").setVisible(false));
+					item.add(new Label("description2").setVisible(false));
+				}
+				if (obj.getEmail() != null && !obj.getEmail().isEmpty()) {
+					item.add(new Label("emailTag2", "Email: "));
+					item.add(new ExternalLink("email2", "mailto:" + obj.getEmail(), obj.getEmail()));
+				} else {
+					item.add(new Label("emailTag2").setVisible(false));
+					item.add(new Label("email2").setVisible(false));
+				}
+				if (obj.getPhone() != null && !obj.getPhone().isEmpty()) {
+					item.add(new Label("phoneTag2", "Tlf.: "));
+					item.add(new Label("phone2", obj.getPhone()));
+				} else {
+					item.add(new Label("phoneTag2").setVisible(false));
+					item.add(new Label("phone2").setVisible(false));
+				}
+				if (obj.getDate() != null && !obj.getDate().isEmpty()) {
+					item.add(new Label("dateTag2", "Date: "));
+					item.add(new Label("date2", obj.getDate()));
+				} else {
+					item.add(new Label("dateTag2").setVisible(false));
+					item.add(new Label("date2", obj).setVisible(false));
+				}
+				if (obj.getSchedule() != null && !obj.getSchedule().isEmpty()) {
+					item.add(new Label("scheduleTag2", "Schedule: "));
+					item.add(new Label("schedule2", obj.getSchedule()));
+				} else {
+					item.add(new Label("scheduleTag2").setVisible(false));
+					item.add(new Label("schedule2").setVisible(false));
+				}
+				if (obj.getOtherInfo() != null) {
+					item.add(new Label("otherTag2", "Searcahable attributes: "));
+					addlinks = new ArrayList<>(Arrays.asList(obj.getOtherInfo().split("##")));
+					String newinfo = "";
+
+					for (int i = 0; i < addlinks.size(); i++) {
+						newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+") + "&zoom="
+								+ zoom + "&fullscreen=" + fullscreen + "'>" + addlinks.get(i) + "</a><br />";
+					}
+					item.add(new Label("other2", newinfo).setEscapeModelStrings(false));
+				} else {
+					item.add(new Label("otherTag2").setVisible(false));
+					item.add(new Label("other2").setVisible(false));
+				}
+				if (obj.getDate_updated() != null) {
+					item.add(new Label("dateUpdatedTag2", "Last update: "));
+					item.add(new Label("dateUpdated2", obj.getDate_updated()));
+				} else {
+					item.add(new Label("dateUpdatedTag2").setVisible(false));
+					item.add(new Label("dateUpdated2").setVisible(false));
+				}
+				if (obj.getDate_published() != null) {
+					item.add(new Label("datePublishedTag2", "First publish: "));
+					item.add(new Label("datePublished2", obj.getDate_published()));
+				} else {
+					item.add(new Label("datePublishedTag2").setVisible(false));
+					item.add(new Label("datePublished2").setVisible(false));
+				}
+				if (obj.getUsername() != null) {
+					item.add(new Label("userPublishedTag2", "Last editor: "));
+					item.add(new Label("userPublished2", obj.getUsername()));
+
+				} else {
+					item.add(new Label("userPublishedTag2").setVisible(false));
+					item.add(new Label("userPublished2").setVisible(false));
+				}
+				if (obj.getSource() != null && !obj.getSource().isEmpty()) {
+					item.add(new Label("sourcePublishedTag2", "Data publisher: "));
+					item.add(new Label("sourcePublished2", obj.getSource()));
+				} else {
+					item.add(new Label("sourcePublishedTag2").setVisible(false));
+					item.add(new Label("sourcePublished2").setVisible(false));
+				}
+
+			}
 		};
+		wmc2.add(showMarkerInfoList);
+		wmc2.add(new DirectionPanel("direction2"));
+
+		final Form<?> formSaveLoc = new Form<Void>("saveLocationsForm");
 		datacontainer.add(formSaveLoc);
 
 		Date now = new Date();
@@ -618,22 +847,22 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected void onAjaxEvent(AjaxRequestTarget target) {
 				super.onAjaxEvent(target);
-				target.add(currentPage);
+				// target.add(currentPage);
 				target.appendJavaScript("initIds();initMarkers(false);showLocationTableIfNavigatorChange();");
 			}
 		};
 		wmc.add(pagination);
 
-		LoadableDetachableModel<Object> model = new LoadableDetachableModel<Object>() {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public Object load() {
-				return pagination.getPageable().getCurrentPage() + 1;
-			}
-		};
-		currentPage.setDefaultModel(model);
+		/*
+		 * Current Navigation page LoadableDetachableModel<Object> model = new
+		 * LoadableDetachableModel<Object>() {
+		 * 
+		 * private static final long serialVersionUID = 1L;
+		 * 
+		 * @Override public Object load() { return
+		 * pagination.getPageable().getCurrentPage() + 1; } };
+		 * currentPage.setDefaultModel(model);
+		 */
 
 		names.clear();
 		namesSelect.clear();
@@ -649,7 +878,6 @@ public class LocationServicePage extends BasePage {
 		}
 
 		initializeLocations(datacontainer);
-		wmc.add(new DirectionPanel("direction"));
 
 		final Form<String> formSearch = new Form<String>("formSearch");
 		add(formSearch);
@@ -673,7 +901,7 @@ public class LocationServicePage extends BasePage {
 					if (name != null) {
 						if (name.toLowerCase().replaceAll("\\s", "").replaceAll("##", "").matches(
 								"(.*)" + input.toLowerCase().replaceAll("\\s", "").replaceAll("##", "") + "(.*)")) {
-							choices.add(name.replaceAll("##", "•").replace(input, "'''" + input + "'''"));
+							choices.add(name.toLowerCase().replaceAll("##", "•").replace(input, input.toUpperCase()));
 							if (++count == 5)
 								break;
 						}
@@ -698,8 +926,8 @@ public class LocationServicePage extends BasePage {
 				saveSqlLocBackup.setVisible(false);
 				target.add(wmc);
 				target.appendJavaScript("map.gmap('clear', 'markers');");
-				setResponsePage(getPage());
-
+				PageParameters pageParameters = new PageParameters();
+				setResponsePage(LocationServicePage.class, pageParameters);
 			}
 		};
 		clearSearch.setDefaultFormProcessing(false);
@@ -724,8 +952,8 @@ public class LocationServicePage extends BasePage {
 					for (LocationModel loc : origList) {
 
 						// single search restricted to 5 possible choices coming out from: inputField
-						if (loc.getOtherInfo() != null
-								&& loc.getOtherInfo().replaceAll("##", "•").contentEquals(name.replaceAll("'''", ""))) {
+						if (loc.getOtherInfo() != null && loc.getOtherInfo().replaceAll("##", "•").toLowerCase()
+								.contentEquals(name.toLowerCase())) {
 							list.add(loc);
 							found = true;
 							break;
@@ -951,12 +1179,14 @@ public class LocationServicePage extends BasePage {
 	}
 
 	int count = 0;
+	List<String> addlinks = null;
 
 	public PageableListView<LocationModel> displayList(String id, List<LocationModel> list, int num, String username) {
 
 		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
 		String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toString();
+
 		PageableListView<LocationModel> listView = new PageableListView<LocationModel>(id, list, num) {
 			private static final long serialVersionUID = 1L;
 
@@ -964,12 +1194,10 @@ public class LocationServicePage extends BasePage {
 			protected void onBeforeRender() {
 				if (series.getData() != null) {
 					series.getData().clear();
-					log.info("series chart is null");
-				} else {
-					log.info("series chart is NOT null");
 				}
 				allAttributes.clear();
 				allSums.clear();
+
 				super.onBeforeRender();
 			}
 
@@ -978,194 +1206,118 @@ public class LocationServicePage extends BasePage {
 				final LocationModel obj = item.getModelObject();
 
 				item.add(new Label("id_location", obj.getId()));
-
 				item.add(new Label("icon_marker", obj.getIconmarker()));
+				item.add(new Label("latitude", obj.getLatitude().toString()));
+				item.add(new Label("longitude", obj.getLongitude().toString()));
+				item.add(new Label("name", obj.getName()));
 
-				if (obj.getName() != null && !obj.getName().isEmpty()) {
-					item.add(new Label("name", obj.getName()));
-				} else {
-					item.add(new Label("name").setVisible(false));
-				}
-				if (username != null) {
-					item.add(new Label("userSession", username));
-				} else {
-					item.add(new Label("userSession", "no active user"));
-				}
-				if (obj.getCsvName() != null && !obj.getCsvName().isEmpty()) {
-					item.add(new Label("csvName", obj.getCsvName()));
-				} else {
-					item.add(new Label("csvName").setVisible(false));
-				}
-				if (obj.getType() != null && !obj.getType().isEmpty()) {
-					item.add(new Label("typeTag", "Type: "));
-					item.add(new Label("type", obj.getType()));
-				} else {
-					item.add(new Label("typeTag").setVisible(false));
-					item.add(new Label("type").setVisible(false));
-				}
-				if (obj.getCity() != null && !obj.getCity().isEmpty()) {
-					item.add(new Label("cityTag", "Address: "));
-					item.add(new Label("city", obj.getAddress()));
-				} else {
-					item.add(new Label("cityTag").setVisible(false));
-					item.add(new Label("city").setVisible(false));
-				}
-				if (obj.getPostcode() != null && !obj.getPostcode().isEmpty()) {
-					item.add(new Label("postcode", obj.getPostcode()));
-				} else {
-					item.add(new Label("postcode").setVisible(false));
-				}
-//				if (obj.getAddress() != null && !obj.getAddress().isEmpty()) {
-//					item.add(new Label("addressTag", "Address: "));
-//					item.add(new Label("address", obj.getAddress()));
-//				} else {
-//					item.add(new Label("addressTag").setVisible(false));
-//					item.add(new Label("address").setVisible(false));
-//				}
-//				if (obj.getStreet() != null && !obj.getStreet().isEmpty()) {
-//					item.add(new Label("street", obj.getStreet()));
-//				} else {
-//					item.add(new Label("street").setVisible(false));
-//				}
-//				if (obj.getNumber() != null && !obj.getNumber().isEmpty()) {
-//					item.add(new Label("number", obj.getNumber()));
-//				} else {
-//					item.add(new Label("number").setVisible(false));
-//				}
-//				if (obj.getDistrict() != null && !obj.getDistrict().isEmpty()) {
-//					item.add(new Label("district", obj.getDistrict()));
-//				} else {
-//					item.add(new Label("district").setVisible(false));
-//				}
-				if (obj.getLatitude() != null) {
-					item.add(new Label("coordsTag", "Coords: "));
-					item.add(new Label("latitude", obj.getLatitude().toString()));
-					item.add(new Label("longitude", obj.getLongitude().toString()));
-				} else {
-					item.add(new Label("latitude").setVisible(false));
-					item.add(new Label("longitude").setVisible(false));
-				}
-				if (obj.getWebsite() != null && !obj.getWebsite().isEmpty()) {
-					item.add(new Label("websiteTag", "Website: "));
-					item.add(new ExternalLink("website", obj.getWebsite(), obj.getWebsite()));
-				} else {
-					item.add(new Label("websiteTag").setVisible(false));
-					item.add(new Label("website").setVisible(false));
-				}
-				if (obj.getUrlImage() != null && !obj.getUrlImage().isEmpty()) {
-					item.add(new ContextImage("image", obj.getUrlImage().toString()));
-				} else {
-					item.add(new Image("image", obj.getUrlImage()).setVisible(false));
-				}
-				if (obj.getDescription() != null && !obj.getDescription().isEmpty()) {
-					item.add(new Label("descriptionTag", "Description: "));
-					item.add(new Label("description", obj.getDescription()));
-				} else {
-					item.add(new Label("descriptionTag").setVisible(false));
-					item.add(new Label("description").setVisible(false));
-				}
-				if (obj.getEmail() != null && !obj.getEmail().isEmpty()) {
-					item.add(new Label("emailTag", "Email: "));
-					item.add(new ExternalLink("email", "mailto:" + obj.getEmail(), obj.getEmail()));
-				} else {
-					item.add(new Label("emailTag").setVisible(false));
-					item.add(new Label("email").setVisible(false));
-				}
-				if (obj.getPhone() != null && !obj.getPhone().isEmpty()) {
-					item.add(new Label("phoneTag", "Tlf.: "));
-					item.add(new Label("phone", obj.getPhone()));
-				} else {
-					item.add(new Label("phoneTag").setVisible(false));
-					item.add(new Label("phone").setVisible(false));
-				}
-				if (obj.getDate() != null && !obj.getDate().isEmpty()) {
-					item.add(new Label("dateTag", "Date: "));
-					item.add(new Label("date", obj.getDate()));
-				} else {
-					item.add(new Label("dateTag").setVisible(false));
-					item.add(new Label("date", obj).setVisible(false));
-				}
-				if (obj.getSchedule() != null && !obj.getSchedule().isEmpty()) {
-					item.add(new Label("scheduleTag", "Schedule: "));
-					item.add(new Label("schedule", obj.getSchedule()));
-				} else {
-					item.add(new Label("scheduleTag").setVisible(false));
-					item.add(new Label("schedule").setVisible(false));
-				}
-				if (obj.getOtherInfo() != null) {
-					item.add(new Label("otherTag", "Linked data: "));
-					String[] addlinks = obj.getOtherInfo().split("##");
-					String newinfo = "";
-					for (int i = 0; i < addlinks.length; i++) {
+//				if (obj.getOtherInfo() != null) {
+				addlinks = new ArrayList<>(Arrays.asList(obj.getOtherInfo().split("##")));
+				String newinfo = "";
 
-						newinfo += "<a href='search?&value=" + addlinks[i].trim().replaceAll(" ", "+") + "&zoom=" + zoom
-								+ "&fullscreen=" + fullscreen + "'>" + addlinks[i] + "</a><br />";
+				for (int i = 0; i < addlinks.size(); i++) {
 
-						if (allAttributes.contains(addlinks[i])) {
-							int indexOfWord = allAttributes.indexOf(addlinks[i]);
-							allSums.set(indexOfWord, allSums.get(indexOfWord) + 1);
-							// log.info("Existing word! for " + addlinks[i] + " we have a sum of: "
-//									+ allSums.get(indexOfWord));
-						} else {
-							allAttributes.add(addlinks[i]);
-							allSums.add(0);
-							// log.info("Adding first time " + addlinks[i] + " with position: " + i);
+					newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+") + "&zoom=" + zoom
+							+ "&fullscreen=" + fullscreen + "'>" + addlinks.get(i) + "</a><br />";
+
+//						if (allAttributes.contains(addlinks[i])) {
+//							int indexOfWord = allAttributes.indexOf(addlinks[i]);
+//							allSums.set(indexOfWord, allSums.get(indexOfWord) + 1);
+//
+//							// log.info("Existing word! for " + addlinks[i] + " we have a sum of: "
+////									+ allSums.get(indexOfWord));
+//						} else {
+//							allAttributes.add(addlinks[i]);
+//							allSums.add(0);
+//
+//							// log.info("Adding first time " + addlinks[i] + " with position: " + i);
+//						}
+
+					PieChartModel pc = new PieChartModel();
+					boolean found = false;
+					int pos = 0;
+
+					if (!addlinks.get(i).contains("Published by") && !addlinks.get(i).contains("Last update")) {
+						for (PieChartModel pie : pieChartList) {
+							if (pie.getAttribute() != null && pie.getAttribute().equals(addlinks.get(i))) {
+								found = true;
+								pos = pieChartList.indexOf(pie);
+//								log.info("we found existing val for pos "
+//										+ pie.getAttribute().indexOf(pie.getAttribute()) + " and val "
+//										+ pie.getAttribute());
+							}
 						}
+						if (found) {
+							// int indexOfWord = pieChartList.indexOf(addlinks[i]);
+							pieChartList.get(pos).setRepetitions(pieChartList.get(pos).getRepetitions() + 1);
 
+//							log.info("Existing word! for " + pieChartList.get(pos).getAttribute()
+//									+ " we have a sum of: " + pieChartList.get(pos).getRepetitions());
+						} else if (addlinks.get(i) != null) {
+							pc.setAttribute(addlinks.get(i));
+							pc.setRepetitions(1);
+
+//							log.info("Adding first time " + pc.getAttribute() + " with position: " + i);
+							pieChartList.add(pc);
+						}
 					}
-					item.add(new Label("other", newinfo).setEscapeModelStrings(false));
-				} else {
-					item.add(new Label("otherTag").setVisible(false));
-					item.add(new Label("other").setVisible(false));
-				}
-				if (obj.getDate_updated() != null) {
-					item.add(new Label("dateUpdatedTag", "Last update: "));
-					item.add(new Label("dateUpdated", obj.getDate_updated()));
-				} else {
-					item.add(new Label("dateUpdatedTag").setVisible(false));
-					item.add(new Label("dateUpdated").setVisible(false));
-				}
-				if (obj.getDate_published() != null) {
-					item.add(new Label("datePublishedTag", "First publish: "));
-					item.add(new Label("datePublished", obj.getDate_published()));
-				} else {
-					item.add(new Label("datePublishedTag").setVisible(false));
-					item.add(new Label("datePublished").setVisible(false));
-				}
-				if (obj.getUsername() != null) {
-					item.add(new Label("userPublishedTag", "Last editor: "));
-					item.add(new Label("userPublished", obj.getUsername()));
 
-				} else {
-					item.add(new Label("userPublishedTag").setVisible(false));
-					item.add(new Label("userPublished").setVisible(false));
 				}
-				if (obj.getSource() != null && !obj.getSource().isEmpty()) {
-					item.add(new Label("sourcePublishedTag", "Data publisher: "));
-					item.add(new Label("sourcePublished", obj.getSource()));
-				} else {
-					item.add(new Label("sourcePublishedTag").setVisible(false));
-					item.add(new Label("sourcePublished").setVisible(false));
-				}
-				if (count == list.size() - 1 || count == num - 1) {
+				item.add(new Label("other", newinfo).setEscapeModelStrings(false));
+//				} else {
+//					item.add(new Label("otherTag").setVisible(false));
+//					item.add(new Label("other").setVisible(false));
+//				}
+
+				// list size of the pie chart must be greater than the values of a one location
+				// (otherwise we hide the chart)
+				if ((count == list.size() - 1 || count == num - 1) && !pieChartList.isEmpty()
+						&& pieChartList.size() > addlinks.size()) {
+					log.info("size is " + pieChartList.size());
+					log.info("size2 is " + addlinks.size());
+
 					series = new PointSeries();
-					for (int i = 0; i < allAttributes.size(); i++) {
+					pie_chart.setVisible(true);
 
-						if (!allAttributes.isEmpty() && !allSums.isEmpty() && allSums.get(i) > 1
-								&& !allAttributes.get(i).contains("Last update")
-								&& !allAttributes.get(i).contains("Published by")) {
+					for (int i = 0; i < pieChartList.size(); i++)
+//						log.info("val is " + pieChartList.get(i).getAttribute() + ", "
+//								+ pieChartList.get(i).getRepetitions());
 
-							String category = allAttributes.get(i) + " [" + allSums.get(i) + " reps]";
+						Collections.sort(pieChartList, Collections.reverseOrder());
 
-							series.addPoint(new Point(category, Math.round(allSums.get(i) * 100) / 100.0)
-									.setEvents(new Events().setClick(new RedirectFunction(
-											"search?&value=" + allAttributes.get(i).trim().replaceAll(" ", "")
+//					pieChartList.sort(Comparator.comparing(PieChartModel::getRepetitions,
+//							Comparator.nullsLast(Comparator.naturalOrder())));
+
+					for (int i = 0; i < pieChartList.size(); i++) {
+
+						if (pieChartList.get(i).getRepetitions() != null && pieChartList.get(i).getRepetitions() > 1) {
+
+							series.addPoint(
+									new Point(pieChartList.get(i).getAttribute(), pieChartList.get(i).getRepetitions())
+											.setEvents(new Events().setClick(new RedirectFunction("search?&value="
+													+ pieChartList.get(i).getAttribute().trim().replaceAll(" ", "")
 													+ "&zoom=" + zoom + "&fullscreen=" + fullscreen))));
-
 						}
 					}
-					series.setShowInLegend(true);
+//					log.info("WE HAVE " + pieChartList.get(0).getAttribute() + " WITH REP IS "
+//							+ pieChartList.get(0).getRepetitions());
+//					log.info("WE HAVE2 " + pieChartList.get(1).getAttribute() + " WITH REP IS "
+//							+ pieChartList.get(1).getRepetitions());
+					series.setShowInLegend(false);
+					series.setDataLabels(new DataLabels().setEnabled(true).setBackgroundColor(new HexColor("#364654"))
+							.setColor(new HexColor("#FFFFFF"))
+							.setFormatter(new Function().setFunction("if('" + pieChartList.get(0).getRepetitions()
+									+ "' == this.y || '" + pieChartList.get(1).getRepetitions()
+									+ "' == this.y){ return '' + this.point.name +': '+ this.y + ' rep';}"))
+							.setStyle(new CssStyle().setProperty("font-weight", "normal")
+									.setProperty("font-size", "11px").setProperty("font-family", "sans-serif, verdana")
+									.setProperty("width", "60px"))
+							.setAlign(HorizontalAlignment.RIGHT));
+					chart_options.setTooltip(new Tooltip().setFormatter(
+							new Function().setFunction(" return ''+ this.point.name +': '+ this.y +' rep';")));
 					chart_options.addSeries(series);
+				} else {
+					pie_chart.setVisible(false);
 				}
 				count++;
 			}
@@ -1176,7 +1328,6 @@ public class LocationServicePage extends BasePage {
 	public void initializeLocations(final WebMarkupContainer datacontainer) {
 
 		final TextField<String> idInput = new TextField<String>("idInput", Model.of(""));
-
 		final Form<?> editFormTriggerClick = new Form<Void>("editFormTriggerClick") {
 
 			private static final long serialVersionUID = 1L;
@@ -1185,15 +1336,13 @@ public class LocationServicePage extends BasePage {
 		editFormTriggerClick.add(idInput);
 		datacontainer.add(editFormTriggerClick);
 
-		final Form<?> editForm = new Form<Void>("editForm") {
-
-			private static final long serialVersionUID = 1L;
-
-		};
+		final Form<?> editForm = new Form<Void>("editForm");
 		editForm.setVisible(false);
+		editForm.setOutputMarkupId(true);
+		datacontainer.add(editForm);
 
 		locationsForm = new Form<Void>("locationsForm");
-		datacontainer.add(locationsForm);
+		add(locationsForm);
 
 		WebSession session = WebSession.get();
 
@@ -1279,7 +1428,7 @@ public class LocationServicePage extends BasePage {
 		listLocations.add(check);
 		locationsForm.add(listLocations);
 
-		ListView<LocationModel> editRowList = new ListView<LocationModel>("editRow", listEdit) {
+		ListView<LocationModel> editRowList = new ListView<LocationModel>("editRow", temp_list) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -1320,14 +1469,14 @@ public class LocationServicePage extends BasePage {
 			public void onSubmit() {
 				super.onSubmit();
 
-				locationServiceDAO.updateLocationModel(listEdit.get(0));
+				locationServiceDAO.updateLocationModel(temp_list.get(0));
 				editForm.setVisible(false);
 			}
 		};
 		saveLocation.setVisible(false);
 		editForm.add(saveLocation);
 
-		final IndicatingAjaxButton closeEdit = new IndicatingAjaxButton("closeEdit") {
+		final AjaxButton closeEdit = new AjaxButton("closeEdit") {
 			private static final long serialVersionUID = 1L;
 
 			@Override
@@ -1339,39 +1488,38 @@ public class LocationServicePage extends BasePage {
 			}
 		};
 		closeEdit.setVisible(false);
+		editForm.add(closeEdit);
 
-		IndicatingAjaxButton editInfoButton = new IndicatingAjaxButton("editInfoButton") {
+		AjaxButton editInfoButton = new AjaxButton("editInfoButton") {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			protected void onSubmit(AjaxRequestTarget target) {
-				editForm.setVisible(true);
 				super.onSubmit(target);
+				editForm.setVisible(true);
+
 				final String idInputValue = idInput.getModelObject();
+				log.info("YOU JUST CLICKED OVER MARKER EDIT: " + idInputValue);
 
-				int i = 0;
-				boolean find = false;
-				listEdit.clear();
-
-				while (find == false) {
-					if (origList.get(i).getId().toString().contentEquals(idInputValue)) {
-						listEdit.add(origList.get(i));
-						find = true;
-					}
-					i++;
-				}
-				target.add(datacontainer);
-				saveLocation.setVisible(true);
-				setResponsePage(getPage());
-				closeEdit.setVisible(true);
+//				int i = 0;
+//				boolean find = false;
+//				listEdit.clear();
+//
+//				while (find == false) {
+//					if (origList.get(i).getId().toString().contentEquals(idInputValue)) {
+//						listEdit.add(origList.get(i));
+//						find = true;
+//					}
+//					i++;
+//				}
+//				target.add(datacontainer);
+//				saveLocation.setVisible(true);
+//				setResponsePage(getPage());
+//				closeEdit.setVisible(true);
 			}
 		};
 		editFormTriggerClick.add(editInfoButton);
-
-		editForm.setOutputMarkupId(true);
-		editForm.add(closeEdit);
-		datacontainer.add(editForm);
 
 		final Button displayLocations = new Button("displayLocations") {
 

@@ -30,7 +30,6 @@
 	<properties>
 		<java.version>1.8</java.version>
 		<wicket.version>8.3.0</wicket.version>
-		<agilecodersbootstrap.version>3.0.0-M7</agilecodersbootstrap.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M8</wicket-bootstrap-extensions.version>
 		<jetty-maven-plugin.version>9.4.14.v20181114</jetty-maven-plugin.version>
 		<jetty-all-server.version>8.2.0.v20160908</jetty-all-server.version>
@@ -111,8 +110,22 @@
 		    <version>2.9.8</version>
 		</dependency>
 		
-		
-
+		<!-- Multiselect
+		<dependency>
+	    <groupId>com.googlecode.wicket-jquery-ui</groupId>
+	    <artifactId>wicket-jquery-ui</artifactId>
+	    <version>8.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.googlecode.wicket-jquery-ui</groupId>
+			<artifactId>wicket-jquery-ui-theme-uilightness</artifactId>
+			<version>8.1.0</version>
+		</dependency>
+<dependency>
+    <groupId>com.googlecode.wicket-jquery-ui</groupId>
+    <artifactId>wicket-jquery-ui-samples</artifactId>
+    <version>8.0.0-M1.1</version>
+</dependency> -->
 
 		<!-- Spring -->
 		<dependency>
@@ -314,14 +327,18 @@
     <version>2.9.8</version>
 </dependency>-->
 
-<!-- Highcharts usage -->		
+<!-- Highcharts usage
 <dependency>
+    <groupId>com.pingunaut</groupId>
+    <artifactId>wicket-chartjs</artifactId>
+    <version>7.0.1</version>
+</dependency>
+		-->
+		<dependency>
     <groupId>de.adesso.wicked-charts</groupId>
     <artifactId>wicked-charts-wicket8</artifactId>
     <version>3.1.0</version>
-</dependency>
-
-		
+</dependency> 
 		
 		<!-- Jetty -->
 		<dependency>

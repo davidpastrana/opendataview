@@ -86,6 +86,16 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 
 	@Override
 	@Transactional
+	public List<LocationModel> getLocationByID(String queryidvalue) {
+
+		Query query = getEntityManager().createQuery("select l from locations l where l.id = " + queryidvalue + "",
+				LocationModel.class);
+		List<LocationModel> resultList = query.getResultList();
+		return resultList;
+	}
+
+	@Override
+	@Transactional
 	public boolean checkLocationExistanceByOtherName(String[] listValues) {
 
 //		log.info("values to check" + Arrays.toString(listValues));
@@ -108,10 +118,10 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 							+ listValues[7] + "' and lower(csvname) = '" + listValues[13].toLowerCase() + "'",
 					LocationModel.class);
 
-			if (!query.getResultList().isEmpty()) {
-				return true;
-			} else {
+			if (query.getResultList() == null || query.getResultList().isEmpty()) {
 				return false;
+			} else {
+				return true;
 			}
 		} else {
 			return false;

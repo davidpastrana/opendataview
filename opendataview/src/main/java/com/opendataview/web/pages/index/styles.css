@@ -126,17 +126,17 @@ a:hover {
 }
 
 .btn {
-	background-color: #cc4646ba !important;
-	border: solid #f8f9fa7d 1.5px !important;
+	background-color: #cc4646ba;
+	border: solid #f8f9fa7d 1.5px;
 }
 
 .btn:hover {
-	background-color: #CC4646 !important;
-	border: solid #8484846e 1.5px !important;
+	background-color: #CC4646;
+	border: solid #8484846e 1.5px;
 }
 
 .btn-primary {
-	background: #f8f9fae8;
+	background: #cc4646ba;
 }
 
 /*
@@ -174,7 +174,7 @@ a:hover {
 /* Header 
 ----------------------------------------------*/
 .header {
-	position: fixed;
+	position: relative;
 	width: 100%;
 	background: #CC4646;
 	z-index: 50;
@@ -233,9 +233,6 @@ a:hover {
 	outline: none;
 }
 
-.navbar-toggle {
-	
-}
 /*.carousel-inner*/
 .d-block, .carousel {
     height: 100vh;
@@ -376,7 +373,6 @@ a:hover {
 
 /*--- Banner ----*/
 .banner-container {
-	margin-top: 17px;
 	width: 100%;
 	position: relative;
 	padding: 0px;
@@ -919,11 +915,6 @@ hr {
 	border-color: #ddd;
 }
 
-body {
-	margin: 0;
-	font-family: Arial, sans-serif;
-}
-
 #navigation {
 	position: fixed;
 	top: 0;
@@ -1147,13 +1138,6 @@ footer {
 	-webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
-#mapTypeId {
-	color: #fff;
-	height: 38px;
-	background-color: #cc4646ba;
-	border: solid #f8f9fa7d 1.5px;
-}
-
 .row {
 	margin-right: 0;
 	margin-left: 0;
@@ -1173,20 +1157,23 @@ footer {
 	vertical-align: top;
 	border-top: 0px solid #dee2e6;
 }
-
+/* Drag & drop csv file view */
 .properties-table tr td:nth-child(1) {
 	min-width: 215px !important;
 }
-
-#zoomOut {
-	margin-left: 5px;
-}
-
 .kv-preview-thumb {
 	width: 99%;
 }
-
+.file-zoom-dialog .modal-lg {
+    max-width: 100%;
+    font-size: 11px;
+}
+.file-zoom-content {
+    height: 100%;
+}
 .krajee-default.file-preview-frame .kv-file-content, .file-preview-text,
 	.file-preview-object {
 	width: 100% !important;
+	font-size: 11px;
+	white-space: pre;
 }

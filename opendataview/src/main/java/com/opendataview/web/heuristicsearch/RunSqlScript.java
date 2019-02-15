@@ -61,7 +61,7 @@ public class RunSqlScript {
 			// splits on colon and gets values out from query INSERT VALUES (__);
 			String[] listValues = line.replaceAll("'", "").split("VALUES\\(")[1].split("\\);$")[0].split(",");
 
-			log.info("values " + Arrays.toString(listValues));
+			log.info("\n\nvalues " + Arrays.toString(listValues));
 
 			// check if requires an sql update or not, by executing the inster query
 

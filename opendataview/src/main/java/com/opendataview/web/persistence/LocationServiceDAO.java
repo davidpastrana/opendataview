@@ -9,32 +9,36 @@ import com.opendataview.web.model.RatingModel;
 
 public interface LocationServiceDAO {
 
-  List<LocationModel> readLocationModel() throws DataAccessException;
+	List<LocationModel> readLocationModel() throws DataAccessException;
 
-  void removeLocationModel(LocationModel locationModel);
+	void removeLocationModel(LocationModel locationModel);
 
-  void updateLocationModel(LocationModel locationModel);
+	void updateLocationModel(LocationModel locationModel);
 
-  void updateRatingModel(RatingModel ratingModel);
+	void updateRatingModel(RatingModel ratingModel);
 
-  void storeRatingModel(RatingModel rating);
+	void storeRatingModel(RatingModel rating);
 
-  List<RatingModel> readRatingModel() throws DataAccessException;
+	List<RatingModel> readRatingModel() throws DataAccessException;
 
-  void storeLocationModel(List<LocationModel> locationlist);
+	void storeLocationModel(List<LocationModel> locationlist);
 
-List<LocationModel> searchLocationModel(String location_value) throws DataAccessException;
+	List<LocationModel> searchLocationModel(String location_value) throws DataAccessException;
 
-void removeAllLocations(String username);
+	void removeAllLocations(String username);
 
-void removeLocationByName(String csvName);
+	void removeLocationByName(String csvName);
 
-List<LocationModel> showLocationByName(String csvName);
+	List<LocationModel> showLocationByName(String csvName);
 
-boolean checkLocationExistanceByID(String queryidvalue);
-boolean checkLocationExistanceByOtherName(String[] listValues);
+	boolean checkLocationExistanceByID(String queryidvalue);
 
-void updateQuery(String[] listValues, boolean hasid);
-void executeQuery(String query);
+	boolean checkLocationExistanceByOtherName(String[] listValues);
+
+	void updateQuery(String[] listValues, boolean hasid);
+
+	void executeQuery(String query);
+
+	List<LocationModel> getLocationByID(String queryidvalue);
 
 }

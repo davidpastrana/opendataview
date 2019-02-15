@@ -154,7 +154,6 @@ section.contact-infos {
 }
 
 #map_wrapper {
-	top: 41px;
 	position: fixed;
 	height: 100%;
 	left: 0px;
@@ -167,33 +166,35 @@ section.contact-infos {
 	height: 100%;
 	width: 100%;
 }
-
 #customZoom {
 	right: 75px;
 	bottom: 10px;
 	position: fixed;
 }
-
-.formSearch {
-	position: relative;
-	left: 7px;
-	z-index: 1;
-	color: rgba(255, 255, 255, 0.84);
-	display: inline-flex;
+#mapTypeId {
+	color: #fff;
+	height: 41px;
+	width: 95px;
+	background-color: #cc4646ba;
+	border: solid #f8f9fa7d 1.5px;
+	position: fixed;
+	bottom: 10px;
+	right: 180px;
 }
-
-.formSearch2 {
-	position: relative;
-	z-index: 1;
-	color: rgba(255, 255, 255, 0.84);
-	display: inline-flex;
+#saveVisibleLocFile {
 }
-
-.table-search {
-	position: relative;
-	left: 4px;
+#saveSqlLocBackup {
 }
-
+#saveLocationsForm {
+	display: inline-block;
+    font-size: 32px;
+    right: 354px;
+    position: fixed;
+    bottom: 6px;
+}
+.fa,.glyphicon {
+	cursor: pointer;
+}
 .displayOptions input[type="text"], .displayOptions input[type="submit"]
 	{
 	outline: none;
@@ -237,23 +238,20 @@ section.contact-infos {
 }
 
 .wicket-aa {
+	position: fixed;
+	left: 2px;
+    max-width: 334px;
 	font-family: "Lucida Grande", "Lucida Sans Unicode", Tahoma, Verdana;
 	font-size: 12px;
 	background-color: #fff;
-	/*	border-width: 1px;
-	border-color: #cccccc;
-	border-style: solid;*/
 	text-align: left;
-	position: fixed;
-	max-width: 337px;
-	top: 100px;
+	max-width: 335px;
 	border: none;
 	display: flex;
 	flex-direction: column;
 	border-top-right-radius: 24px;
 	border-bottom-left-radius: 24px;
 	border-bottom-right-radius: 24px;
-	/*box-shadow: 0 4px 6px 0 rgba(32,33,36,0.28);*/
 	overflow: hidden;
 	margin: 0;
 	padding: 0;
@@ -294,10 +292,6 @@ input[type="text"], input[type="submit"], input[type="button"] {
     background: #F9F9F9;
     cursor: pointer;
 }*/
-#saveLocationsForm {
-	display: inline-block;
-}
-
 .active {
 	color: #FFF !important;
 }
@@ -504,7 +498,7 @@ table {
 }
 
 .hide {
-	display: none;
+	display: none!important;
 }
 
 .arrowDisplay {
@@ -796,12 +790,33 @@ table {
 .mfb-component__child-icon {
 	font-size: 22px !important;
 }
-
+#switch {
+position: fixed;
+    bottom: 10px;
+    right: 280px;
+}
+#switch .active {
+	border: none;
+}
 .displayOptions {
 	position: fixed;
 	z-index: 7;
 	left: 2px;
 	top: 77px;
+}
+.toggle-off.btn {
+    color: #333;
+    background-color: #808080 !important;
+    border: none;
+}
+.toggle-on {
+    background-color: #cc4646ba !important;
+}
+.toggle-group > btn:hover{
+	border:none !important;
+}
+.toggle-handle {
+    background-color: #f7b2b2 !important;
 }
 /*.displayOptions {
 	position: fixed;
@@ -838,6 +853,83 @@ table {
    	padding: 1px;
    	max-width: 150px;
 }*/
+
+.markersTableContainer {
+	position: relative;
+	top: 0px;
+	font-size: 10px;
+	color: #444;
+	border-spacing: 0px;
+	margin-top: -4px;
+	left: 4.5px;
+	padding-right: 2px;
+	padding-bottom: 35px;
+	-webkit-overflow-scrolling: touch;
+
+}
+
+.markersTable th {
+	height: 25px;
+	width: 312px;
+	color: #FFF;
+	font-family: Arial;
+}
+
+.markersTable {
+	cellspacing: 0;
+	left: 0px;
+	top: 53px;
+	background: #626262;
+	bottom: 0px;
+	z-index: 100;
+	-webkit-overflow-scrolling: touch;
+	display: none;
+}
+
+.markersTable>tbody:nth-child(1)>tr:nth-child(1)>td:nth-child(1) {
+	position: absolute;
+	overflow-y: scroll;
+	overflow-x: hidden;
+	height: 100%;
+	width: 318px;
+	top: 0px;
+	left: 0px;
+	padding-top: 53px;
+	margin-left: -3px;
+	background: rgba(85, 85, 85, 0.8);
+	z-index: 10;
+}
+.selectMarkersTable2 {
+
+
+}
+.selectMarkersTable {
+	display: inline-table;
+	margin-left: 1px;
+	margin-top: -2px;
+	width: 100%;
+	z-index: 100;
+}
+
+.selectMarkersTable tr:nth-child(1):hover, .markerClicked>tbody:nth-child(1)>tr:nth-child(1)
+	{
+	top: 5px;
+	background: #DFF1FF;
+}
+
+.selectMarkersTable>tbody>tr:nth-child(1) {
+	padding: 15px 8px;
+	margin: 2px 1px;
+	background: white;
+	width: 309px;
+	display: block;
+	cursor: pointer;
+}
+
+.selectMarkersTable tr:nth-child(1):hover, .markerClicked>tbody:nth-child(1)>tr:nth-child(1)
+	{
+	background: #DFF1FF;
+}
 .selectMarkersTable>tbody:nth-child(1)>tr:nth-child(1)>td:nth-child(1)>table:nth-child(1)>tbody:nth-child(1)>tr:nth-child(1)>td:nth-child(2)
 	{
 	left: 167px;
@@ -982,7 +1074,7 @@ table {
 	top: 160px;;
 	background: #db4437;
 	opacity: 0.9;
-	left: 292px;
+	left: 313px;
 	font-size: 18px;
 	padding: 14px 7px;
 	z-index: 1000;
@@ -1003,78 +1095,7 @@ button.btn-secondary:nth-child(3) {
 select.form-control:not([size]):not([multiple]) {
     height: auto;
 }
-.markersTableContainer {
-	position: relative;
-	top: 0px;
-	font-size: 10px;
-	color: #444;
-	border-spacing: 0px;
-	margin-top: -4px;
-	left: 4.5px;
-	padding-right: 2px;
-	padding-bottom: 35px;
-	-webkit-overflow-scrolling: touch;
 
-}
-
-.markersTable th {
-	height: 25px;
-	width: 312px;
-	color: #FFF;
-	font-family: Arial;
-}
-
-.markersTable {
-	cellspacing: 0;
-	left: 0px;
-	top: 53px;
-	background: #626262;
-	bottom: 0px;
-	z-index: 100;
-	-webkit-overflow-scrolling: touch;
-	display: none;
-}
-
-.markersTable>tbody:nth-child(1)>tr:nth-child(1)>td:nth-child(1) {
-	overflow-y: scroll;
-	overflow-x: hidden;
-	height: 100%;
-	position: absolute;
-	width: 318px;
-	top: 0px;
-	padding-top: 53px;
-	margin-left: -3px;
-	background: rgba(85, 85, 85, 0.8);
-	z-index: 10;
-}
-
-.selectMarkersTable {
-	display: inline-table;
-	margin-left: 1px;
-	margin-top: -2px;
-	width: 100%;
-	z-index: 100;
-}
-
-.selectMarkersTable tr:nth-child(1):hover, .markerClicked>tbody:nth-child(1)>tr:nth-child(1)
-	{
-	top: 5px;
-	background: #DFF1FF;
-}
-
-.selectMarkersTable>tbody>tr:nth-child(1) {
-	padding: 15px 8px;
-	margin: 2px 1px;
-	background: white;
-	width: 309px;
-	display: block;
-	cursor: pointer;
-}
-
-.selectMarkersTable tr:nth-child(1):hover, .markerClicked>tbody:nth-child(1)>tr:nth-child(1)
-	{
-	background: #DFF1FF;
-}
 
 .showHideNavigator {
 	z-index: 5002;
@@ -1146,36 +1167,79 @@ select.form-control:not([size]):not([multiple]) {
 	width: 240px;
 	z-index: 1;
 }
+<!-- Marker functionality  -->
 
+
+#showMarkerInfoBttn {
+	position: fixed;
+	bottom: 215px;
+	left: 0px;
+	width: 50px;
+	z-index: 1;
+}
+#idInput {
+	position: fixed;
+	bottom: 175px;
+	left: 0px;
+	width: 50px;
+	z-index: 1;
+}
+.markersTable2 {
+	position: relative;
+    height: 100vh;
+    overflow-y: scroll;
+    display: block;
+	/*cellspacing: 0;
+	-webkit-overflow-scrolling: touch;*/
+	top: 0px;
+	background: #F8F9F9;
+	z-index: 1000;
+	max-width: 314px;
+}
+.markersTableContainer2 {
+	font-size: 10px;
+	color: #444;
+}
+#idInput2 {
+	position: fixed;
+	bottom: 300px;
+	left: 0px;
+	width: 50px;
+	z-index: 1;
+}
+#editInfoButton {
+	position: fixed;
+	bottom: 145px;
+	left: 0px;
+	width: 50px;
+	z-index: 1;
+}
+
+<!-- Search functionality -->
 #viewHidePanels {
 	position: fixed;
-	bottom: 190px;
+	bottom: 115px;
 	left: 0px;
-	width: 240px;
+	width: 50px;
 	z-index: 1;
 }
 #mapZoomLevel {
 	position: fixed;
-	bottom: 160px;
+	bottom: 76px;
 	left: 0px;
-	width: 240px;
+	width: 50px;
 	z-index: 1;
 }
 #geoCoordDistance {
 	position: fixed;
-	bottom: 90px;
+	bottom: 37px;
 	left: 0px;
-	width: 240px;
+	width: 100px;
 	z-index: 1;
 }
 
 .svg-icon {
 	height: 32px;
-}
-
-#coordInput, #idInput, #editInfoButton {
-	width: 100%;
-	display: none;
 }
 
 .editInformation {
@@ -1363,6 +1427,11 @@ select.form-control:not([size]):not([multiple]) {
 	display: none;
 }
 
+#streetview2 {
+	width: 293px !important;
+	height: 200px !important;
+	background: transparent !important;
+}
 .streetview>div:nth-child(2)>div:nth-child(7) {
 	margin-left: -80px !important;
 }
@@ -1410,8 +1479,9 @@ select.form-control:not([size]):not([multiple]) {
 }
 
 .directionTable {
-	position: absolute;
+	position: fixed;
 	top: -26px;
+	left: 0px;
 	margin-left: -1px;
 	display: none;
 	height: 100%;
@@ -1605,27 +1675,155 @@ div#goog-gt-tt {
 	border-radius: 4px;
 	color: #333;
 }
-
+.map-panels {
+	position: relative;
+	top: 0px;
+}
+#searchView {
+	float: left;
+}
+#locationView {
+	float: right;
+}
 #locationView, #searchView {
-	top: 48px;
-	position: fixed;
+	position: absolute;
+	top: 0px;
 	z-index: 7;
 	background: rgba(255, 255, 255, .87);
 	border-radius: 13px;
 	color: #333;
+	max-width: 335px;
+	margin: 2px;
+}
+  #custom-handle {
+    width: 2em;
+    height: 1.6em;
+    top: 50%;
+    margin-top: -.8em;
+    margin-left: -1em;
+    text-align: center;
+    line-height: 1.6em;
+  }
+.formSearch {
+	 width: 320px;
+    background: white;
+    border-radius: 12px;
+        z-index: 1;
+}
+.formSearch input {
+	border: none;
+}
+
+.formSearch2 {
+	position: relative;
+	z-index: 1;
+	color: rgba(255, 255, 255, 0.84);
+	display: inline-flex;
+}
+
+.table-search {
+	position: relative;
+}
+#icon-search {
+	position: absolute;
+    right: 79px;
+    z-index: 10000;
+    color: black;
+    font-size: 20px;
+    line-height: 32px;
+    cursor: pointer;
+    padding: 2px;
+    -webkit-appearance: none;
+    background: transparent;
+    border: none;
+}
+#icon-mylocation {
+	position: absolute;
+        right: 50px;
+    z-index: 10000;
+    color: black;
+    font-size: 20px;
+    line-height: 32px;
+    cursor: pointer;
+    padding: 2px;
+    -webkit-appearance: none;
+}
+#resetInputSubmit {
+	position: absolute;
+     right: 20px;
+    z-index: 10000;
+    color: black;
+    font-size: 20px;
+    line-height: 32px;
+    cursor: pointer;
+    padding: 2px;
+    -webkit-appearance: none;
+}
+#delete-all-button {
+	position: absolute;
+     right: 0px;
+    z-index: 10000;
+    color: black;
+    font-size: 20px;
+    line-height: 32px;
+    cursor: pointer;
+    padding: 2px;
+    -webkit-appearance: none;
+}
+
+#bysy_indicator {
+	display: none;
+}
+
+.loading-gif {
+	position: fixed;
+	z-index: 1000;
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 100%;
+	background: rgba(255, 255, 255, .8) url(/images/gif/loading.gif) 50% 45%
+		no-repeat;
+	background-size: 47px;
+}
+
+.loading-text {
+	top: 25%;
+	left: 18%;
+	position: relative;
+	color: #999;
+	font-size: 15px;
+}
+/*customizing tooltip color*/
+/*right tooltip*/
+.tooltip.right>.tooltip-arrow {
+	border-right-color: dodgerblue;
+}
+/*tooltip inner*/
+.tooltip>.tooltip-inner {
+	background-color: dodgerblue;
+  text-shadow: 0 1px 1px #000;
+	font-weight: normal;
+	font-size: 14px;
+}
+
+#locationView input[name=listLocations] {
+	display: none;
 }
 
 #locationView {
 	right: 4px;
 }
-
-#searchView {
-	left: 4px;
-}
-
 #locationView input, #removeLocations input {
 	cursor: pointer;
 	margin-right: 5px;
+}
+#locationView label, #removeLocations label {
+	cursor: pointer;
+}
+#locationView .radio:first-of-type label:hover {
+	text-decoration: underline;
+	color: #CC4646;
 }
 
 .imageURL {
@@ -1717,8 +1915,9 @@ div#goog-gt-tt {
     padding: 5px 11px;
 }
 #display-form-search {
-	min-width: 362px;
-	padding: 7px 25px 6px;
+    min-width: 362px;
+    padding: 4px 2px;
+    margin: 2px 2px;
 }
 #text-location-edit {
 	min-height: 200px;
@@ -1748,6 +1947,10 @@ div#goog-gt-tt {
 .moreInfo {
 	width: 100%;
 	display: none;
+}
+.moreInfo2 {
+	width: 100%;
+	padding: 18px 15px;
 }
 
 .floating {
@@ -3466,15 +3669,13 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 }
 
 .ui-tooltip {
-	padding: 8px;
+	padding: 8px 10px;
 	position: absolute;
 	z-index: 9999;
 	max-width: 300px;
 	-webkit-box-shadow: 0 0 5px #aaa;
 	box-shadow: 0 0 5px #aaa;
-}
-
-body .ui-tooltip {
+	background-color:#fff;
 	border-width: 2px;
 }
 
@@ -3497,8 +3698,6 @@ body .ui-tooltip {
 
 .ui-widget-content {
 	border: 1px solid #dddddd;
-	background: #ffffff
-		url(/images/uislider/ui-bg_flat_75_ffffff_40x100.png) 50% 50% repeat-x;
 	color: #444444;
 }
 
@@ -3617,7 +3816,7 @@ body .ui-tooltip {
 	height: 16px;
 	background-position: 16px 16px;
 }
-
+/*
 .ui-icon, .ui-widget-content .ui-icon {
 	background-image: url(/images/uislider/ui-icons_ff0084_256x240.png);
 }
@@ -3644,7 +3843,7 @@ body .ui-tooltip {
 
 .ui-state-error .ui-icon, .ui-state-error-text .ui-icon {
 	background-image: url(/images/uislider/ui-icons_ff0084_256x240.png);
-}
+}*/
 
 /* positioning */
 .ui-icon-carat-1-n {
@@ -4381,7 +4580,7 @@ body .ui-tooltip {
 	border-radius: 0px;
 }
 
-/* Polygon change color and delete options */
+/* Polygon change color and delete options
 #panel {
 	font-family: Arial, sans-serif;
 	font-size: 13px;
@@ -4391,7 +4590,7 @@ body .ui-tooltip {
 	bottom: 10px;
 	display: inline;
 	right: 180px;
-}
+} */
 #color-palette {
 	position: fixed;
 	top: 80px;
@@ -4433,9 +4632,9 @@ body .ui-tooltip {
 	cursor: pointer;
 }
 
-.highcharts-data-labels {
+/*.highcharts-data-labels {
 	display: none;
-}
+}*/
 .highcharts-legend {
 	max-width: 100px;
 	overflow: scroll;
@@ -4444,14 +4643,15 @@ body .ui-tooltip {
 	display: block;
 }
 #container {
-	overflow-x: scroll;
-    height: 400px;
     position: fixed;
+    left: 0px;
     bottom: 0px;
-    left: -54px;
     z-index: 10000;
-    top: 150px;
+    bottom: 0px;
+    height: 200px;
+    width: 200px;
 }
+
 
 .color-button {
 	width: 14px;
@@ -4460,9 +4660,6 @@ body .ui-tooltip {
 	margin: 2px;
 	float: left;
 	cursor: pointer;
-}
-.navbar-toggler {
-	
 }
 #active_dictionary,#dictionary_matches {
 	    background: #9999991a;
@@ -4486,9 +4683,6 @@ body .ui-tooltip {
     top: 4px;
     right: 0px;
 }
-#locationView, #searchView {
-    top: 42px !important;
-}
 .carousel-caption h1 {
     font-size: 27px !important;
 }
@@ -4511,7 +4705,6 @@ body .ui-tooltip {
     display: inline-grid;
     right: -3px;
 }
-
 .d-none {
     display: inherit !important;
 }

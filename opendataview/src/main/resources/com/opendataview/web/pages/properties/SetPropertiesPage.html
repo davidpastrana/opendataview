@@ -9,100 +9,9 @@
 >
 <body>
 	<wicket:extend>
-		<style type="text/css">
-#bysy_indicator {
-	display: none;
-}
 
-.loading-gif {
-	position: fixed;
-	z-index: 1000;
-	top: 0;
-	left: 0;
-	height: 100%;
-	width: 100%;
-	background: rgba(255, 255, 255, .8) url(/images/gif/loading.gif) 50% 45%
-		no-repeat;
-	background-size: 47px;
-}
-
-.loading-text {
-	top: 25%;
-	left: 18%;
-	position: relative;
-	color: #999;
-	font-size: 15px;
-}
-/*customizing tooltip color*/
-/*right tooltip*/
-.tooltip.right>.tooltip-arrow {
-	border-right-color: dodgerblue;
-}
-/*tooltip inner*/
-.tooltip>.tooltip-inner {
-	/*background-color: dodgerblue;
-  text-shadow: 0 1px 1px #000;*/
-	font-weight: normal;
-	font-size: 14px;
-}
-</style>
 		<script>
-	$(window).on("load",function(){
-		 if($("#active_dictionary option:selected").text() == "true") {
-		 	$("#dictionary_matches").show();
-		 } else {
-		 	$("#dictionary_matches").hide();
-		 }
-		 if($("#schema_autodetection option:selected").text() == "true") {
-		 	$(".hide_schema_auto").show();
-		 } else {
-		 	$(".hide_schema_auto").hide();
-		 }
-		 setupFunc();
-	});
 
-
-	
-	$(document).ready(function(){
-		
-		$("#active_dictionary select").on("change",function(){
-			 if($("#active_dictionary option:selected").text() == "true") {
-			 	$("#dictionary_matches").show();
-			 } else {
-			 	$("#dictionary_matches").hide();
-			 }
-		});
-		$("#schema_autodetection select").on("change",function(){
-			 if($("#schema_autodetection option:selected").text() == "true") {
-			 	$(".hide_schema_auto").show();
-			 } else {
-			 	$(".hide_schema_auto").hide();
-			 }
-		});
-		
-		
-		  $('[data-toggle="tooltip"]').tooltip(); 
-    });
-
- function setupFunc() {
-	 //hideBusysign();
-	 $('.fileinput-upload-button').on('click', function()
-	           {
-		 
-	             showBusysign();
-	           }
-	      );
-	 /*document.getElementsByTagName('fileinput-upload-button')[0].onclick = clickFunc;
-         Wicket.Ajax.registerPreCallHandler(showBusysign);
-         Wicket.Ajax.registerPostCallHandler(hideBusysign);
-         Wicket.Ajax.registerFailureHandler(hideBusysign);*/
- }
- function hideBusysign() {
-   document.getElementById('bysy_indicator').style.display ='none';
- }
- function showBusysign() {
-   document.getElementById('bysy_indicator').style.display ='inline';
- }
  /*
  function clickFunc() {
 	 showBusysign();
@@ -236,7 +145,7 @@
 											class="form-control"
 										/></td>
 									</tr>
-									<tr id="dictionary_matches">
+									<tr class="dictionary_matches">
 										<td>Dictionary names (right side): <i
 											class="fa fa-info-circle"
 											data-toggle="tooltip"
@@ -245,7 +154,7 @@
 										/></td>
 										<td>titles, description, latitudes, longitudes, shape, latlong, data_publishers, emails, urls, phones, cities, postal_codes, working_hours, dates, images</td>
 									</tr>
-									<tr id="dictionary_matches">
+									<tr class="dictionary_matches">
 										<td><br /><br />Schema mapping for multiple headers to dictionary names (you can add % for any possible matches and multiple names, making sure is of type *:1 and ends in semicolon): <i
 											class="fa fa-info-circle"
 											data-toggle="tooltip"

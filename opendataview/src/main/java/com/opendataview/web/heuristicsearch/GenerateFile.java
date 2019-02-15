@@ -165,6 +165,7 @@ public class GenerateFile extends MainClass {
 		log.info("file taken: " + source.getAbsolutePath());
 
 		log.info("line " + br.readLine());
+		int no_inserts = 0;
 		while ((line = br.readLine()) != null) {
 
 			// we do not insert the header
@@ -213,10 +214,14 @@ public class GenerateFile extends MainClass {
 				buffer.append(",0,0);");
 				buffer.append(NEW_LINE);
 			} else {
-				log.info("We could not find any latitude or longitude value to upload into database.");
-				outputinfo.append("\nWe could not find any latitude or longitude value to upload into database.\n");
+				no_inserts++;
 			}
 
+		}
+		if (no_inserts > 0) {
+			log.info("\n\n" + no_inserts + " Failed to upload! either latitude or longitude could be missing.");
+			outputinfo.append(
+					"\n\n" + no_inserts + " Failed to upload! either latitude or longitude could be missing.\n");
 		}
 		br.close();
 		buffer.close();

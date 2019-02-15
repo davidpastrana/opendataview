@@ -25,7 +25,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
@@ -286,16 +285,16 @@ public class MainClass extends SetPropertiesPage {
 					outputinfo.append("\n>> Delimiter: [ " + DELIMITER + " ]");
 					log.info(">> Auto detect field types: " + autodetectSchema);
 					outputinfo.append("\n>> Auto detect field types: " + autodetectSchema);
-					log.info(">> Schema enabled: " + active_dictionary);
-					outputinfo.append("\n>> Schema enabled: " + active_dictionary);
-					log.info(">> Schema mappings:\n[" + dictionary_matches + "]");
-					outputinfo.append("\n>> Schema mappings:\n[" + dictionary_matches + "]");
 					log.info(">> Field types debug: " + fieldtypesdebugmode);
 					outputinfo.append("\n>> Field types debug: " + fieldtypesdebugmode);
 					log.info(">> Queries debug: " + geonamesdebugmode);
 					outputinfo.append("\n>> Queries debug: " + geonamesdebugmode);
 					log.info(">> Temp directory: " + dir);
 					outputinfo.append("\n>> Temp directory: " + dir);
+					log.info(">> Schema enabled: " + active_dictionary);
+					outputinfo.append("\n>> Schema enabled: " + active_dictionary);
+					log.info(">> Schema mappings:\n[" + dictionary_matches + "]");
+					outputinfo.append("\n>> Schema mappings:\n[" + dictionary_matches + "]");
 
 					header = new String[ncolchecks];
 					String[] value = new String[ncolchecks];
@@ -336,7 +335,9 @@ public class MainClass extends SetPropertiesPage {
 					for (int hfile = 0; hfile < value.length; hfile++) { // each value of the csv header
 						if (value[hfile].length() > 0) {
 
-							// capitalize only the first letter of each header value (line 0)
+							// capitalize only the first letter of each header value (line 0) and clean any
+							// double quotes
+							value[hfile] = value[hfile].replaceAll("\"", "");
 							header[hfile] = value[hfile].substring(0, 1).toUpperCase()
 									+ value[hfile].substring(1).toLowerCase();
 
@@ -364,7 +365,11 @@ public class MainClass extends SetPropertiesPage {
 //                				  log.info("STATIC VALUE2 added: "+static_value);
 //                				  first = tmp;
 											// if(header_value.contentEquals(first)) {
+
+											// In case of a hardcoded value, left side is the static value and right
+											// side is the dictionary word
 											dict_static[hconfig] = static_value + "_forcolumn_" + second;
+
 											// log.info("STATIC VALUE SAVED FOR COL '"+hconfig+"':
 											// "+dict_static[hconfig]);
 											// }
@@ -1198,6 +1203,8 @@ public class MainClass extends SetPropertiesPage {
 					log.info("\nFields with static values:\n");
 					for (int k = 0; k < dict_static.length; k++) {
 						if (dict_static[k] != null) {
+							// We have a hardcoded value, then we split into the value (left hardcoded
+							// value) and dictionary word (right side)
 							String location_value = dict_static[k].split("_forcolumn_")[0];
 							String location_type = dict_static[k].split("_forcolumn_")[1];
 							outputinfo.append("\"" + location_value + "\" in col \"" + location_type + "\"\n");
@@ -1289,18 +1296,18 @@ public class MainClass extends SetPropertiesPage {
 			setFormatLatLng(loc, value);
 			break;
 		case "latitudes":
-			if (NumberUtils.isNumber(value.replace(",", "."))) {
-				loc.setLatitude(new BigDecimal(value.replace(",", ".")));
-			} else {
-				log.info("NOT NUMBERIC, latitude is " + value);
-			}
+//			if (NumberUtils.isNumber(value.replace(",", "."))) {
+			loc.setLatitude(new BigDecimal(value.replace(",", ".")));
+//			} else {
+//				log.info("NOT NUMBERIC, latitude is " + value);
+//			}
 			break;
 		case "longitudes":
-			if (NumberUtils.isNumber(value.replace(",", "."))) {
-				loc.setLongitude(new BigDecimal(value.replace(",", ".")));
-			} else {
-				log.info("NOT NUMBERIC, longitude is " + value);
-			}
+//			if (NumberUtils..isNumber(value.replace(",", "."))) {
+			loc.setLongitude(new BigDecimal(value.replace(",", ".")));
+//			} else {
+//				log.info("NOT NUMBERIC, longitude is " + value);
+//			}
 			break;
 		case "latlong":
 			setFormatLatLng(loc, value);
@@ -1402,9 +1409,12 @@ public class MainClass extends SetPropertiesPage {
 			// j is the column position
 			int j = 0;
 
+			// In case we have defined Hardcoded values in the Schema
 			for (int x = 0; x < dict_static.length; x++) {
 				if (dict_static[x] != null) {
 					for (int y = 0; y < nchecks; y++) {
+						// We have a hardcoded value, then we split into the value (left hardcoded
+						// value) and dictionary word (right side)
 						String location_value = dict_static[x].split("_forcolumn_")[0];
 						String location_type = dict_static[x].split("_forcolumn_")[1];
 						setFieldTypes(loc, location_type, location_value, x, y);
@@ -1415,14 +1425,17 @@ public class MainClass extends SetPropertiesPage {
 
 			while (j < value.length) {
 
-				// type is a regex of 20 chars or any capital letter start from the CSV name
+				// We set the type from the CSV file name or any other detected field
 				if (csvname_match != null) {
 					loc.setType(csvname_match);
 
 				}
 
+				// We set the CSV file name
 				loc.setCsvName(file_name);
 
+				// We always place all attributes inside OtherInfo column (Important to allow
+				// attributes search and graphs for any unrecognized field)
 				if (header[j] != null && !value[j].isEmpty()) {
 					if (loc.getOtherInfo() == null) {
 						loc.setOtherInfo("Filename: " + file_name + " ## Published by: " + loc.getUsername()
@@ -1432,8 +1445,15 @@ public class MainClass extends SetPropertiesPage {
 					}
 				}
 
+				log.info("VALUE BEFORE WAS: " + value[j]);
+
+				// We clean the value from any possible unwanted character
+				value[j] = value[j].replaceAll("\"", "").trim();
+
+				log.info("VALUE AFTER IS: " + value[j]);
+
 				// log.info("index is "+j+ " with size "+resul.length);
-				if (resul[j] != null && !value[j].trim().isEmpty()) {
+				if (resul[j] != null && !value[j].isEmpty() && i > 0) {
 					// log.info("going to check harcoded? "+resul[j]);
 					setFieldTypes(loc, resul[j], value[j], i, j);
 
