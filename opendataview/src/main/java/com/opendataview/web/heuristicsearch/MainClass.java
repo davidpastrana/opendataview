@@ -8,8 +8,6 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.math.BigDecimal;
-import java.math.MathContext;
 import java.net.URISyntaxException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -188,7 +186,9 @@ public class MainClass extends SetPropertiesPage {
 				newFormat += x;
 			}
 			if (startCopying && x == ' ') {
-				obj.setLongitude(new BigDecimal(new Double(newFormat), new MathContext(newFormat.length() - 2)));
+				// obj.setLongitude(new BigDecimal(new Double(newFormat), new
+				// MathContext(newFormat.length() - 2)));
+				obj.setLongitude(new Float(newFormat));
 				newFormat = "";
 				isLatitudeRead = true;
 			}
@@ -197,7 +197,9 @@ public class MainClass extends SetPropertiesPage {
 			}
 			if (x == ')') {
 				// newFormat = newFormat.replace(")", "");
-				obj.setLatitude(new BigDecimal(new Double(newFormat), new MathContext(newFormat.length() - 2)));
+				// obj.setLatitude(new BigDecimal(new Double(newFormat), new
+				// MathContext(newFormat.length() - 2)));
+				obj.setLongitude(new Float(newFormat));
 				startCopying = !startCopying;
 			}
 		}
@@ -1297,14 +1299,14 @@ public class MainClass extends SetPropertiesPage {
 			break;
 		case "latitudes":
 //			if (NumberUtils.isNumber(value.replace(",", "."))) {
-			loc.setLatitude(new BigDecimal(value.replace(",", ".")));
+			loc.setLatitude(new Float(value.replace(",", ".")));
 //			} else {
 //				log.info("NOT NUMBERIC, latitude is " + value);
 //			}
 			break;
 		case "longitudes":
 //			if (NumberUtils..isNumber(value.replace(",", "."))) {
-			loc.setLongitude(new BigDecimal(value.replace(",", ".")));
+			loc.setLongitude(new Float(value.replace(",", ".")));
 //			} else {
 //				log.info("NOT NUMBERIC, longitude is " + value);
 //			}
@@ -1315,22 +1317,22 @@ public class MainClass extends SetPropertiesPage {
 		case "nuts1":
 			double[] latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new BigDecimal(latlng[0]));
-				loc.setLongitude(new BigDecimal(latlng[1]));
+				loc.setLatitude(new Float(latlng[0]));
+				loc.setLongitude(new Float(latlng[1]));
 			}
 			break;
 		case "nuts2":
 			latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new BigDecimal(latlng[0]));
-				loc.setLongitude(new BigDecimal(latlng[1]));
+				loc.setLatitude(new Float(latlng[0]));
+				loc.setLongitude(new Float(latlng[1]));
 			}
 			break;
 		case "nuts3":
 			latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new BigDecimal(latlng[0]));
-				loc.setLongitude(new BigDecimal(latlng[1]));
+				loc.setLatitude(new Float(latlng[0]));
+				loc.setLongitude(new Float(latlng[1]));
 			}
 			break;
 		case "titles":
@@ -1438,8 +1440,9 @@ public class MainClass extends SetPropertiesPage {
 				// attributes search and graphs for any unrecognized field)
 				if (header[j] != null && !value[j].isEmpty()) {
 					if (loc.getOtherInfo() == null) {
-						loc.setOtherInfo("Filename: " + file_name + " ## Published by: " + loc.getUsername()
-								+ " ## Last update: " + loc.getDate_updated() + " ## " + header[j] + ": " + value[j]);
+						loc.setOtherInfo("ID: " + loc.getId() + " ## Filename: " + file_name + " ## Published by: "
+								+ loc.getUsername() + " ## Last update: " + loc.getDate_updated() + " ## " + header[j]
+								+ ": " + value[j]);
 					} else {
 						loc.setOtherInfo(loc.getOtherInfo() + " ## " + header[j] + ": " + value[j]);
 					}

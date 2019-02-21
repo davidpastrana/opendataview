@@ -1,16 +1,9 @@
 package com.opendataview.web.heuristicsearch;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Serializable;
-import java.math.BigDecimal;
 import java.net.URL;
-import java.net.URLConnection;
 import java.net.URLEncoder;
-import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,127 +14,114 @@ import org.geonames.InvalidParameterException;
 import org.geonames.ToponymSearchCriteria;
 import org.geonames.ToponymSearchResult;
 import org.geonames.WebService;
-import org.json.JSONArray;
-import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.opendataview.web.heuristicsearch.GeonamesSQLQueries.LatLng;
 import com.opendataview.web.model.LocationModel;
 
 public class _TestedAPIs {
 
-  private final static org.slf4j.Logger log = LoggerFactory.getLogger(_TestedAPIs.class);
+	private final static org.slf4j.Logger log = LoggerFactory.getLogger(_TestedAPIs.class);
 
-  // Google API for Geocoding
-  private static final String GEOCODE_API_V3 =
-      "https://maps.googleapis.com/maps/api/geocode/json?address=";
+	// Google API for Geocoding
+	private static final String GEOCODE_API_V3 = "https://maps.googleapis.com/maps/api/geocode/json?address=";
 
+	// NOMINATIM OPEN STREET MAP GET LAT LNG LIMITED TO 2.500 reaquests
 
+	public void NominatimAPI(String name, LocationModel loc) {
 
-  // NOMINATIM OPEN STREET MAP GET LAT LNG LIMITED TO 2.500 reaquests
+		String address = name + ", AT";
+		log.info("address is " + address);
 
-  public void NominatimAPI(String name, LocationModel loc) {
+		OpenStreetMapGeoCodeJacksonParser latlng = new OpenStreetMapGeoCodeJacksonParser();
+		LatLng coord = latlng.parse(address);
 
-    String address = name + ", AT";
-    log.info("address is " + address);
+		if (coord != null) {
+			loc.setLatitude(new Float(coord.getLat()));
+			loc.setLongitude(new Float(coord.getLng()));
+		}
+	}
 
-    OpenStreetMapGeoCodeJacksonParser latlng = new OpenStreetMapGeoCodeJacksonParser();
-    LatLng coord = latlng.parse(address);
+	// GEONAMES API limit 2000 requests per hour
 
-    if (coord != null) {
-      loc.setLatitude(new BigDecimal(coord.getLat()));
-      loc.setLongitude(new BigDecimal(coord.getLng()));
-    }
-  }
+	public void GeonamesAPI(String name, LocationModel loc) throws InvalidParameterException {
 
-  // GEONAMES API limit 2000 requests per hour
+		ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
+		WebService.setUserName("davisrp");
+		searchCriteria.setQ(loc.getCity());
+		searchCriteria.setCountryCode("AT");
+		// "berlin"
 
-  public void GeonamesAPI(String name, LocationModel loc) throws InvalidParameterException {
+		try {
+			ToponymSearchResult searchResult = WebService.search(searchCriteria);
+			if (searchResult != null) {
+				loc.setLatitude(new Float(searchResult.getToponyms().get(0).getLatitude()));
+				loc.setLongitude(new Float(searchResult.getToponyms().get(0).getLongitude()));
+				// loc.setPostcode(searchResult.getToponyms().get(0).getPos);
+			}
+			if (searchResult.toString().contentEquals(
+					"the hourly limit of 2000 credits for davisrp has been exceeded. Please throttle your requests or use the commercial service.")) {
 
-    ToponymSearchCriteria searchCriteria = new ToponymSearchCriteria();
-    WebService.setUserName("davisrp");
-    searchCriteria.setQ(loc.getCity());
-    searchCriteria.setCountryCode("AT");
-    // "berlin"
+				log.info("In one hour we make 2000 more requests ! :)");
 
-    try {
-      ToponymSearchResult searchResult = WebService.search(searchCriteria);
-      if (searchResult != null) {
-        loc.setLatitude(new BigDecimal(searchResult.getToponyms().get(0).getLatitude()));
-        loc.setLongitude(new BigDecimal(searchResult.getToponyms().get(0).getLongitude()));
-        // loc.setPostcode(searchResult.getToponyms().get(0).getPos);
-      }
-      if (searchResult
-          .toString()
-          .contentEquals(
-              "the hourly limit of 2000 credits for davisrp has been exceeded. Please throttle your requests or use the commercial service.")) {
+			}
+			log.info("CITY READ: " + name + "with latlng: ");
+			log.info(searchResult.getToponyms().get(0).getLatitude() + ", "
+					+ searchResult.getToponyms().get(0).getLongitude());
 
-        log.info("In one hour we make 2000 more requests ! :)");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 
-      }
-      log.info("CITY READ: " + name + "with latlng: ");
-      log.info(searchResult.getToponyms().get(0).getLatitude() + ", "
-          + searchResult.getToponyms().get(0).getLongitude());
+	public static String setFormatLine(String linea) {
+		String copy = "";
+		if (linea.indexOf('"') >= 0) {
+			copy = new String();
+			boolean inQuotes = false;
+			boolean inParentesis = false;
+			for (int i = 0; i < linea.length(); ++i) {
+				if (linea.charAt(i) == '"') {
+					inQuotes = !inQuotes;
+				}
+				if (linea.charAt(i) == '(') {
+					inParentesis = !inParentesis;
+				}
+				char x = linea.charAt(i);
+				if ((x == ',' || x == ';') && inQuotes) {
+					copy += ' ';
+				} else if ((x == '(' || x == ' ' || x == ')') && inParentesis) {
+					if (x == '(') {
+						copy += ';';
+					} else if (x == ')') {
+						inParentesis = !inParentesis;
+					} else {
+						copy += ' ';
+					}
 
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-  }
+				} else {
+					copy += x;
+				}
+			}
+			linea = copy.replace("\"", "");
+		}
+		return linea;
+	}
 
-  
+	public class OpenStreetMapGeoCodeJacksonParser {
 
-  public static String setFormatLine(String linea) {
-    String copy = "";
-    if (linea.indexOf('"') >= 0) {
-      copy = new String();
-      boolean inQuotes = false;
-      boolean inParentesis = false;
-      for (int i = 0; i < linea.length(); ++i) {
-        if (linea.charAt(i) == '"') {
-          inQuotes = !inQuotes;
-        }
-        if (linea.charAt(i) == '(') {
-          inParentesis = !inParentesis;
-        }
-        char x = linea.charAt(i);
-        if ((x == ',' || x == ';') && inQuotes) {
-          copy += ' ';
-        } else if ((x == '(' || x == ' ' || x == ')') && inParentesis) {
-          if (x == '(') {
-            copy += ';';
-          } else if (x == ')') {
-            inParentesis = !inParentesis;
-          } else {
-            copy += ' ';
-          }
+		private static final String LATITUDE = "lat";
+		private static final String LONGITUDE = "lon";
 
-        } else {
-          copy += x;
-        }
-      }
-      linea = copy.replace("\"", "");
-    }
-    return linea;
-  }
+		public LatLng parse(final InputStream jsonStream) throws JsonParseException, JsonMappingException, IOException {
+			LatLng coordinate = null;
+			ObjectMapper mapper = new ObjectMapper();
+			// StringBuilder stringBuilder = new StringBuilder();
+			JsonNode array = mapper.readValue(jsonStream, JsonNode.class);
+			JsonNode object = array.get("results").get(0);
+			String reportKey = object.get("formatted_address").textValue();
 
-
-
-  public class OpenStreetMapGeoCodeJacksonParser {
-
-    private static final String LATITUDE = "lat";
-    private static final String LONGITUDE = "lon";
-
-    public LatLng parse(final InputStream jsonStream) throws JsonParseException, JsonMappingException, IOException {
-      LatLng coordinate = null;
-      ObjectMapper mapper = new ObjectMapper();
-      //StringBuilder stringBuilder = new StringBuilder();
-      JsonNode array =  mapper.readValue(jsonStream, JsonNode.class);
-      JsonNode object = array.get("results").get(0);
-      String reportKey = object.get("formatted_address").textValue();
-
-      
-      System.out.println("KEY IS "+reportKey);
+			System.out.println("KEY IS " + reportKey);
 //      final ObjectMapper mapper = new ObjectMapper();
 //      try {
 //    	  log.info("RETURN BEROFE IS "+mapper.readValue(jsonStream, List.class).toString());
@@ -163,9 +143,9 @@ public class _TestedAPIs {
 //        Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
 //            ex.getMessage(), ex);
 //      }
-      return coordinate;
-    }
-    
+			return coordinate;
+		}
+
 //    public class OpenStreetMapGeoCodeJacksonParser {
 //
 //	    private static final String LATITUDE = "lat";
@@ -232,104 +212,92 @@ public class _TestedAPIs {
 //	  }
 //    
 
-    public LatLng parse(String rawAddress) {
-      InputStream is = null;
-      LatLng coords = null;
+		public LatLng parse(String rawAddress) {
+			InputStream is = null;
+			LatLng coords = null;
 
-      if (rawAddress != null && rawAddress.length() > 0) {
-        try {
-          String address = URLEncoder.encode(rawAddress, "utf-8");
-          String geocodeURL =
-              "http://nominatim.openstreetmap.org/search?format=json&limit=1&polygon=0&addressdetails=0&email=contact@EMAIL.ME&countrycodes=at&q=";
-          // String geocodeURL =
-          // "http://open.mapquestapi.com/nominatim/v1/search?key=AjpGVX3AGUvVRX8Km7ohoB3u1YfJPpU7&location=";
+			if (rawAddress != null && rawAddress.length() > 0) {
+				try {
+					String address = URLEncoder.encode(rawAddress, "utf-8");
+					String geocodeURL = "http://nominatim.openstreetmap.org/search?format=json&limit=1&polygon=0&addressdetails=0&email=contact@EMAIL.ME&countrycodes=at&q=";
+					// String geocodeURL =
+					// "http://open.mapquestapi.com/nominatim/v1/search?key=AjpGVX3AGUvVRX8Km7ohoB3u1YfJPpU7&location=";
 
-          String formattedUrl = geocodeURL + address;
-          System.out.println(formattedUrl);
+					String formattedUrl = geocodeURL + address;
+					System.out.println(formattedUrl);
 
-          URL geocodeUrl = new URL(formattedUrl);
-          is = geocodeUrl.openStream();
-          coords = parse(is);
-          
-        } catch (IOException ex) {
-          Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
-              null, ex);
-        } finally {
-          try {
-            is.close();
-          } catch (IOException ex) {
-            Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE,
-                null, ex);
-          }
-        }
-      }
-      return coords;
-    }
-  }
+					URL geocodeUrl = new URL(formattedUrl);
+					is = geocodeUrl.openStream();
+					coords = parse(is);
 
+				} catch (IOException ex) {
+					Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE, null, ex);
+				} finally {
+					try {
+						is.close();
+					} catch (IOException ex) {
+						Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE, null, ex);
+					}
+				}
+			}
+			return coords;
+		}
+	}
 
-  public static class LatLng {
+	public static class LatLng {
 
-    private static final long serialVersionUID = 16549987563L;
+		private static final long serialVersionUID = 16549987563L;
 
-    private double lat;
-    private double lng;
+		private double lat;
+		private double lng;
 
-    public LatLng(final double lat, final double lng) {
-      this.lat = lat;
-      this.lng = lng;
-    }
+		public LatLng(final double lat, final double lng) {
+			this.lat = lat;
+			this.lng = lng;
+		}
 
-    public double getLat() {
-      return lat;
-    }
+		public double getLat() {
+			return lat;
+		}
 
-    public void setLat(final double lat) {
-      this.lat = lat;
-    }
+		public void setLat(final double lat) {
+			this.lat = lat;
+		}
 
-    public double getLng() {
-      return lng;
-    }
+		public double getLng() {
+			return lng;
+		}
 
-    public void setLng(final double lng) {
-      this.lng = lng;
-    }
+		public void setLng(final double lng) {
+			this.lng = lng;
+		}
 
-    @Override
-    public boolean equals(Object obj) {
-      if (obj == null) {
-        return false;
-      }
-      if (getClass() != obj.getClass()) {
-        return false;
-      }
-      final LatLng other = (LatLng) obj;
-      if (Double.doubleToLongBits(this.lat) != Double.doubleToLongBits(other.lat)) {
-        return false;
-      }
-      if (Double.doubleToLongBits(this.lng) != Double.doubleToLongBits(other.lng)) {
-        return false;
-      }
-      return true;
-    }
+		@Override
+		public boolean equals(Object obj) {
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final LatLng other = (LatLng) obj;
+			if (Double.doubleToLongBits(this.lat) != Double.doubleToLongBits(other.lat)) {
+				return false;
+			}
+			if (Double.doubleToLongBits(this.lng) != Double.doubleToLongBits(other.lng)) {
+				return false;
+			}
+			return true;
+		}
 
-    @Override
-    public int hashCode() {
-      int hash = 3;
-      hash =
-          53
-              * hash
-              + (int) (Double.doubleToLongBits(this.lat) ^ (Double.doubleToLongBits(this.lat) >>> 32));
-      hash =
-          53
-              * hash
-              + (int) (Double.doubleToLongBits(this.lng) ^ (Double.doubleToLongBits(this.lng) >>> 32));
-      return hash;
-    }
+		@Override
+		public int hashCode() {
+			int hash = 3;
+			hash = 53 * hash + (int) (Double.doubleToLongBits(this.lat) ^ (Double.doubleToLongBits(this.lat) >>> 32));
+			hash = 53 * hash + (int) (Double.doubleToLongBits(this.lng) ^ (Double.doubleToLongBits(this.lng) >>> 32));
+			return hash;
+		}
 
-  }
-
-
+	}
 
 }

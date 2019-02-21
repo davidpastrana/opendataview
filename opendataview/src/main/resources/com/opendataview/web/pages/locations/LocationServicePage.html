@@ -9,22 +9,13 @@
 >
 <body>
 	<wicket:extend>
+	<div class="parent-wrapper">
 	<div class="map-panels">
 		<div
 			id="searchView"
 			data-intro="Use this filter to select the type of locations you want to see."
 			data-position="left"
 		>
-			<!--  <i
-				id="display-form-search2"
-				class="fa fa-chevron-circle-down fa-2x"
-				onclick="$('#display-form-search').slideToggle();$('#hide-form-search').show();$('#display-form-search2').hide();"
-			/> <i
-				id="hide-form-search"
-				class="fa fa-chevron-circle-up fa-2x"
-				onclick="$('#display-form-search').slideToggle();$('#hide-form-search').hide();$('#display-form-search2').show();"
-			/>-->
-			<div id="display-form-search">
 				<table class="table-search">
 					<tr>
 						<th>
@@ -56,7 +47,7 @@
 											title="Show My Location"
 								/>
 								<i id="resetInputSubmit"
-									wicket:id="clearSearch"
+									wicket:id="resetInputSubmit"
 									class="fa fa-refresh"
 									data-toggle="tooltip"
 											data-placement="bottom"
@@ -71,25 +62,26 @@
 								
 								
 				<input class="hide"
-					placeholder="Hide panels true or false"
 					id="viewHidePanels"
 					wicket:id="viewPanels"
 					type="text"
 				/>
 				<input class="hide"
-					placeholder="Zoom level displayed here"
+					id="mapType"
+					wicket:id="mapType"
+					type="text"
+				/>
+				<input class=""
 					id="mapZoomLevel"
 					wicket:id="mapZoomLevel"
 					type="text"
 				/>
-				<input class="hide"
-					placeholder="Distance in KM displayed here"
+				<input class=""
 					id="geoCoordDistance"
 					wicket:id="geoCoordDistance"
 					type="text"
 				/>
-				<input class="hide"
-					placeholder="Copy & paste polygon search here"
+				<input class=""
 					id="polygonCoordInput"
 					wicket:id="polygonCoordInput"
 					type="text"
@@ -99,11 +91,11 @@
 					id="savePolygonCoordinates"
 					type="submit"
 				></button>
-				<button class="hide"
-					wicket:id="btnDeletePolygon"
+				<!--  <button class="hide"
+					wicket:id="deletePolygonCoordinates"
 					id="deletePolygonCoordinates"
 					type="submit"
-				></button>
+				></button>-->
 							</form>
 						</th>
 					</tr>
@@ -115,7 +107,6 @@
 						</th>
 					</tr>
 				</table>
-			</div>
 		</div>
 		<form
 				wicket:id="locationsForm"
@@ -154,6 +145,12 @@
 						class="btn btn-lg btn-primary"
 						wicket:id="removeSelected"
 					>Remove selected</button>
+					
+									<input class=""
+					id="viewHidePanels"
+					wicket:id="testinput"
+					type="text"
+				/>
 				</div>
 			</form>
 	</div>
@@ -242,7 +239,7 @@
 
 			</form>-->
 
-			<div id="map_wrapper">
+			<div id="map_wrapper" class="metadata-marker" style="display: none;" data-region_tag="html-body">
 				<div
 					id="map_canvas"
 					class="gmap"
@@ -309,12 +306,20 @@
 						data-placement="top"
 						title="Type of Layer"
 					>
-
-							<option value="1">Roadmap</option>
-							<option value="2">Satellite</option>
-							<option value="3">Terrain</option>
-							<option value="4">Route</option>
-							<option value="5">White</option>
+							<option value="grayscale">Grayscale</option>
+							<option value="satellite">Satellite</option>
+							<option value="terrain">Terrain</option>
+							<option value="roadmap">Roadmap</option>
+							<option value="route">Route</option>
+							<option value="silver">Silver</option>
+							<option value="night">Night</option>
+							<option value="retro">Retro</option>
+							<option value="light">Light</option>
+							<option value="snow">Snow</option>
+							<option value="monotone">Monotone</option>
+							<option value="nature">Nature</option>
+							<option value="colourful">Colourful</option>
+							<option value="bluewater">BlueWater</option>
 					</select>
 					</span>
 				</div>
@@ -343,7 +348,7 @@
 				></button>
 			</form>
 			
-			<form wicket:id="editFormTriggerClick">
+			<form wicket:id="editFormTriggerClick" class="hide">
 				<input
 					id="idInput"
 					wicket:id="idInput"
@@ -354,8 +359,7 @@
 					type="submit"
 				></button>
 			</form>
-			
-			<form wicket:id="editForm" id="editInfo" autocomplete="off">
+			<form wicket:id="editForm" id="editInfo">
 				<i
 					id="closeEdit"
 					wicket:id="closeEdit"
@@ -394,11 +398,7 @@
 								type="text"
 								wicket:id="number"
 							/></td>
-							<td>District: <input
-								class="form-control"
-								type="text"
-								wicket:id="district"
-							/></td>
+
 							<td>Latitude: <input
 								class="form-control"
 								type="text"
@@ -465,26 +465,34 @@
 			
 		</div>
 		
+		<div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+    
+				            <div id="dismiss">
+            <i class="ion-android-close"></i>
+        </div>
 		
 		<div wicket:id="wmc2">
-							<form wicket:id="showMarkerForm" id="showMarkerForm">					</form>
-							<i
+							<!--<form wicket:id="showMarkerForm" id="showMarkerForm" />
+							  <i
 					id="closeEdit"
 					
 					class="fa fa-times-circle fa-2x"
-				/>
+				/>-->
+
 
 				<table class="markersTable2">
 				<tr>
 					<td>
 						<table class="markersTableContainer2">
-							<i id="arrowHideLocationsTable"
-								class="arrowHideLocation arrowHideDirection ion-chevron-left" onclick="buttonDisplayLocations();"
-							></i>
+							<!-- <i id="arrowHideLocationsTable2"
+								class="arrowHideLocation2 arrowHideDirection2 ion-chevron-left" onclick="buttonDisplayLocations();"
+							></i>-->
 							<tr
 								class="row" wicket:id="showMarkerInfoList"
 							>
-								<td><i
+								<td><!-- <i
 									class="fa fa-info-circle fa-2x iconInfo"
 									onclick="displayMoreInfo()"
 								/> <i
@@ -496,7 +504,7 @@
 								/> <i
 									class="fa fa-pencil fa-2x iconEditInfo"
 									onclick="getIdMarker(id)"
-								/>
+								/> -->
 									<table class="selectMarkersTable2">
 										<tr>
 											<td>
@@ -505,15 +513,15 @@
 														<td><div id="streetview2" /></td>
 													</tr>
 												</table>
-												<table>
+												<table class="main-title">
 													<tr>
-														<td class="titleName">
+														<td>
 														<!-- Do not touch - necessary to show the markers 
 															<span itemprop="csvName" wicket:id="csvName2"
 															class="hide" />-->
 															<span
 															wicket:id="name2"
-															class="h4"
+															class="title h4"
 														/><br /> <span
 															wicket:id="userPublishedTag2"
 															
@@ -660,109 +668,61 @@
 			
 
 		</div>
-		
-		
-		
+		   </nav>
+
+</div>
+    <!-- Dark Overlay element when click on the left sidebar -->
+    <div class="overlay"></div>
+
 		<div wicket:id="wmc">
 
 			<!--  <span wicket:id="currentPage" />-->
-			<div itemprop="Place" itemscope itemtype="https://schema.org/Place">
-				<span
-					itemprop="csvName"
-					class="hide"
-				>My position</span> <span
-					itemprop="name"
-					wicket:id="currentPosition"
-					
-				/>
-				<div
-					itemprop="geo"
-					itemscope
-					itemtype="https://schema.org/GeoCoordinates"
-				>
+			<span itemscope itemtype="https://schema.org/Property">
 					<span
-						itemprop="latitude"
+						itemprop="alternateName"
 						wicket:id="currentLatitude"
 					/> <span
-						itemprop="longitude"
+						itemprop="additionalType"
 						wicket:id="currentLongitude"
 					/>
-				</div>
-			</div>
-			
+			</span>
 
 
-			<table class="markersTable">
-				<tr>
-					<td>
-						<table class="markersTableContainer">
-							<tr class="row"
-								wicket:id="rows"
-							>
-								<td>
-									<table
-										class="selectMarkersTable"
-										itemscope
-										itemtype="https://schema.org/Organization"
-									>
-										<tr>
-											<td>
-												<table>
-													<tr>
-														<td itemscope itemptype="https://schema.org/Place" class="titleName">
-																												
-														<!-- Do not touch - necessary to show the markers 
-															<span itemprop="csvName" wicket:id="csvName"
-															class="hide" />-->
+			<table>
+			<tr><td>
+									<span itemscope itemtype="https://schema.org/GeoCoordinates" wicket:id="rows" class="hide">
+														<span
+															itemprop="url"
+															wicket:id="id_location" />
+															<span
+															itemprop="subjectOf"
+															wicket:id="list_size"
+														/>
 															<span
 															itemprop="name"
 															wicket:id="name"
-															class="h4"
 														/><span
-															itemprop="url"
-															wicket:id="icon_marker"
-															class="hide"
-														/></td>
-			<td>
-														<!-- DO NOT CHANGE - itemprop IS IMPORTANT FOR EDITING THE MARKERS -->
-															<span
 															itemprop="identifier"
-															wicket:id="id_location"
-															class="id_DB" />
-															<span itemprop="Place" itemscope itemtype="https://schema.org/Place" >
-																														<span itemprop="geo" itemscope itemtype="https://schema.org/GeoCoordinates"
-															><span itemprop="latitude"
+															wicket:id="icon_marker"
+														/>
+															<span itemprop="latitude"
 																	wicket:id="latitude" /><span
 																	itemprop="longitude"
 																	wicket:id="longitude"
 																/>
-															</span>
-															</span>
-								
-
-														</td>
-													</tr>
-												</table>
-
-
-												
-											</td>
-										</tr>
-									</table></td>
-							</tr>
-						</table>
-					</td>
-				</tr>
+									</span>
+													</td></tr>
 				<tr>
-					<td><a
+					<td><span
+						class="tableNavigator"
+						wicket:id="tableNavigator"
+					></span><!-- <a
 						class="showHideNavigator"
 						onclick="$('.tableNavigator').slideToggle();"
-					>Show/hide</a> <span
-						class="tableNavigator"
-						wicket:id="navigator"
-					/></td>
+					>Show/hide</a> --></td>
 				</tr>
 			</table>
+		</div>
 		</div>
 	</wicket:extend>
 </body>

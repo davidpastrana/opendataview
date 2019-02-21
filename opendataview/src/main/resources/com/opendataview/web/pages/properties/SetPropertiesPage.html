@@ -174,6 +174,12 @@
 											title="You can only do mappings to those available names from your header tag names"
 										/></td>
 										<td>
+										<select
+											wicket:id="autodetectSchema"
+											class="form-control"
+										/>
+										<div class="color-picker"></div>
+										
 										01: <img class="svg-icon" src="/images/markers/svg/01.svg" /> 02: <img class="svg-icon" src="/images/markers/svg/02.svg" /> 03: <img class="svg-icon" src="/images/markers/svg/03.svg" /> 04: <img class="svg-icon" src="/images/markers/svg/04.svg" /> 05: <img class="svg-icon" src="/images/markers/svg/05.svg" /> 
 										06: <img class="svg-icon" src="/images/markers/svg/06.svg" /> 07: <img class="svg-icon" src="/images/markers/svg/07.svg" /> 08: <img class="svg-icon" src="/images/markers/svg/08.svg" /> 09: <img class="svg-icon" src="/images/markers/svg/09.svg" /> 10: <img class="svg-icon" src="/images/markers/svg/10.svg" /> 
 										11: <img class="svg-icon" src="/images/markers/svg/11.svg" /> 12: <img class="svg-icon" src="/images/markers/svg/12.svg" /> 13: <img class="svg-icon" src="/images/markers/svg/13.svg" /> 14: <img class="svg-icon" src="/images/markers/svg/14.svg" /> 15: <img class="svg-icon" src="/images/markers/svg/15.svg" />
@@ -688,6 +694,11 @@
 			<!-- /.Container -->
 		</div>
 		<!-- Footer -->
+				<!-- Color picker -->
+		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.css"/>
+		<script src="https://cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.js"></script>
+		<script src="https://simonwep.github.io/pickr/gh-page/js/script.js"></script>
+		
 		<wicket:panel wicket:id="footer" />
 		<!-- /.Footer -->
 	</wicket:extend>

@@ -23,7 +23,6 @@ import com.opendataview.web.panels.FooterPanel;
 import com.opendataview.web.panels.TopBarPanel;
 
 import de.agilecoders.wicket.core.markup.html.themes.bootstrap.BootstrapCssReference;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeCssReference;
 
 public class BasePage extends WebPage {
 
@@ -36,7 +35,7 @@ public class BasePage extends WebPage {
 		super.renderHead(response);
 
 		response.render(CssHeaderItem.forReference(BootstrapCssReference.instance()));
-		response.render(CssHeaderItem.forReference(FontAwesomeCssReference.instance()));
+//		response.render(CssHeaderItem.forReference(FontAwesomeCssReference.instance()));
 		response.render(
 				CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "opendataview.main.css")));
 		response.render(CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "styles.css")));

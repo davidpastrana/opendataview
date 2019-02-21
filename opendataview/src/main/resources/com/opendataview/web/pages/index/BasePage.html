@@ -10,15 +10,31 @@
 >
 <head>
 <meta charset="utf-8">
+
+ <!-- Chrome, Firefox OS and Opera -->
 <meta
 	name="theme-color"
 	content="#cc4646"
 >
+<!-- Windows Phone -->
+    <meta name="msapplication-navbutton-color" content="#cc4646"/>
+
+    <!-- iOS Safari -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="#cc4646"/>
+    
 <meta
 	name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1"
+	content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no"
 >
-<title>OpenDataView - Your visualized data being shared</title>
+
+<title>OpenDataView - Visualizing and sharing Geodata</title>
+
+<!-- SEO Stuff -->
+<meta name="audience" lang="en" content="all"/>
+<meta name="expires" content="7 days"/>
+<meta name="robots" content="follow"/>
+<meta name="revisit-after" content="7 days"/>
+<meta name="page-topic" content="Spatial Data"/>
 <meta
 	name="description"
 	content="Help your city government become a smart city through Open Data. Convey transparency and manage city resources through Location Intelligence."
@@ -27,29 +43,10 @@
 	name="keywords"
 	content="open data view, open data visualization, open data shared, geographic data, reasoning data, serialization of data, heuristic search, spatial data, gis data, field type recognition"
 />
+<meta name="copyright" content="David Rodriguez-Pastrana Parareda"/>
 <meta
 	name="author"
 	content="David Rodriguez-Pastrana Parareda"
-/>
-<meta
-	name="DC.title"
-	content="OpenDataView - Your visualized data being shared"
-/>
-<meta
-	name="DC.description"
-	content="Help your city government become a smart city through Open Data. Convey transparency and manage city resources through Location Intelligence."
-/>
-<meta
-	name="DC.keywords"
-	content="open data view, open data visualization, open data shared, geographic data, reasoning data, serialization of data, heuristic search, spatial data, gis data, field type recognitio"
-/>
-<meta
-	name="DC.creator"
-	content="David Rodriguez-Pastrana Parareda"
-/>
-<meta
-	name="DC.language"
-	content="en"
 />
 <wicket:link>
 <link
@@ -61,50 +58,34 @@
 	rel="stylesheet"
 	href="/css/mfb.min.css"
 />
-<!-- Favicons -->
+<!-- Icons -->
+<link rel="shortcut icon" sizes="16x16 24x24 32x32 48x48 64x64" href="/images/favicon/opendataview.ico"/>
+<link rel="fluid-icon" href="/images/favicon/opendataview.ico"/>
 <link
 	rel="apple-touch-icon"
 	href="/images/favicon/opendataview.ico"
 >
-<link
-	rel="shortcut icon"
-	sizes="16x16 24x24 32x32 48x48 64x64"
-	href="/images/favicon/opendataview.ico"
->
-<!-- SVG Icons - We can choose from: Ionicicons_v2.0.1/Glyphicons_v3.0.0/FontAwesome_v4.7.0 -->
-<link
+
+<!-- Style sheets -->
+<!-- SVG Icons - We can choose from: Ionicicons_v2.0.1/Glyphicons_v3.0.0/FontAwesome_v4.7.0
+http://marcoceppi.github.io/bootstrap-glyphicons/ -->
+<!-- <link
 	rel="stylesheet"
 	href="//code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css"
->
-<link
+>-->
+<!-- <link
 	rel="stylesheet"
 	href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"
->
+>-->
+<!--  <link href="//gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">-->
 </wicket:link>
+		<!-- Google Maps API and libraries -->
+		<script src="//maps.google.com/maps/api/js?language=en&amp;libraries=places,drawing&amp;v=weekly&amp;key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o" async defer></script>
 </head>
 <body>
 	<!-- Wicket Head Scripts -->
 	<wicket:head>
-<!--  <script async defer src="https://maps.googleapis.com/maps/api/js?v=3.0&amp;key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o&amp;libraries=places,drawing&amp;language=en&amp;"></script>-->
-<script async defer src="//maps.google.com/maps/api/js?language=en&amp;libraries=places,drawing&amp;v=3.33&amp;key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o"></script>
-<!-- switch to enable fullscreen -->
-<link href="//gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
-<script src="//gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
 
-		<script src="/js/jquery.ui.map.min.js"></script>
-		<script src="/js/jquery.ui.map.services.js"></script>
-		<script src="/js/jquery.ui.map.microdata.min.js"></script>
-		<script src="/js/jquery.ui.map.extensions.js"></script>
-		<!--<script src="/js/markercluster.js"></script>-->
-		
-		<!-- Distance slider for the locations reload -->
-		<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
-		
-		<script async defer src="/js/opendataview.ui.js"></script>
-		
-		<!-- Informative messages about functionality -->
-		<script src="/js/chardinjs.min.js"></script>
 
 	</wicket:head>
 	<!-- /.Wicket Head Scripts -->
@@ -195,7 +176,26 @@
 	<wicket:child />
 	<!-- /.Wicket extends -->
 	
+		<script src="/js/jquery.ui.map.min.js"></script>
+		<script src="/js/jquery.ui.map.services.js"></script>
+		<script src="/js/jquery.ui.map.microdata.min.js"></script>
+		<script src="/js/jquery.ui.map.extensions.js"></script>
+		<!--  <script src="https://cdnjs.cloudflare.com/ajax/libs/js-marker-clusterer/1.0.0/markerclusterer_compiled.js"></script>-->
+
+		<!-- switch to enable fullscreen mode -->
+		<script src="//gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/malihu-custom-scrollbar-plugin/3.1.5/jquery.mCustomScrollbar.concat.min.js"></script>
+
+		<!-- Functions to manipulate Web UI -->
+		<script async defer src="/js/opendataview.ui.js"></script>
+		
+		<!-- Helpful messages about functionality -->
+		<script src="/js/chardinjs.min.js"></script>
 	
+			<!-- Distance slider around the marker location -->
+		<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
+		
 	<!-- Floating button -->
 	<script src="/js/mfb.js"></script>
 	<!-- 

@@ -8,6 +8,7 @@ import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.core.util.file.WebApplicationPath;
+import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.time.Duration;
@@ -56,14 +57,19 @@ public class WicketApplication extends AuthenticatedWebApplication {
 
 		if (usesDeploymentConfig()) {
 			getMarkupSettings().setMarkupFactory(new HtmlCompressingMarkupFactory());
+			getMarkupSettings().setStripWicketTags(true);
+			getMarkupSettings().setStripComments(true);
+			getMarkupSettings().setCompressWhitespace(true);
 			HtmlCompressor compressor = new HtmlCompressor();
 
 			// in case we want a more readable html set to true
 			compressor.setPreserveLineBreaks(false);
+
 			getMarkupSettings().setMarkupFactory(new HtmlCompressingMarkupFactory(compressor));
 		}
 
 		Bootstrap.install(this);
+
 //    WicketWebjars.install(this);
 
 //    
@@ -120,6 +126,8 @@ public class WicketApplication extends AuthenticatedWebApplication {
 //		getStoreSettings().setInmemoryCacheSize(50);
 //		getStoreSettings().setMaxSizePerSession(Bytes.kilobytes(500));
 		// getApplicationSettings().setPageExpiredErrorPage(CustomExpiredErrorPage.class);
+
+		getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
 		// set cookie mode to keep open the same session id
 		getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));

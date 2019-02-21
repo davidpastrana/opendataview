@@ -1,7 +1,6 @@
 package com.opendataview.web.model;
 
 import java.io.Serializable;
-import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,10 +37,10 @@ public class LocationModel implements Serializable {
 	protected String elevation;
 	@Column(columnDefinition = "TEXT")
 	protected String population;
-	@Column(columnDefinition = "decimal", precision = 2, scale = 15)
-	protected BigDecimal latitude;
-	@Column(columnDefinition = "decimal", precision = 2, scale = 15)
-	protected BigDecimal longitude;
+	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+	protected Float latitude;
+	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+	protected Float longitude;
 	@Column(columnDefinition = "TEXT")
 	private String website;
 	@Column(columnDefinition = "TEXT")
@@ -160,19 +159,19 @@ public class LocationModel implements Serializable {
 		this.population = population;
 	}
 
-	public BigDecimal getLatitude() {
+	public Float getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(BigDecimal latitude) {
+	public void setLatitude(Float latitude) {
 		this.latitude = latitude;
 	}
 
-	public BigDecimal getLongitude() {
+	public Float getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(BigDecimal longitude) {
+	public void setLongitude(Float longitude) {
 		this.longitude = longitude;
 	}
 

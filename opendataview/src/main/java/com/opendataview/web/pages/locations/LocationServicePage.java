@@ -21,7 +21,6 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
-import org.apache.wicket.extensions.ajax.markup.html.IndicatingAjaxButton;
 import org.apache.wicket.extensions.ajax.markup.html.autocomplete.AutoCompleteTextField;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
@@ -96,6 +95,8 @@ import de.adesso.wickedcharts.wicket8.highcharts.Chart;
 
 public class LocationServicePage extends BasePage {
 
+	PageParameters pageParameters = new PageParameters();
+
 	private static final long serialVersionUID = 1L;
 
 	@Override
@@ -116,37 +117,32 @@ public class LocationServicePage extends BasePage {
 
 		response.render(OnDomReadyHeaderItem.forScript("window.onload = function () {}"));
 
-		String searchValue = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value")
+		String value = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value").toString();
+		String coords = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("coords").toString();
+		String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist").toString();
+		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
+		String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toString();
-		String polygonCoordInputValue = RequestCycle.get().getRequest().getRequestParameters()
-				.getParameterValue("coords").toString();
-		String polygonDist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist")
-				.toString();
-		String mapZoomLevel = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom")
-				.toString();
-		String viewPanels = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
-				.toString();
-		log.info("param coord is: " + polygonCoordInputValue);
-		log.info("param distance dist is: " + polygonDist);
+		String mapType = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("maptype").toString();
+//		log.info("param coord is: " + polygonCoordInputValue);
+//		log.info("param distance dist is: " + polygonDist);
 
-		if (mapZoomLevel != null || viewPanels != null || polygonDist != null) {
-			log.info("we have a search with zoom " + mapZoomLevel);
-			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + mapZoomLevel
-					+ ");$('#viewPanels').val(" + viewPanels + ");$('#geoCoordDistance').val(" + polygonDist + ")"));
+		if (zoom != null || fullscreen != null || mapType != null || dist != null) {
+			log.info("we have a search with zoom " + zoom);
+			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val("
+					+ fullscreen + ");$('#mapType').val('" + mapType + "');$('#geoCoordDistance').val(" + dist + ")"));
 		}
 
-		if (polygonCoordInputValue != null) {
-			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + polygonDist
-					+ ");$('#mapZoomLevel').val(" + mapZoomLevel + ");$('#viewPanels').val(" + viewPanels + ")"));
-			String[] att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1).split("\\),\\(");
+		if (coords != null) {
+			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + dist + ")"));
+			String[] att = coords.substring(1, coords.length() - 1).split("\\),\\(");
 			if (att.length == 1) {
 				response.render(OnDomReadyHeaderItem
 						.forScript("window.onload = function () {initMyPosition();$(\".slider_wrapper\").show()}"));
 			} else {
 				response.render(OnDomReadyHeaderItem
 						.forScript("window.onload = function () {polygon = new google.maps.Polygon({paths:["
-								+ polygonCoordInputValue.replaceAll("\\(", "{lat:").replaceAll("\\)", "}")
-										.replaceAll("[0-9],", ",lng:")
+								+ coords.replaceAll("\\(", "{lat:").replaceAll("\\)", "}").replaceAll("[0-9],", ",lng:")
 								+ "],zIndex: 1300, fillColor: 'rgba(255,255,255,.0)', clickable: false, editable: false, strokeWeight: 0, fillOpacity: 0.45, draggable: false, flat: false,});polygon.setMap(map.gmap(\"get\",\"map\"))}"));
 
 //				log.info("Polygon is: polygon = new google.maps.Polygon({paths:["
@@ -172,6 +168,8 @@ public class LocationServicePage extends BasePage {
 	private ArrayList<String> namesSelect = new ArrayList<String>();
 	private List<LocationModel> temp_list = new ArrayList<LocationModel>();
 	private List<LocationModel> temp_list2 = new ArrayList<LocationModel>();
+	int count = 0;
+	List<String> addlinks = null;
 
 	private static Options chart_options = new Options();
 	private Chart pie_chart = new Chart("chart", chart_options);
@@ -180,6 +178,8 @@ public class LocationServicePage extends BasePage {
 	private List<String> allAttributes = new ArrayList<String>();
 	private List<Integer> allSums = new ArrayList<Integer>();
 	private static Series<Point> series = new PointSeries();
+
+	private int max_number_markers_perpage = 1000;
 
 	private final static Logger log = LoggerFactory.getLogger(LocationServicePage.class);
 
@@ -223,10 +223,11 @@ public class LocationServicePage extends BasePage {
 	}
 
 	final TextField<String> viewPanels = new TextField<String>("viewPanels", Model.of("false"));
-
+	final TextField<String> mapType = new TextField<String>("mapType", Model.of("grayscale"));
 	final TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("8"));
-
+	final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
 //	Pie pie = new Pie();
+	final PageableListView<LocationModel> lview = displayList("rows", list, max_number_markers_perpage);
 
 	public LocationServicePage(PageParameters parameters) throws IOException {
 
@@ -235,16 +236,19 @@ public class LocationServicePage extends BasePage {
 //		pie.getOptions().setMaintainAspectRatio(true);
 //		pie.getOptions().setTooltipTemplate("<%= label %>");
 
+//        LatLng.of(55.0, 1),
+//        LatLng.of(50.0, -1)
+
 		setStatelessHint(false);
 		setVersioned(false);
 
 		WebSession session = WebSession.get();
 		viewPanels.setOutputMarkupId(true);
+		mapType.setOutputMarkupId(true);
 		mapZoomLevel.setOutputMarkupId(true);
+		geoCoordDistance.setOutputMarkupId(true);
 //		final TextField<String> mapIconMarker = new TextField<String>("mapIconMarker", Model.of("10"));
 //		mapIconMarker.setOutputMarkupId(true);
-		final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
-		geoCoordDistance.setOutputMarkupId(true);
 
 		String username = null;
 //		if (session.getAttribute("user_name") == null) {
@@ -279,18 +283,14 @@ public class LocationServicePage extends BasePage {
 		wmc2.setOutputMarkupId(true);
 		add(wmc2);
 
-		final Form<?> showMarkerForm = new Form<Void>("showMarkerForm");
-		// showMarkerInfoList.setOutputMarkupId(true);
-
-		showMarkerForm.setOutputMarkupId(true);
-		wmc2.add(showMarkerForm);
+//		final Form<?> showMarkerForm = new Form<Void>("showMarkerForm");
+//		// showMarkerInfoList.setOutputMarkupId(true);
+//
+//		showMarkerForm.setOutputMarkupId(true);
+//		wmc2.add(showMarkerForm);
 //		wmc.add(showMarkerInfoList);
 //		wmc.add(new DirectionPanel("direction2"));
 //		wmc.setOutputMarkupId(true);
-
-		Label currentPosition = new Label("currentPosition", "");
-		currentPosition.setOutputMarkupId(true);
-		wmc.add(currentPosition);
 
 		final Model<String> modelLat = new Model<String>("");
 		Label currentLatitude = new Label("currentLatitude", modelLat);
@@ -305,12 +305,14 @@ public class LocationServicePage extends BasePage {
 		origList = locationServiceDAO.readLocationModel();
 
 		// restriction to display 300 locations per page (to not overload the browser)
-		final PageableListView<LocationModel> lview = displayList("rows", list, 5000, username);
 		lview.setOutputMarkupId(true);
 		wmc.add(lview);
 
+		wmc.add(tableNavigator);
+		tableNavigator.setVisible(false);
+
 		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
-		IndicatingAjaxButton showMarkerInfoBttn = new IndicatingAjaxButton("showMarkerInfoBttn") {
+		AjaxButton showMarkerInfoBttn = new AjaxButton("showMarkerInfoBttn") {
 
 			private static final long serialVersionUID = 1L;
 
@@ -319,14 +321,15 @@ public class LocationServicePage extends BasePage {
 				super.onSubmit(target);
 
 				String idInputValue2 = idInput2.getModelObject();
-				log.info("YOU JUST CLICKED OVER MARKER: " + idInputValue2);
+//				log.info("YOU JUST CLICKED OVER MARKER: " + idInputValue2);
 				temp_list2.clear();
 
 				temp_list2.addAll(locationServiceDAO.getLocationByID(idInputValue2));
 
-				log.info("TEMP2 NAME IS " + temp_list2.get(0).getName());
+//				log.info("TEMP2 NAME IS " + temp_list2.get(0).getName());
 
 				target.add(wmc2);
+				// target.appendJavaScript("$('.markersTable2').show()");
 
 				// target.add(datacontainer);
 				// setResponsePage(getPage());
@@ -369,7 +372,7 @@ public class LocationServicePage extends BasePage {
 
 			String geoCoordDistanceValue = "";
 			if (parameters.get("dist").isNull()) {
-				geoCoordDistanceValue = "10";
+				geoCoordDistanceValue = "1";
 			} else {
 				geoCoordDistanceValue = parameters.get("dist").toString();
 			}
@@ -446,16 +449,22 @@ public class LocationServicePage extends BasePage {
 			String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
 			String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 					.toString();
+			String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("maptype")
+					.toString();
+//			String fullscreen = viewPanels.getModelObject();
+//			String maptype = mapType.getModelObject();
+//			String zoom = mapZoomLevel.getModelObject();
 
 			@Override
 			public void populateItem(final ListItem<LocationModel> item) {
 
-				log.info("WE DISPLAY THE MARKER LIST WITH " + item.getModelObject().getName());
+				// log.info("WE DISPLAY THE MARKER LIST WITH " +
+				// item.getModelObject().getName());
 				final LocationModel obj = item.getModelObject();
 
 				item.add(new Label("id_location2", obj.getId()));
 
-				log.info("LOCATION ID IS MARKER: " + obj.getId());
+//				log.info("LOCATION ID IS MARKER: " + obj.getId());
 
 				item.add(new Label("icon_marker2", obj.getIconmarker()));
 
@@ -555,7 +564,8 @@ public class LocationServicePage extends BasePage {
 
 					for (int i = 0; i < addlinks.size(); i++) {
 						newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+") + "&zoom="
-								+ zoom + "&fullscreen=" + fullscreen + "'>" + addlinks.get(i) + "</a><br />";
+								+ zoom + "&fullscreen=" + fullscreen + "&maptype=" + maptype + "'>" + addlinks.get(i)
+								+ "</a><br />";
 					}
 					item.add(new Label("other2", newinfo).setEscapeModelStrings(false));
 				} else {
@@ -841,18 +851,6 @@ public class LocationServicePage extends BasePage {
 			saveSqlLocBackup.setVisible(true);
 		}
 
-		final AjaxPagingNavigator pagination = new AjaxPagingNavigator("navigator", lview) {
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			protected void onAjaxEvent(AjaxRequestTarget target) {
-				super.onAjaxEvent(target);
-				// target.add(currentPage);
-				target.appendJavaScript("initIds();initMarkers(false);showLocationTableIfNavigatorChange();");
-			}
-		};
-		wmc.add(pagination);
-
 		/*
 		 * Current Navigation page LoadableDetachableModel<Object> model = new
 		 * LoadableDetachableModel<Object>() {
@@ -912,7 +910,7 @@ public class LocationServicePage extends BasePage {
 		};
 		formSearch.add(inputField);
 
-		IndicatingAjaxButton clearSearch = new IndicatingAjaxButton("clearSearch") {
+		AjaxButton resetInputSubmit = new AjaxButton("resetInputSubmit") {
 
 			private static final long serialVersionUID = 1L;
 
@@ -930,10 +928,10 @@ public class LocationServicePage extends BasePage {
 				setResponsePage(LocationServicePage.class, pageParameters);
 			}
 		};
-		clearSearch.setDefaultFormProcessing(false);
-		formSearch.add(clearSearch);
+		resetInputSubmit.setDefaultFormProcessing(false);
+		formSearch.add(resetInputSubmit);
 
-		formSearch.add(new IndicatingAjaxButton("searchLocation") {
+		formSearch.add(new AjaxButton("searchLocation") {
 
 			private static final long serialVersionUID = 1L;
 
@@ -942,6 +940,7 @@ public class LocationServicePage extends BasePage {
 				super.onSubmit(target);
 				String name = inputField.getModelObject();
 				String viewPanelsInputValue = viewPanels.getModelObject();
+				String mapTypeInputValue = mapType.getModelObject();
 				String zoomLevelInputValue = mapZoomLevel.getModelObject();
 
 				if (name != null) {
@@ -980,6 +979,7 @@ public class LocationServicePage extends BasePage {
 						pageParameters.set("lng", list.get(0).getLongitude());
 						pageParameters.set("zoom", zoomLevelInputValue);
 						pageParameters.set("fullscreen", viewPanelsInputValue);
+						pageParameters.set("maptype", mapTypeInputValue);
 					}
 					// user for multiple results by querying with a like %otherinfo% statement
 					if (found2) {
@@ -988,6 +988,7 @@ public class LocationServicePage extends BasePage {
 						log.info("ZOOM TO ADD: " + zoomLevelInputValue);
 						pageParameters.set("zoom", zoomLevelInputValue);
 						pageParameters.set("fullscreen", viewPanelsInputValue);
+						pageParameters.set("maptype", mapTypeInputValue);
 					}
 					setResponsePage(LocationServicePage.class, pageParameters);
 				}
@@ -996,65 +997,62 @@ public class LocationServicePage extends BasePage {
 
 		});
 
-//		final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("20"));
-//		geoCoordDistance.setOutputMarkupId(true);
-
 		final TextField<String> polygonCoordInput = new TextField<String>("polygonCoordInput", Model.of(""));
 		polygonCoordInput.setOutputMarkupId(true);
 
-		IndicatingAjaxButton btnDeletePolygon = new IndicatingAjaxButton("btnDeletePolygon") {
-			private static final long serialVersionUID = 1L;
+//		AjaxButton deletePolygonCoordinates = new AjaxButton("deletePolygonCoordinates") {
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void onSubmit(AjaxRequestTarget target) {
+//				super.onSubmit(target);
+//				String polygonCoordInputValue = polygonCoordInput.getModelObject();
+//
+//				if (polygonCoordInputValue == null) {
+//					list.clear();
+//
+//				} else if (polygonCoordInputValue != null && polygonCoordInputValue.contains(",")) {
+//					polygonCoordInputValue = polygonCoordInputValue.replaceAll("\\s+", "");
+//
+//					Path2D myPolygon = new Path2D.Double();
+//					String[] att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1)
+//							.split("\\),\\(");
+//
+//					String[] coordXY = null;
+//					for (int i = 0; i < att.length; i++) {
+//						coordXY = att[i].split(",");
+//						if (i == 0) {
+//							myPolygon.moveTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+//						} else {
+//							myPolygon.lineTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+//						}
+//					}
+//					myPolygon.closePath();
+//
+//					for (LocationModel loc : origList) {
+//
+//						if (!polygonCoordInputValue.isEmpty()) {
+//							if (myPolygon.contains(loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue())) {
+//								list.remove(loc);
+//							}
+//
+//						}
+//					}
+//
+//				}
+//				if (list.isEmpty()) {
+//					saveVisibleLocFile.setVisible(false);
+//					saveSqlLocBackup.setVisible(false);
+//					target.add(saveVisibleLocFile);
+//					target.add(saveSqlLocBackup);
+//				}
+//				target.add(wmc);
+//				target.appendJavaScript("initMarkers(false);");
+//
+//			}
+//		};
 
-			@Override
-			public void onSubmit(AjaxRequestTarget target) {
-				super.onSubmit(target);
-				String polygonCoordInputValue = polygonCoordInput.getModelObject();
-
-				if (polygonCoordInputValue == null) {
-					list.clear();
-
-				} else if (polygonCoordInputValue != null && polygonCoordInputValue.contains(",")) {
-					polygonCoordInputValue = polygonCoordInputValue.replaceAll("\\s+", "");
-
-					Path2D myPolygon = new Path2D.Double();
-					String[] att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1)
-							.split("\\),\\(");
-
-					String[] coordXY = null;
-					for (int i = 0; i < att.length; i++) {
-						coordXY = att[i].split(",");
-						if (i == 0) {
-							myPolygon.moveTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
-						} else {
-							myPolygon.lineTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
-						}
-					}
-					myPolygon.closePath();
-
-					for (LocationModel loc : origList) {
-
-						if (!polygonCoordInputValue.isEmpty()) {
-							if (myPolygon.contains(loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue())) {
-								list.remove(loc);
-							}
-
-						}
-					}
-
-				}
-				if (list.isEmpty()) {
-					saveVisibleLocFile.setVisible(false);
-					saveSqlLocBackup.setVisible(false);
-					target.add(saveVisibleLocFile);
-					target.add(saveSqlLocBackup);
-				}
-				target.add(wmc);
-				target.appendJavaScript("initIds();initMarkers(false);");
-
-			}
-		};
-
-		IndicatingAjaxButton savePolygonCoordinates = new IndicatingAjaxButton("savePolygonCoordinates") {
+		AjaxButton savePolygonCoordinates = new AjaxButton("savePolygonCoordinates") {
 
 			private static final long serialVersionUID = 1L;
 
@@ -1064,12 +1062,19 @@ public class LocationServicePage extends BasePage {
 
 				String[] att = null;
 				String viewPanelsInputValue = viewPanels.getModelObject();
+				String mapTypeInputValue = mapType.getModelObject();
 				String zoomLevelInputValue = mapZoomLevel.getModelObject();
 				String geoCoordDistanceValue = geoCoordDistance.getModelObject();
+
+				log.info("DISTANCE READ IS " + geoCoordDistanceValue);
+
 				String polygonCoordInputValue = polygonCoordInput.getModelObject();
 				double distanceKm = 0;
 				if (geoCoordDistanceValue != null) {
 					distanceKm = Double.valueOf(geoCoordDistanceValue);
+				} else {
+					distanceKm = 1;
+					target.appendJavaScript("$('#geoCoordDistance').val(1);");
 				}
 
 				if (polygonCoordInputValue == null) {
@@ -1144,16 +1149,18 @@ public class LocationServicePage extends BasePage {
 				if (polygonCoordInputValue == null) {
 					pageParameters.set("zoom", zoomLevelInputValue);
 					pageParameters.set("fullscreen", viewPanelsInputValue);
+					pageParameters.set("maptype", mapTypeInputValue);
 					pageParameters.set("dist", geoCoordDistanceValue);
 					pageParameters.set("coords", parameters.get("coords"));
-					log.info("coords2 from input fied are:" + polygonCoordInputValue);
+					// log.info("coords2 from input fied are:" + polygonCoordInputValue);
 				} else {
 					pageParameters.set("zoom", zoomLevelInputValue);
 					pageParameters.set("fullscreen", viewPanelsInputValue);
+					pageParameters.set("maptype", mapTypeInputValue);
 					pageParameters.set("dist", geoCoordDistanceValue);
 					pageParameters.set("coords", polygonCoordInputValue);
 //					int zoom = target.appendJavaScript("map.gmap(\"get\",\"map\").getZoom()");
-					log.info("coords1 from input fied are:" + polygonCoordInputValue);
+					// log.info("coords1 from input fied are:" + polygonCoordInputValue);
 				}
 				// setResponsePage(getPage().getClass(), getPage().getPageParameters());
 				setResponsePage(LocationServicePage.class, pageParameters);
@@ -1162,30 +1169,34 @@ public class LocationServicePage extends BasePage {
 
 		};
 
-//		final Form<?> coordGeoForm = new Form<Void>("coordGeoForm") {
-//
-//			private static final long serialVersionUID = 1L;
-//
-//		};
-		// datacontainer.add(coordGeoForm);
 		formSearch.add(viewPanels);
+		formSearch.add(mapType);
 		formSearch.add(mapZoomLevel);
-		// coordGeoForm.add(mapIconMarker);
 		formSearch.add(geoCoordDistance);
 		formSearch.add(polygonCoordInput);
 		formSearch.add(savePolygonCoordinates);
-		formSearch.add(btnDeletePolygon);
+		// formSearch.add(deletePolygonCoordinates);
 		add(formSearch);
 	}
 
-	int count = 0;
-	List<String> addlinks = null;
+	final AjaxPagingNavigator tableNavigator = new AjaxPagingNavigator("tableNavigator", lview) {
+		private static final long serialVersionUID = 1L;
 
-	public PageableListView<LocationModel> displayList(String id, List<LocationModel> list, int num, String username) {
+		@Override
+		protected void onAjaxEvent(AjaxRequestTarget target) {
+			super.onAjaxEvent(target);
+			// target.add(currentPage);
+
+			target.appendJavaScript("initMarkers(true);showLocationTableIfNavigatorChange();");
+		}
+	};
+
+	public PageableListView<LocationModel> displayList(String id, List<LocationModel> list, int num) {
 
 		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
 		String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toString();
+		String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("maptype").toString();
 
 		PageableListView<LocationModel> listView = new PageableListView<LocationModel>(id, list, num) {
 			private static final long serialVersionUID = 1L;
@@ -1210,6 +1221,7 @@ public class LocationServicePage extends BasePage {
 				item.add(new Label("latitude", obj.getLatitude().toString()));
 				item.add(new Label("longitude", obj.getLongitude().toString()));
 				item.add(new Label("name", obj.getName()));
+				item.add(new Label("list_size", list.size()));
 
 //				if (obj.getOtherInfo() != null) {
 				addlinks = new ArrayList<>(Arrays.asList(obj.getOtherInfo().split("##")));
@@ -1271,8 +1283,15 @@ public class LocationServicePage extends BasePage {
 
 				// list size of the pie chart must be greater than the values of a one location
 				// (otherwise we hide the chart)
+				// log.info("WE HAVE " + (list.size() - 1) + ", " + count + ", " + (num - 1));
 				if ((count == list.size() - 1 || count == num - 1) && !pieChartList.isEmpty()
 						&& pieChartList.size() > addlinks.size()) {
+
+					log.info("count SIZE2 " + count + " and MAX MARKERS IS " + num);
+					if (count == num - 1) {
+						tableNavigator.setVisible(true);
+					}
+
 					log.info("size is " + pieChartList.size());
 					log.info("size2 is " + addlinks.size());
 
@@ -1294,9 +1313,12 @@ public class LocationServicePage extends BasePage {
 
 							series.addPoint(
 									new Point(pieChartList.get(i).getAttribute(), pieChartList.get(i).getRepetitions())
-											.setEvents(new Events().setClick(new RedirectFunction("search?&value="
-													+ pieChartList.get(i).getAttribute().trim().replaceAll(" ", "")
-													+ "&zoom=" + zoom + "&fullscreen=" + fullscreen))));
+											.setEvents(
+													new Events().setClick(new RedirectFunction("search?&value="
+															+ pieChartList.get(i).getAttribute().trim().replaceAll(" ",
+																	"")
+															+ "&zoom=" + zoom + "&fullscreen=" + fullscreen
+															+ "&maptype=" + maptype))));
 						}
 					}
 //					log.info("WE HAVE " + pieChartList.get(0).getAttribute() + " WITH REP IS "
@@ -1306,9 +1328,9 @@ public class LocationServicePage extends BasePage {
 					series.setShowInLegend(false);
 					series.setDataLabels(new DataLabels().setEnabled(true).setBackgroundColor(new HexColor("#364654"))
 							.setColor(new HexColor("#FFFFFF"))
-							.setFormatter(new Function().setFunction("if('" + pieChartList.get(0).getRepetitions()
-									+ "' == this.y || '" + pieChartList.get(1).getRepetitions()
-									+ "' == this.y){ return '' + this.point.name +': '+ this.y + ' rep';}"))
+//							.setFormatter(new Function().setFunction("if('" + pieChartList.get(0).getRepetitions()
+//									+ "' == this.y || '" + pieChartList.get(1).getRepetitions()
+//									+ "' == this.y){ return '' + this.point.name +': '+ this.y + ' rep';}"))
 							.setStyle(new CssStyle().setProperty("font-weight", "normal")
 									.setProperty("font-size", "11px").setProperty("font-family", "sans-serif, verdana")
 									.setProperty("width", "60px"))
@@ -1322,6 +1344,7 @@ public class LocationServicePage extends BasePage {
 				count++;
 			}
 		};
+
 		return listView;
 	}
 
@@ -1342,7 +1365,12 @@ public class LocationServicePage extends BasePage {
 		datacontainer.add(editForm);
 
 		locationsForm = new Form<Void>("locationsForm");
+		locationsForm.setOutputMarkupId(true);
 		add(locationsForm);
+
+		final TextField<String> testinput = new TextField<String>("testinput", Model.of(""));
+		testinput.setOutputMarkupId(true);
+		locationsForm.add(testinput);
 
 		WebSession session = WebSession.get();
 
@@ -1414,12 +1442,24 @@ public class LocationServicePage extends BasePage {
 //				list.addAll(list2);
 
 				// setResponsePage(getPage());
-				PageParameters pageParameters = new PageParameters();
-				String viewPanelsInputValue = viewPanels.getModelObject();
-				String zoomLevelInputValue = mapZoomLevel.getModelObject();
+//				String viewPanelsInputValue = viewPanels.getModelObject();
+//				String mapTypeInputValue = mapType.getModelObject();
+//				String zoomLevelInputValue = mapZoomLevel.getModelObject();
+
+//				String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom")
+//						.toString();
+//				String fullscreen = RequestCycle.get().getRequest().getRequestParameters()
+//						.getParameterValue("fullscreen").toString();
+//				String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("maptype")
+//						.toString();
+				String testinput2 = testinput.getModelObject();
+				log.info("TEST THE INPUT FIELD:" + testinput2);
+//
+//				PageParameters pageParameters = new PageParameters();
 				pageParameters.set("value", namesSelect.get(0));
-				pageParameters.set("zoom", zoomLevelInputValue);
-				pageParameters.set("fullscreen", viewPanelsInputValue);
+				pageParameters.set("zoom", 12);
+				// pageParameters.set("fullscreen", false);
+				// pageParameters.set("maptype", maptype);
 				// setResponsePage(getPage().getClass(), getPage().getPageParameters());
 				setResponsePage(LocationServicePage.class, pageParameters);
 			}
@@ -1440,8 +1480,7 @@ public class LocationServicePage extends BasePage {
 				item.add(new TextField<String>("address", new PropertyModel<String>(item.getModelObject(), "address")));
 				item.add(new TextField<String>("street", new PropertyModel<String>(item.getModelObject(), "street")));
 				item.add(new TextField<String>("number", new PropertyModel<String>(item.getModelObject(), "number")));
-				item.add(new TextField<String>("district",
-						new PropertyModel<String>(item.getModelObject(), "district")));
+
 				item.add(new TextField<String>("latitude",
 						new PropertyModel<String>(item.getModelObject(), "latitude")));
 				item.add(new TextField<String>("longitude",

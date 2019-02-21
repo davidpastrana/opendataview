@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -37,8 +36,8 @@ public class GeonamesSQLQueries extends MainClass {
 
 	public static void setGeonameResult(LocationModel loc, ResultSet rs) throws NumberFormatException, SQLException {
 
-		loc.setLatitude(new BigDecimal(rs.getString(3)));
-		loc.setLongitude(new BigDecimal(rs.getString(4)));
+		loc.setLatitude(new Float(rs.getString(3)));
+		loc.setLongitude(new Float(rs.getString(4)));
 		loc.setPopulation(rs.getString(5));
 		loc.setElevation(rs.getString(6));
 	}
@@ -100,27 +99,27 @@ public class GeonamesSQLQueries extends MainClass {
 
 		private static final long serialVersionUID = 16549987563L;
 
-		private double lat;
-		private double lng;
+		private Float lat;
+		private Float lng;
 
-		public LatLng(final double lat, final double lng) {
+		public LatLng(final Float lat, final Float lng) {
 			this.lat = lat;
 			this.lng = lng;
 		}
 
-		public double getLat() {
+		public Float getLat() {
 			return lat;
 		}
 
-		public void setLat(final double lat) {
+		public void setLat(final Float lat) {
 			this.lat = lat;
 		}
 
-		public double getLng() {
+		public Float getLng() {
 			return lng;
 		}
 
-		public void setLng(final double lng) {
+		public void setLng(final Float lng) {
 			this.lng = lng;
 		}
 	}
@@ -201,8 +200,8 @@ public class GeonamesSQLQueries extends MainClass {
 
 //	        BigDecimal lat = BigDecimal.valueOf(js4.getDouble("lat"));
 //	        BigDecimal lng = BigDecimal.valueOf(js4.getDouble("lng"));
-				Double lat = js4.getDouble("lat");
-				Double lng = js4.getDouble("lng");
+				Float lat = js4.getFloat("lat");
+				Float lng = js4.getFloat("lng");
 
 				LatLng latlng = new LatLng(lat, lng);
 
@@ -391,8 +390,8 @@ public class GeonamesSQLQueries extends MainClass {
 					}
 					// if we want to find and store the geocoding type found
 					if (loc != null & result != null) {
-						loc.setLatitude(BigDecimal.valueOf(result.getLat()));
-						loc.setLongitude(BigDecimal.valueOf(result.getLng()));
+						loc.setLatitude(Float.valueOf(result.getLat()));
+						loc.setLongitude(Float.valueOf(result.getLng()));
 						return true;
 					}
 
@@ -467,8 +466,8 @@ public class GeonamesSQLQueries extends MainClass {
 					if (geonamesdebugmode)
 						DebugInfo(ps, rs);
 					if (loc != null) {
-						loc.setLatitude(new BigDecimal(rs.getString(3)));
-						loc.setLongitude(new BigDecimal(rs.getString(4)));
+						loc.setLatitude(new Float(rs.getString(3)));
+						loc.setLongitude(new Float(rs.getString(4)));
 						loc.setPopulation(rs.getString(5));
 						loc.setElevation(rs.getString(6));
 						return true;

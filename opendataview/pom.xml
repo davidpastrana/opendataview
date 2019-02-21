@@ -99,6 +99,7 @@
 			<artifactId>wicket-bootstrap-extensions</artifactId>
 			<version>${wicket-bootstrap-extensions.version}</version>
 		</dependency>
+		
 		<!--  <dependency>
 		    <groupId>org.wicketstuff</groupId>
 		    <artifactId>wicketstuff-stateless</artifactId>
