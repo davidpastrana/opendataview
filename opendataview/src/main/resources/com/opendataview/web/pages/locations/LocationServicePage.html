@@ -9,6 +9,7 @@
 >
 <body>
 	<wicket:extend>
+	
 	<div class="parent-wrapper">
 	<div class="map-panels">
 		<div
@@ -34,33 +35,45 @@
 								<button id="icon-search"
 									type="submit"
 									wicket:id="searchLocation"
-									class="fa fa-search"
-									data-toggle="tooltip"
-											data-placement="bottom"
+									class="glyphicon glyphicon-search"
 											title="Search"
 								></button>
 								<i id="icon-mylocation"
-									class="fa fa-crosshairs"
-									onclick="getGeolocation();"
-									data-toggle="tooltip"
-											data-placement="bottom"
+									class="glyphicon glyphicon-map-marker"
 											title="Show My Location"
 								/>
 								<i id="resetInputSubmit"
 									wicket:id="resetInputSubmit"
-									class="fa fa-refresh"
-									data-toggle="tooltip"
-											data-placement="bottom"
+									class="glyphicon glyphicon-refresh"
 											title="Refresh"
 								/>
 								
-								<i
-					class="fa fa-eraser hide"
+								<!--  <i
+					class="fa fa-eraser"
 					id="delete-all-button"
 					title="Clear everything which is over the map"
+				/>-->
+								
+				<input class="hide"
+					id="showGraph"
+					wicket:id="showGraph"
+					type="text"
 				/>
-								
-								
+				<input class="hide"
+					id="showPrivateMap"
+					wicket:id="showPrivateMap"
+					type="text"
+				/>
+				<input class="hide"
+					id="disableClustering"
+					wicket:id="disableClustering"
+					type="text"
+				/>	
+				<input class="hide"
+					id="showGraph"
+					wicket:id="showGraph"
+					type="text"
+				/>	
 				<input class="hide"
 					id="viewHidePanels"
 					wicket:id="viewPanels"
@@ -73,15 +86,15 @@
 				/>
 				<input class=""
 					id="mapZoomLevel"
-					wicket:id="mapZoomLevel"
+					wicket:id="mapZoomLevel" title="Current Zoom"
 					type="text"
 				/>
-				<input class=""
+				<input class=hide""
 					id="geoCoordDistance"
 					wicket:id="geoCoordDistance"
 					type="text"
 				/>
-				<input class=""
+				<input class="hide"
 					id="polygonCoordInput"
 					wicket:id="polygonCoordInput"
 					type="text"
@@ -116,14 +129,17 @@
 			>
 				<i
 					id="displayLocations"
-					class="fa fa-chevron-circle-down fa-2x"
-					onclick="$('#hideLocation').slideToggle();$('#hideLocations').show();$('#displayLocations').hide()"
-				/> <i
-					id="hideLocations"
-					class="fa fa-chevron-circle-up fa-2x"
-					onclick="$('#hideLocations').hide();$('#displayLocations').show();$('#hideLocation').slideToggle();"
+					class="glyphicon glyphicon-cog custom-displayloc"
 				/>
 				<div id="hideLocation">
+									<p
+						class="h3 list-route"
+						wicket:id="configLabel"
+					>Configuration:</p>
+					<div class="radio"
+						wicket:id="listConfig"
+					></div>
+					<br />
 					<p
 						class="h3 list-route"
 						wicket:id="importedFilesLabel"
@@ -145,12 +161,6 @@
 						class="btn btn-lg btn-primary"
 						wicket:id="removeSelected"
 					>Remove selected</button>
-					
-									<input class=""
-					id="viewHidePanels"
-					wicket:id="testinput"
-					type="text"
-				/>
 				</div>
 			</form>
 	</div>
@@ -161,114 +171,31 @@
 	<div id="demo-panel" class="wrapper">
     	<div id="container" wicket:id="chart"></div>
 	</div>
-		
-			<ul
-				id="menu"
-				class="mfb-component--br mfb-zoomin"
-				data-mfb-toggle="hover"
-				data-intro="Hover over here to select the options to display the location details, open the directions tab and export your tour to pdf."
-				data-position="left"
-			>
-				<li class="mfb-component__wrap"><a
-					href="#"
-					class="mfb-component__button--main "
-				> <i
-						class="mfb-component__main-icon--resting ion-plus-round"
-						style="color: rgb(255, 255, 255);"
-					></i> <i
-						class="mfb-component__main-icon--active ion-android-close"
-						style="color: rgb(255, 255, 255);"
-					></i>
-				</a>
-					<ul class="mfb-component__list">
-						<!--  <li><a
-							href="/"
-							data-mfb-label="Locations"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-android-map"></i>
-						</a></li>
-						<li><a
-							href="/about"
-							data-mfb-label="About"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-android-info"></i>
-						</a></li>
-						<li><a
-							href="/contact"
-							data-mfb-label="Contact"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-android-contact_mail"></i>
-						</a>
-						</li>
-												<li><a
-							href="/login"
-							data-mfb-label="Sign In"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-android-contact_person"></i>
-						</a></li>
-						<li><a
-							href="/register"
-							data-mfb-label="Register"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-android-contact_person_add"></i>
-						</a></li>-->
-						<li><a
-							href="#"
-							onclick="displayLocationsTable()"
-							data-mfb-label="Display list"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-android-list"></i>
-						</a></li>
-						<li><a
-							href="#"
-							onclick="displayDirectionTable()"
-							data-mfb-label="Get directions"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-location"></i>
-						</a></li>
-						<li><a
-							href="#"
-							onclick="$('body').chardinJs('toggle')"
-							data-mfb-label="Help overlay"
-							class="mfb-component__button--child"
-						> <i class="mfb-component__child-icon ion-help"></i>
-						</a></li>
-					</ul></li>
-			</ul>
 			<!--  <form wicket:id="coordGeoForm">
 
 			</form>-->
 
-			<div id="map_wrapper" class="metadata-marker" style="display: none;" data-region_tag="html-body">
-				<div
-					id="map_canvas"
-					class="gmap"
-				/>
-			</div>
-			<!--custom controls-->
-			<span id="customZoom">
-			<span
-				id="zoomIn"
-				class="btn zoom in"
-				data-toggle="tooltip"
-				data-placement="top"
-				title="Zoom In"
-			> <i class="fa fa-plus" />
-			</span> <span
-				id="zoomOut"
-				class="btn zoom out"
-				data-toggle="tooltip"
-				data-placement="top"
-				title="Zoom Out"
-			> <i class="fa fa-minus" />
-			</span>
-			</span>
-			<span id="switch"
-				data-toggle="tooltip"
-				data-placement="top"
-				title="Enable Full Screen">
-				<input type="checkbox" data-toggle="toggle" />
+			<div id="mapid"></div><div id="map_canvas" class="gmap" />
+
+<!--  
+			<span id="switch4" data-toggle="tooltip" data-placement="top" title="Show Graph Duplicate Attributes (slowing down performance)">
+				<input id="showDuplicateAtt" type="checkbox" data-toggle="toggle" />
         	</span>
+			<span id="switch3" data-toggle="tooltip" data-placement="top" title="Show Private Map">
+				<input id="mapPrivate" type="checkbox" data-toggle="toggle" />
+        	</span>
+			<span id="switch2" data-toggle="tooltip" data-placement="top" title="Disable Clustering (slowing down performance)">
+				<input id="disableClustering" type="checkbox" data-toggle="toggle" />
+        	</span>
+			<span id="switch" data-toggle="tooltip" data-placement="top" title="Enable Fullscreen">
+				<input id="enableFullscreen" type="checkbox" data-toggle="toggle" />
+        	</span>
+-->
+        	<div id="zoom-overlay">
+				  <button id="zoomOut" class="btn" title="Zoom Out">-</button>
+				  <button id="zoomIn" class="btn" title="Zoom In">+</button>
+			</div>
+			<button id="attribution-button" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" title="Maps Attribution">?</button>
 			<div id="panel">
 
 					<form
@@ -283,8 +210,6 @@
 						<i id="saveVisibleLocFile" name="download"
 							class="glyphicon glyphicon-file"
 							wicket:id="saveVisibleLocFile"
-																data-toggle="tooltip"
-											data-placement="top"
 											title="Download current view in CSV format"
 						/>
 						<i
@@ -295,15 +220,11 @@
 						<i id="saveSqlLocBackup"
 							class="glyphicon glyphicon-save"
 							wicket:id="saveSqlLocBackup"
-																data-toggle="tooltip"
-											data-placement="top"
 											title="Backup current view in SQL format" />
 					</form>
-					<span class="mapTypeId"> <select
+					<!--  <span class="mapTypeId"> <select
 						id="mapTypeId"
 						class="form-control"
-						data-toggle="tooltip"
-						data-placement="top"
 						title="Type of Layer"
 					>
 							<option value="grayscale">Grayscale</option>
@@ -321,9 +242,9 @@
 							<option value="colourful">Colourful</option>
 							<option value="bluewater">BlueWater</option>
 					</select>
-					</span>
+					</span>-->
 				</div>
-			<div id="color-palette" class="hide">
+			<!-- <div id="color-palette" class="hide">
 				<i
 					class="fa fa-eraser"
 					id="delete-all-button"
@@ -333,7 +254,7 @@
 					id="delete-button"
 					title="Clear after selecting a polygon"
 				/>
-			</div>
+			</div> -->
 			
 			<form wicket:id="showMarkerInfo" class="hide">
 				<input
@@ -496,15 +417,9 @@
 									class="fa fa-info-circle fa-2x iconInfo"
 									onclick="displayMoreInfo()"
 								/> <i
-									class="fa fa-map fa-2x iconDirection"
-									onclick="displayDirectionTable()"
-								/> <i
 									class="fa fa-street-view fa-2x iconStreetView"
 									onclick="displayStreetView()"
-								/> <i
-									class="fa fa-pencil fa-2x iconEditInfo"
-									onclick="getIdMarker(id)"
-								/> -->
+								/>--> 
 									<table class="selectMarkersTable2">
 										<tr>
 											<td>
@@ -539,6 +454,14 @@
 															class="imageURL"
 														/></td>
 														<td>
+														<i
+									class="fa fa-pencil fa-2x iconEditInfo"
+									onclick="getIdMarker(id)"
+								/>
+								 <i
+									class="fa fa-map fa-2x iconDirection"
+									onclick="displayDirectionTable()"
+								/>
 														</td>
 													</tr>
 													
@@ -563,7 +486,7 @@
 												
 												<table class="moreInfo2">
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="descriptionTag2"
 														/></td>
 														<td><span
@@ -571,7 +494,7 @@
 														/></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="scheduleTag2"
 														/></td>
 														<td><span
@@ -579,7 +502,7 @@
 														/></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="phoneTag2"
 														/></td>
 														<td><span
@@ -587,7 +510,7 @@
 														/></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="emailTag2"
 														/></td>
 														<td><a
@@ -595,7 +518,7 @@
 														/></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="websiteTag2"
 														/></td>
 														<td><a
@@ -604,37 +527,37 @@
 														/></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="dateTag2"
 														/></td>
 														<td><span wicket:id="date2" /></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="otherTag2"
 														/></td>
-														<td><span wicket:id="other2" /></td>
+														<td><span class="other2" wicket:id="other2" /></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="datePublishedTag2"
 														/></td>
 														<td><span wicket:id="datePublished2" /></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="dateUpdatedTag2"
 														/></td>
 														<td><span wicket:id="dateUpdated2" /></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="sourcePublishedTag2"
 														/></td>
 														<td><span wicket:id="sourcePublished2" /></td>
 													</tr>
 													<tr>
-														<td class="labelDescription"><span
+														<td><span
 															wicket:id="coordsTag2"
 														/></td>
 														<td>
@@ -646,7 +569,7 @@
 														</td>
 													</tr>
 													<tr>
-														<td class="labelDescription">Location ID:</td>
+														<td>Location ID:</td>
 														<td>
 															<span wicket:id="id_location2"
 															class="id_DB" />
@@ -661,9 +584,11 @@
 						</table>
 					</td>
 				</tr>
+				<!--  
 				<tr>
 					<td><wicket:panel wicket:id="direction2" /></td>
 				</tr>
+				-->
 			</table>
 			
 
@@ -671,59 +596,11 @@
 		   </nav>
 
 </div>
-    <!-- Dark Overlay element when click on the left sidebar -->
-    <div class="overlay"></div>
-
-		<div wicket:id="wmc">
-
-			<!--  <span wicket:id="currentPage" />-->
-			<span itemscope itemtype="https://schema.org/Property">
-					<span
-						itemprop="alternateName"
-						wicket:id="currentLatitude"
-					/> <span
-						itemprop="additionalType"
-						wicket:id="currentLongitude"
-					/>
-			</span>
-
-
-			<table>
-			<tr><td>
-									<span itemscope itemtype="https://schema.org/GeoCoordinates" wicket:id="rows" class="hide">
-														<span
-															itemprop="url"
-															wicket:id="id_location" />
-															<span
-															itemprop="subjectOf"
-															wicket:id="list_size"
-														/>
-															<span
-															itemprop="name"
-															wicket:id="name"
-														/><span
-															itemprop="identifier"
-															wicket:id="icon_marker"
-														/>
-															<span itemprop="latitude"
-																	wicket:id="latitude" /><span
-																	itemprop="longitude"
-																	wicket:id="longitude"
-																/>
-									</span>
-													</td></tr>
-				<tr>
-					<td><span
-						class="tableNavigator"
-						wicket:id="tableNavigator"
-					></span><!-- <a
-						class="showHideNavigator"
-						onclick="$('.tableNavigator').slideToggle();"
-					>Show/hide</a> --></td>
-				</tr>
-			</table>
-		</div>
-		</div>
-	</wicket:extend>
+	<div id="jsonObject" />
+    <!-- IMPORTANT - Dark Overlay element when click out from the Markerinfo Sidebar -->
+    <div class="overlay" />
+	<div wicket:id="wmc" />
+</div>
+</wicket:extend>
 </body>
 </html>

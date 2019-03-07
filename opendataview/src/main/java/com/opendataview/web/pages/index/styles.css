@@ -101,13 +101,6 @@ p {
 	color: #fff;
 	background: rgba(255, 255, 255, 0.35);
 }
-.moreInfo > tbody > tr :not(.labelDescription) {
-	line-height: 1.8;
-	max-width: 240px;
-	display: block;
-	word-wrap: break-word;
-	padding: 1.5px 0px;
-}
 a {
 	color: #CC4646;
 	text-decoration: none;
@@ -124,19 +117,36 @@ a:hover {
 	color: #DF3927;
 	text-decoration: underline;
 }
-
 .btn {
-	background-color: #cc4646ba;
-	border: solid #f8f9fa7d 1.5px;
+    background-color: #F8F9F9;
+    border: solid #4444448f 1.2px;
+    padding: 0.9rem 1.2rem !important;
+    color: #444444cf !important;
+	font-size: 13px;
+}
+.btn-dark {
+	background: #444;
+	color: #fff;
 }
 
+.btn-dark:hover {
+	background: #000;
+	color: #fff;
+}
+.btn-lg {
+	border-radius: 1px;
+	-webkit-border-radius: 1px;
+	-moz-border-radius: 1px;
+	margin: 0px 1.2px;
+}
 .btn:hover {
-	background-color: #CC4646;
-	border: solid #8484846e 1.5px;
+	color: white !important;
+	background-color: #9a9b9d;
+	border: solid #9a9b9d 1.2px;
 }
 
 .btn-primary {
-	background: #cc4646ba;
+	background: #F8F9F9;
 }
 
 /*
@@ -881,21 +891,6 @@ nav#filter a {
 .page-section.intro {
 	min-height: 600px;
 }
-
-.btn {
-	font-weight: 200;
-}
-
-.btn-dark {
-	background: #444;
-	color: #fff;
-}
-
-.btn-dark:hover {
-	background: #000;
-	color: #fff;
-}
-
 .back-to-top {
 	display: inline-block;
 	clear: both;
@@ -941,6 +936,9 @@ hr {
 	padding: 5px;
 	text-decoration: none;
 	transition: all 400ms;
+}
+#navigation>li>a:hover {
+	text-decoration: none;
 }
 
 #navigation>li>a.current, #navigation>li:hover>a {
@@ -1144,11 +1142,7 @@ footer {
 	margin-left: 0;
 }
 
-.btn {
-	padding: 0.9rem 1.2rem !important;
-	color: white;
-	font-size: 13px;
-}
+
 
 /*select.form-control:not([size]):not([multiple]), .form-control {
     min-height: 32px !important;

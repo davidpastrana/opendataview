@@ -1,7 +1,5 @@
 package com.opendataview.web.persistence;
 
-import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.List;
 
@@ -96,27 +94,31 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 
 	@Override
 	@Transactional
-	public boolean checkLocationExistanceByOtherName(String[] listValues) {
+	public boolean checkLocationExistanceByOtherName(List<String> listValues) {
 
-//		log.info("values to check" + Arrays.toString(listValues));
-//
-//		log.info("QUERY TO CHECK: select l from locations l where l.latitude = '" + listValues[7]
-//				+ "' and l.longitude = '" + listValues[8] + "' and lower(csvname) = '" + listValues[14].toLowerCase()
-//				+ "'");
+		String latitude = listValues.get(6);
+		String longitude = listValues.get(7);
+		String csvname = listValues.get(13);
+
+		log.info("values to check" + Arrays.asList(listValues));
+
+		log.info("QUERY TO CHECK: select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '"
+				+ longitude + "' and lower(csvname) = '" + csvname.toLowerCase() + "'");
 
 		if (listValues != null) {
 
 //		 //we get the desired info to check if is an update, being after the third double-hash symbol
 //		  String value = listValues[21].substring(listValues[21].indexOf(" ## ", 1 + listValues[21].indexOf(" ## ", 1 + listValues[21].indexOf(" ## ")))+4);
 ////		  log.info("DESIRED INFO "+value);
-			log.info("select l from locations l where l.latitude = '\" + listValues[6] + \"' and l.longitude = '\"\n"
-					+ "							+ listValues[7] + \"' and lower(csvname) = '\" + listValues[13].toLowerCase() + \"'");
+			log.info("select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '" + longitude
+					+ "' and lower(csvname) = '" + csvname.toLowerCase() + "'");
 //		  Query query = getEntityManager().createQuery("select l from locations l where lower(otherinfo) like '%"+value.toLowerCase()+"'",
 
-			Query query = getEntityManager().createQuery(
-					"select l from locations l where l.latitude = '" + listValues[6] + "' and l.longitude = '"
-							+ listValues[7] + "' and lower(csvname) = '" + listValues[13].toLowerCase() + "'",
-					LocationModel.class);
+			Query query = getEntityManager()
+					.createQuery(
+							"select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '"
+									+ longitude + "' and lower(csvname) = '" + csvname.toLowerCase() + "'",
+							LocationModel.class);
 
 			if (query.getResultList() == null || query.getResultList().isEmpty()) {
 				return false;
@@ -130,21 +132,20 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 
 	@Override
 	@Transactional
-	public void updateQuery(String[] listValues, boolean hasid) {
+	public void updateQuery(List<String> listValues, boolean hasid) {
 
 		// Not needed anymore
-//		for (int i = 0; i < listValues.length; i++) {
-//			listValues[i] = listValues[i].replaceAll("'", "").replace("null", "");
-//			// log.info("val2: " + listValues[i]);
-//		}
+		for (int i = 0; i < listValues.size(); i++) {
+			log.info("val2: " + listValues.get(i));
+		}
 
-		log.info("values to update" + Arrays.toString(listValues));
+		// log.info("values to update" + Arrays.toString(listValues));
 		// ADD VALUE WHEN WE INSERT SOME NEW FIELD INTO LOCATIONS TABLE - ALWAYS TO ADD
 		// AT THE END - MAKE SURE IS IN THE SAME ORDER
 
 		Query query = null;
 
-		int pos = 0;
+		// int pos = 0;
 
 		if (hasid == true) {
 
@@ -154,7 +155,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
 							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,otherinfo=:otherinfo,rating=:rating,nrating=:nrating,iconmarker=:iconmarker where id = :id",
 					LocationModel.class);
-			query.setParameter("id", new BigInteger(listValues[pos]));
+			query.setParameter("id", new Float(listValues.get(0)));
 
 			// USED ONLY FOR THE BACKUPS TO NOT CHANGE
 
@@ -188,10 +189,18 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 			// AT THE END - MAKE SURE IS IN THE SAME ORDER
 			// Make sure the update selected values appear to be the correct numbers (spent
 			// 2h for that)
-			pos = -1;
-			String latitude = listValues[pos + 7];
-			String longitude = listValues[pos + 8];
-			String csvname = listValues[pos + 14];
+			// pos = -1;
+			String latitude = listValues.get(6);
+			String longitude = listValues.get(7);
+			String csvname = listValues.get(13);
+
+			log.info(
+					"QUERY TO UPDATE: update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
+							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
+							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,otherinfo=:otherinfo,rating=:rating,nrating=:nrating where latitude = '"
+							+ latitude + "' and longitude = '" + longitude + "' and lower(csvname) = '"
+							+ csvname.toLowerCase() + "'");
+
 			query = entityManager.createNativeQuery(
 					"update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
 							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
@@ -231,30 +240,30 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 //			query.setParameter("nrating", Integer.parseInt(listValues[24]));
 
 		}
-		query.setParameter("name", listValues[pos + 1]);
-		query.setParameter("description", listValues[pos + 2]);
-		query.setParameter("type", listValues[pos + 3]);
-		query.setParameter("address", listValues[pos + 4]);
-		query.setParameter("postcode", listValues[pos + 5]);
-		query.setParameter("city", listValues[pos + 6]);
-		query.setParameter("latitude", new BigDecimal(listValues[pos + 7]));
-		query.setParameter("longitude", new BigDecimal(listValues[pos + 8]));
-		query.setParameter("website", listValues[pos + 9]);
-		query.setParameter("phone", listValues[pos + 10]);
-		query.setParameter("date", listValues[pos + 11]);
-		query.setParameter("schedule", listValues[pos + 12]);
-		query.setParameter("email", listValues[pos + 13]);
-		query.setParameter("csvName", listValues[pos + 14]);
-		query.setParameter("population", listValues[pos + 15]);
-		query.setParameter("elevation", listValues[pos + 16]);
-		query.setParameter("username", listValues[pos + 17]);
-		query.setParameter("source", listValues[pos + 18]);
-		// query.setParameter("date_published", listValues[pos+19]);
-		query.setParameter("date_updated", listValues[pos + 20]);
-		query.setParameter("iconmarker", listValues[pos + 21]);
-		query.setParameter("otherinfo", listValues[pos + 22]);
-		query.setParameter("rating", Double.parseDouble(listValues[pos + 23]));
-		query.setParameter("nrating", Integer.parseInt(listValues[pos + 24]));
+		query.setParameter("name", listValues.get(0));
+		query.setParameter("description", listValues.get(1));
+		query.setParameter("type", listValues.get(2));
+		query.setParameter("address", listValues.get(3));
+		query.setParameter("postcode", listValues.get(4));
+		query.setParameter("city", listValues.get(5));
+		query.setParameter("latitude", new Float(listValues.get(6)));
+		query.setParameter("longitude", new Float(listValues.get(7)));
+		query.setParameter("website", listValues.get(8));
+		query.setParameter("phone", listValues.get(9));
+		query.setParameter("date", listValues.get(10));
+		query.setParameter("schedule", listValues.get(11));
+		query.setParameter("email", listValues.get(12));
+		query.setParameter("csvName", listValues.get(13));
+		query.setParameter("population", listValues.get(14));
+		query.setParameter("elevation", listValues.get(15));
+		query.setParameter("username", listValues.get(16));
+		query.setParameter("source", listValues.get(17));
+		// query.setParameter("date_published", listValues.get(18));
+		query.setParameter("date_updated", listValues.get(19));
+		query.setParameter("iconmarker", listValues.get(20));
+		query.setParameter("otherinfo", listValues.get(21));
+		query.setParameter("rating", Double.parseDouble(listValues.get(22)));
+		query.setParameter("nrating", Integer.parseInt(listValues.get(23)));
 		query.executeUpdate();
 	}
 
@@ -329,9 +338,26 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	@Override
 	@Transactional
 	public List<LocationModel> searchLocationModel(String location_value) throws DataAccessException {
-		Query query = getEntityManager()
-				.createQuery("select l from locations l where lower(replace(otherinfo,' ', '')) like '%"
-						+ location_value.replaceAll("\\s+", "").toLowerCase() + "%'", LocationModel.class);
+
+//		log.info(
+//				"HOUR QUERY IS: select l from locations l where lower(replace(replace(otherinfo,'##',''),' ', '')) like '%"
+//						+ location_value.replaceAll("\\s+", "").toLowerCase() + "%'");
+		Query query = getEntityManager().createQuery(
+				"select l from locations l where lower(replace(replace(otherinfo,'##',''),' ', '')) like '%"
+						+ location_value.replaceAll("\\s+", "").toLowerCase() + "%'",
+				LocationModel.class);
+		// query.setParameter(1, "%"+location_value+"%");
+		List<LocationModel> resultList = query.getResultList();
+		return resultList;
+	}
+
+	@Override
+	@Transactional
+	public List<LocationModel> searchLocationByFileName(String filename) throws DataAccessException {
+
+		// log.info("Query: select l from locations l where csvname=" + filename);
+		Query query = getEntityManager().createQuery("from locations where csvname = :filename", LocationModel.class);
+		query.setParameter("filename", filename);
 		// query.setParameter(1, "%"+location_value+"%");
 		List<LocationModel> resultList = query.getResultList();
 		return resultList;

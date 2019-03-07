@@ -9,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,9 +61,10 @@ public class RunSqlScript {
 			String queryid_value = line.replaceAll("'", "").split("VALUES\\(")[1].split(",")[0];
 
 			// splits on colon and gets values out from query INSERT VALUES (__);
-			String[] listValues = line.replaceAll("'", "").split("VALUES\\(")[1].split("\\);$")[0].split(",");
+			List<String> listValues = new ArrayList<String>();
+			listValues = Arrays.asList(line.replaceAll("'", "").split("VALUES\\(")[1].split("\\);$")[0].split(","));
 
-			log.info("\n\nvalues " + Arrays.toString(listValues));
+			log.info("\n\nvalues " + Arrays.asList(listValues));
 
 			// check if requires an sql update or not, by executing the inster query
 

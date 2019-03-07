@@ -6,6 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -15,7 +19,6 @@ import java.util.List;
 
 import javax.servlet.ServletContext;
 
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
@@ -42,8 +45,10 @@ import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.protocol.http.PageExpiredException;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.WebSession;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,8 +71,19 @@ public class SetPropertiesPage extends BasePage {
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
-
-//$('.file-drop-zone-title').text('Drag & drop files here ..');
+		boolean logs = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("logs").toBoolean();
+		boolean uploads = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("uploads")
+				.toBoolean();
+		boolean config = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("config").toBoolean();
+		if (logs) {
+			response.render(OnDomReadyHeaderItem.forScript("$('.nav-tabs a[href=\"#nav-logs\"]').tab('show');"));
+		}
+		if (uploads) {
+			response.render(OnDomReadyHeaderItem.forScript("$('.nav-tabs a[href=\"#nav-uploads\"]').tab('show');"));
+		}
+		if (config) {
+			response.render(OnDomReadyHeaderItem.forScript("$('.nav-tabs a[href=\"#nav-config\"]').tab('show');"));
+		}
 		response.render(OnDomReadyHeaderItem.forScript(
 				"$('.fileinput-remove-button,.fileinput-cancel-button').hide();$('button.fileinput-upload-button').text('Run');$('button.fileinput-upload-button');"));
 	}
@@ -224,7 +240,12 @@ public class SetPropertiesPage extends BasePage {
 			FeedbackPanel feedbackPanel = new FeedbackPanel("feedback");
 			feedbackPanel.setOutputMarkupId(true);
 			feedbackPanel.setOutputMarkupPlaceholderTag(true);
-			feedbackPanel.setVisible(false);
+
+			if (RequestCycle.get().getRequest().getRequestParameters().getParameterValue("logs").toString() != null) {
+				feedbackPanel.setVisible(true);
+			} else {
+				feedbackPanel.setVisible(false);
+			}
 			wmc.add(feedbackPanel);
 
 			final Form<?> formTypes = new Form<Void>("formTypes");
@@ -399,16 +420,18 @@ public class SetPropertiesPage extends BasePage {
 							new PropertyModel<String>(item.getModelObject(), "possiblenameRegex")));
 					item.add(new TextField<String>("descriptionRegex",
 							new PropertyModel<String>(item.getModelObject(), "descriptionRegex")));
-					item.add(new DropDownChoice<String>("iconmarker",
-							new PropertyModel<String>(item.getModelObject(), "iconmarker"),
-							Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13",
-									"14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27",
-									"28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41",
-									"42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55",
-									"56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
-									"70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83",
-									"84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97",
-									"98", "99", "100")));
+					item.add(new TextArea<String>("iconmarker",
+							new PropertyModel<String>(item.getModelObject(), "iconmarker")));
+//					item.add(new DropDownChoice<String>("iconmarker",
+//							new PropertyModel<String>(item.getModelObject(), "iconmarker"),
+//							Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13",
+//									"14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27",
+//									"28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41",
+//									"42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55",
+//									"56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
+//									"70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83",
+//									"84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97",
+//									"98", "99", "100")));
 					item.add(new DropDownChoice<String>("countrycode",
 							new PropertyModel<String>(item.getModelObject(), "countrycode"),
 							Arrays.asList("AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW",
@@ -491,7 +514,12 @@ public class SetPropertiesPage extends BasePage {
 				}
 
 			};
-			downloadLogDetails.setVisible(false);
+			if (RequestCycle.get().getRequest().getRequestParameters().getParameterValue("logs").toString() != null) {
+				downloadLogDetails.setVisible(true);
+			} else {
+				downloadLogDetails.setVisible(false);
+			}
+			downloadLogDetails.setOutputMarkupId(true);
 			form.add(downloadLogDetails);
 
 			final Button saveProperties = new Button("saveProperties") {
@@ -508,6 +536,10 @@ public class SetPropertiesPage extends BasePage {
 						info("Error. No properties defined in database table.");
 						feedbackPanel.setVisible(true);
 					}
+					PageParameters params = new PageParameters();
+					params.add("config", true);
+					setResponsePage(getPage().getClass(), params);
+
 				}
 			};
 			form.add(saveProperties);
@@ -542,12 +574,16 @@ public class SetPropertiesPage extends BasePage {
 							locationServiceDAO.removeLocationByName(namesRemoveSelect.get(i));
 						}
 					}
-					setResponsePage(getPage().getClass(), getPage().getPageParameters());
+
+					PageParameters params = new PageParameters();
+					params.add("uploads", true);
+					setResponsePage(getPage().getClass(), params);
+					// setResponsePage(getPage().getClass(), getPage().getPageParameters());
 				}
 			};
 			form.add(removeSelectedFiles);
 
-			Label showFilesUpload = new Label("showFilesUpload", "Your file uploads:");
+			Label showFilesUpload = new Label("showFilesUpload", "Your uploads:");
 
 			form.add(showFilesUpload);
 
@@ -589,7 +625,7 @@ public class SetPropertiesPage extends BasePage {
 			form.add(retrieveCKAN);
 			resultsBox = new TextArea<String>("resultsBox", textResult);
 			resultsBox.setOutputMarkupPlaceholderTag(true);
-			wmc.add(resultsBox);
+			form.add(resultsBox);
 //       final Button runCKAN = new Button("runCKAN") {
 //    	   
 //
@@ -931,11 +967,11 @@ public class SetPropertiesPage extends BasePage {
 					boolean clear = false;
 					List<FileUpload> fileUploads = model.getObject();
 					if (fileUploads != null) {
-						success("Processed files:");
 
 						int countfile = 1;
 						int countfile2 = 1;
 
+						StringBuilder message = new StringBuilder();
 						for (FileUpload upload : fileUploads) {
 
 							try {
@@ -973,11 +1009,35 @@ public class SetPropertiesPage extends BasePage {
 									}
 									MainClass.start(upload_folder + "uploads/", newFile, feedbackPanel, clear, user);
 
-								} catch (Exception e) {
-									e.printStackTrace();
-								}
+								} catch (Exception ex) {
+									StringWriter errors = new StringWriter();
+									errors.append(
+											"Some error occurred, please send us an email with the error message and test file to: david@dpastrana.com.\n\n Thanks for your understanding!\n\nTimeStamp: "
+													+ DateTime.now() + "\nErrorDetails:\n");
+									ex.printStackTrace(new PrintWriter(errors));
+									// Opens the email desktop with the email already prepared
+//									try {
+//										String uriStr = String.format("mailto:%s?subject=%s&body=%s",
+//												join(",",
+//														Arrays.asList("david@dpastrana.com",
+//																"alu0100508031@student.tuwien.at")),
+//												urlEncode("Error during transaction [opendataview.com]"),
+//												urlEncode(errors.toString()));
+//										Desktop.getDesktop().browse(new URI(uriStr));// Outlook
+//									} catch (IOException | URISyntaxException e) {
+//										e.printStackTrace();
+//									}
 
-								success("File " + countfile + ": " + upload.getClientFileName());
+									error(errors.toString());
+									log.error("\n\nError: " + errors.toString());
+									break;
+									// ex.printStackTrace();
+								}
+								if (countfile == 1) {
+									// success("Processed files:");
+									message.append("Processed files:");
+								}
+								message.append("\nFile " + countfile + ": " + upload.getClientFileName());
 								countfile++;
 							}
 							if (upload.getContentType().contentEquals("application/octet-stream")) {
@@ -1003,18 +1063,21 @@ public class SetPropertiesPage extends BasePage {
 								} catch (Exception e) {
 									e.printStackTrace();
 								}
-								success("Backup " + countfile2 + ": " + upload.getClientFileName());
+								message.append("\nBackup " + countfile2 + ": " + upload.getClientFileName());
 								countfile2++;
 							}
 
 						}
+						success(message);
 
 						downloadLogDetails.setVisible(true);
 						feedbackPanel.setVisible(true);
-						feedbackPanel.add(new AttributeModifier("class",
-								String.valueOf(this.getMarkupAttributes().get("class")).replaceFirst("error", "")));
-						feedbackPanel.add(AttributeModifier.append("class", "success"));
+//						feedbackPanel.add(new AttributeModifier("class",
+//								String.valueOf(this.getMarkupAttributes().get("class")).replaceFirst("error", "")));
+//						feedbackPanel.add(AttributeModifier.append("class", "success"));
 						wmc.modelChanged();
+						resultsBox.modelChanged();
+						listRemoveLocations.modelChanged();
 
 						showFilesUpload.setVisible(true);
 						listRemoveLocations.setVisible(true);
@@ -1023,7 +1086,10 @@ public class SetPropertiesPage extends BasePage {
 
 						// We reload page after printing the result
 
-						setResponsePage(getPage());
+						PageParameters params = new PageParameters();
+						params.add("logs", true);
+						setResponsePage(getPage().getClass(), params);
+
 						// setResponsePage(getPage().getClass(), getPage().getPageParameters());
 
 					} else {
@@ -1042,10 +1108,10 @@ public class SetPropertiesPage extends BasePage {
 			bootstrapFileInput.setRenderBodyOnly(true);
 			bootstrapFileInput.setOutputMarkupId(true);
 
-			bootstrapFileInput.add(new AttributeModifier("span", String.valueOf(this.getMarkupAttributes().get("span"))
-					.replaceFirst("Upload", "Run Heuristic Analysis")));
+//			bootstrapFileInput.add(new AttributeModifier("span", String.valueOf(this.getMarkupAttributes().get("span"))
+//					.replaceFirst("Upload", "Run Heuristic Analysis")));
 
-			wmc.add(bootstrapFileInput);
+			form.add(bootstrapFileInput);
 
 //  final Label label = new Label("dropzonelabel","This is a label changed by dropzone");
 //  label.setOutputMarkupId(true);
@@ -1146,4 +1212,31 @@ public class SetPropertiesPage extends BasePage {
 			feedbackPanel.setVisible(true);
 		}
 	}
+
+//	public static void mailto(List<String> recipients, String subject, String body)
+//			throws IOException, URISyntaxException {
+//		String uriStr = String.format("mailto:%s?subject=%s&body=%s", join(",", recipients), // use semicolon ";" for
+//																								// Outlook!
+//				urlEncode(subject), urlEncode(body));
+//		Desktop.getDesktop().browse(new URI(uriStr));
+//	}
+
+	private static final String urlEncode(String str) {
+		try {
+			return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
+		} catch (UnsupportedEncodingException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
+	public static final String join(String sep, Iterable<?> objs) {
+		StringBuilder sb = new StringBuilder();
+		for (Object obj : objs) {
+			if (sb.length() > 0)
+				sb.append(sep);
+			sb.append(obj);
+		}
+		return sb.toString();
+	}
+
 }

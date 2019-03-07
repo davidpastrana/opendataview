@@ -1,15 +1,16 @@
 package com.opendataview.web.pages.index;
 
-import java.util.EnumSet;
-
-import javax.servlet.SessionTrackingMode;
-
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.core.util.file.WebApplicationPath;
 import org.apache.wicket.javascript.DefaultJavaScriptCompressor;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.IRequestCycleListener;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
 import com.opendataview.web.pages.contact.AboutUsPage;
 import com.opendataview.web.pages.contact.ContactPage;
 import com.opendataview.web.pages.error.AccessDeniedPage;
+import com.opendataview.web.pages.error.ErrorPage404;
 import com.opendataview.web.pages.error.InternalErrorPage;
 import com.opendataview.web.pages.error.PageExpiredErrorPage;
 import com.opendataview.web.pages.locations.LocationServicePage;
@@ -52,6 +54,14 @@ public class WicketApplication extends AuthenticatedWebApplication {
 	@Override
 	public void init() {
 		super.init();
+
+		// Catch runtime exceptions this way:
+		getRequestCycleListeners().add(new IRequestCycleListener() {
+			@Override
+			public IRequestHandler onException(RequestCycle cycle, Exception e) {
+				return new RenderPageRequestHandler(new PageProvider(new ErrorPage404(e)));
+			}
+		});
 
 		log.info("Uses usesDeploymentConfig: " + usesDeploymentConfig());
 
@@ -112,7 +122,8 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		mountPage("/register", RegisterUserPage.class);
 		mountPage("/login", LoginUserPage.class);
 		mountPage("/logout", LogoutUserPage.class);
-		mountPage("/error", InternalErrorPage.class);
+		mountPage("/error2", InternalErrorPage.class);
+		mountPage("/error", ErrorPage404.class);
 		mountPage("/access-denied", AccessDeniedPage.class);
 		mountPage("/session-expired", PageExpiredErrorPage.class);
 		mountResource("sitemap.xml", new SitemapPage());
@@ -124,16 +135,13 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		getResourceSettings().getResourceFinders()
 				.add(new WebApplicationPath(getServletContext(), "/src/main/resources/"));
 //		getStoreSettings().setInmemoryCacheSize(50);
-//		getStoreSettings().setMaxSizePerSession(Bytes.kilobytes(500));
-		// getApplicationSettings().setPageExpiredErrorPage(CustomExpiredErrorPage.class);
-
 		getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
 		// set cookie mode to keep open the same session id
-		getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+		// getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
 
 		// set error pages
-		getApplicationSettings().setPageExpiredErrorPage(PageExpiredErrorPage.class);
+		getApplicationSettings().setPageExpiredErrorPage(LoginUserPage.class);
 		getApplicationSettings().setInternalErrorPage(InternalErrorPage.class);
 		getApplicationSettings().setAccessDeniedPage(AccessDeniedPage.class);
 
@@ -142,9 +150,10 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		getMarkupSettings().setCompressWhitespace(true);
 		getMarkupSettings().setStripComments(true);
 		getMarkupSettings().setStripWicketTags(true);
+		getMarkupSettings().setAutomaticLinking(true); // used for <wicket:link>
 
 		// increase request timeout to support long running transactions
-		getRequestCycleSettings().setTimeout(Duration.hours(5));
+		getRequestCycleSettings().setTimeout(Duration.hours(1));
 
 		// RTFACT-4619, fixed by patching HeaderBufferingWebResponse
 		getRequestCycleSettings().setBufferResponse(false);
@@ -152,8 +161,8 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		// RTFACT-4636
 		getPageSettings().setVersionPagesByDefault(false);
 
-//    IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
-//    setRootRequestMapper(cryptoMapper);
+//		IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
+//		setRootRequestMapper(cryptoMapper);
 
 	}
 

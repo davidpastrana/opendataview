@@ -188,6 +188,7 @@ public class MainClass extends SetPropertiesPage {
 			if (startCopying && x == ' ') {
 				// obj.setLongitude(new BigDecimal(new Double(newFormat), new
 				// MathContext(newFormat.length() - 2)));
+
 				obj.setLongitude(new Float(newFormat));
 				newFormat = "";
 				isLatitudeRead = true;
@@ -199,7 +200,7 @@ public class MainClass extends SetPropertiesPage {
 				// newFormat = newFormat.replace(")", "");
 				// obj.setLatitude(new BigDecimal(new Double(newFormat), new
 				// MathContext(newFormat.length() - 2)));
-				obj.setLongitude(new Float(newFormat));
+				obj.setLatitude(new Float(newFormat));
 				startCopying = !startCopying;
 			}
 		}
@@ -554,168 +555,168 @@ public class MainClass extends SetPropertiesPage {
 					String val = linex[j].toLowerCase().replaceAll("\"", "").trim();
 					file_values[i][j] = val;
 					// inh means i with no header, otherwise would have started from i=1
-					if (fieldtypesdebugmode || geonamesdebugmode)
-						// log.info("check: " + val);
+					// if (fieldtypesdebugmode || geonamesdebugmode)
+					// log.info("check: " + val);
 
-						if (val.matches(phoneRegex)) {
-							PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-							// try {
-							PhoneNumber phone = phoneUtil.parse(val, country_code);
+					if (val.matches(phoneRegex)) {
+						PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
+						// try {
+						PhoneNumber phone = phoneUtil.parse(val, country_code);
 
-							if (phoneUtil.isValidNumber(phone)) {
-								log.info("Phone found for val " + val + " with code " + country_code);
-								column_types[inh][j] = "phones";
-								log.info("we are in column type with i:" + i + " and j:" + j + " and we added="
-										+ column_types[i][j]);
+						if (phoneUtil.isValidNumber(phone)) {
+							log.info("Phone found for val " + val + " with code " + country_code);
+							column_types[inh][j] = "phones";
+							log.info("we are in column type with i:" + i + " and j:" + j + " and we added="
+									+ column_types[i][j]);
+						}
+						// } catch (NumberParseException e) {
+						// // System.err.println("NumberParseException was thrown: " + e.toString());
+						// }
+					} else if (EmailValidator.getInstance().isValid(val)) {
+						// log.info("we have an email ! in fil " + i + " and col " + j);
+						column_types[inh][j] = "emails";
+					} else if (UrlValidator.getInstance().isValid(val)
+							|| UrlValidator.getInstance().isValid("http://" + val)) {
+						if (val.matches(imageRegex)) {
+							column_types[inh][j] = "images";
+						} else if (val.matches(archiveRegex)) {
+							column_types[inh][j] = "archives";
+						} else if (val.matches(documentRegex)) {
+							column_types[inh][j] = "documents";
+						} else {
+							column_types[inh][j] = "urls";
+						}
+					} else if (val.matches(openinghoursRegex)) {
+						column_types[inh][j] = "working_hours";
+					} else if (val.matches(dateRegex)) {
+
+						column_types[inh][j] = "dates";
+					} else if (val.matches(yearRegex)) {
+						column_types[inh][j] = "years";
+					} else if (val.replaceAll(" ", "").matches(currencyRegex)) {
+						column_types[inh][j] = "currencies";
+					} else if (val.replaceAll(" ", "").matches(percentageRegex)) {
+						column_types[inh][j] = "percentages";
+					} else if (val.matches(postcodeRegex)) {
+						// conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr,
+						// geonames_dbpwd);
+						rs = GeonamesSQLQueries.getPostcodeLatLng(Integer.valueOf(val), conn);
+						if (rs != null) {
+							// log.info("WE HAVE A POSTCODE!!! with name " + rs.getString(2) + " for[" + val
+							// + "] , latitude is " + rs.getString(3) + " and longitude is " +
+							// rs.getString(4)
+							// + " in line " + i);
+							column_types[inh][j] = "postal_codes";
+						}
+						// rs.close();
+						// conn.close();
+					} else if (val.matches(nutsRegex)) {
+						// log.info("value is " + val);
+
+						double[] latlng = new ReadGISShapes(parameters).getNutsLatLng(val.toUpperCase());
+						if (latlng != null) {
+							// log.info("result is " + latlng[0]);
+							switch (val.length()) {
+							case 3:
+								column_types[inh][j] = "nuts1";
+								break;
+							case 4:
+								column_types[inh][j] = "nuts2";
+								break;
+							case 5:
+								column_types[inh][j] = "nuts3";
+								break;
 							}
-							// } catch (NumberParseException e) {
-							// // System.err.println("NumberParseException was thrown: " + e.toString());
-							// }
-						} else if (EmailValidator.getInstance().isValid(val)) {
-							// log.info("we have an email ! in fil " + i + " and col " + j);
-							column_types[inh][j] = "emails";
-						} else if (UrlValidator.getInstance().isValid(val)
-								|| UrlValidator.getInstance().isValid("http://" + val)) {
-							if (val.matches(imageRegex)) {
-								column_types[inh][j] = "images";
-							} else if (val.matches(archiveRegex)) {
-								column_types[inh][j] = "archives";
-							} else if (val.matches(documentRegex)) {
-								column_types[inh][j] = "documents";
-							} else {
-								column_types[inh][j] = "urls";
-							}
-						} else if (val.matches(openinghoursRegex)) {
-							column_types[inh][j] = "working_hours";
-						} else if (val.matches(dateRegex)) {
+							// log.info("WE HAVE NUTS!!! with latitude is " + latlng[0] + " and longitude is
+							// "
+							// + latlng[1] + " in line " + i);
+						}
 
-							column_types[inh][j] = "dates";
-						} else if (val.matches(yearRegex)) {
-							column_types[inh][j] = "years";
-						} else if (val.replaceAll(" ", "").matches(currencyRegex)) {
-							column_types[inh][j] = "currencies";
-						} else if (val.replaceAll(" ", "").matches(percentageRegex)) {
-							column_types[inh][j] = "percentages";
-						} else if (val.matches(postcodeRegex)) {
-							// conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr,
-							// geonames_dbpwd);
-							rs = GeonamesSQLQueries.getPostcodeLatLng(Integer.valueOf(val), conn);
-							if (rs != null) {
-								// log.info("WE HAVE A POSTCODE!!! with name " + rs.getString(2) + " for[" + val
-								// + "] , latitude is " + rs.getString(3) + " and longitude is " +
-								// rs.getString(4)
-								// + " in line " + i);
-								column_types[inh][j] = "postal_codes";
-							}
-							// rs.close();
-							// conn.close();
-						} else if (val.matches(nutsRegex)) {
-							// log.info("value is " + val);
+					} else if (val.matches(shapeRegex)) {
+						column_types[inh][j] = "shapes";
+					} else if (val.matches(latitudeRegex) && latitude_visited == false) {
+						column_types[inh][j] = "latitudes";
+						latitude_visited = true;
+					} else if (val.matches(longitudeRegex) && latitude_visited == true) {
+						column_types[inh][j] = "longitudes";
+						latitude_visited = false;
+					} else if (val.matches(latlngRegex)) {
+						column_types[inh][j] = "latlong";
+						// } else if (val.matches(cityRegex) &&
+						// !val.matches("^(other|city|district|state)$")) {
+					} else if (val.matches(descriptionRegex)) {
+						column_types[inh][j] = "descriptions";
+					} else if (val.matches(cityRegex)) {
+						outputinfo.append("\n");
+						log.info("\n");
+						// conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr,
+						// geonames_dbpwd);
 
-							double[] latlng = new ReadGISShapes(parameters).getNutsLatLng(val.toUpperCase());
-							if (latlng != null) {
-								// log.info("result is " + latlng[0]);
-								switch (val.length()) {
-								case 3:
-									column_types[inh][j] = "nuts1";
-									break;
-								case 4:
-									column_types[inh][j] = "nuts2";
-									break;
-								case 5:
-									column_types[inh][j] = "nuts3";
-									break;
-								}
-								// log.info("WE HAVE NUTS!!! with latitude is " + latlng[0] + " and longitude is
-								// "
-								// + latlng[1] + " in line " + i);
-							}
+						// log.info("We are in line " + linex + " col " + j);
 
-						} else if (val.matches(shapeRegex)) {
-							column_types[inh][j] = "shapes";
-						} else if (val.matches(latitudeRegex) && latitude_visited == false) {
-							column_types[inh][j] = "latitudes";
-							latitude_visited = true;
-						} else if (val.matches(longitudeRegex) && latitude_visited == true) {
-							column_types[inh][j] = "longitudes";
-							latitude_visited = false;
-						} else if (val.matches(latlngRegex)) {
-							column_types[inh][j] = "latlong";
-							// } else if (val.matches(cityRegex) &&
-							// !val.matches("^(other|city|district|state)$")) {
-						} else if (val.matches(descriptionRegex)) {
-							column_types[inh][j] = "descriptions";
-						} else if (val.matches(cityRegex)) {
-							outputinfo.append("\n");
-							log.info("\n");
-							// conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr,
-							// geonames_dbpwd);
-
-							// log.info("We are in line " + linex + " col " + j);
-
-							result = GeonamesSQLQueries.getCityLatLng(true, null, rs, val, conn, column_types,
-									file_values, country_code, i, j);
-							if (result != false) {
-								if (tmp_cities[j] == null) {
-									log.info("??????????????? we have city in column: " + j);
-									column_types[inh][j] = "cities";
-									tmp_cities[j] = val;
+						result = GeonamesSQLQueries.getCityLatLng(true, null, rs, val, conn, column_types, file_values,
+								country_code, i, j);
+						if (result != false) {
+							if (tmp_cities[j] == null) {
+								log.info("??????????????? we have city in column: " + j);
+								column_types[inh][j] = "cities";
+								tmp_cities[j] = val;
 //                 log.info("WE HAVE A CITY!!! with name " + rs.getString(2) + " for[" + val
 //                 + "] , latitude is " + rs.getString(3) + " and longitude is " + rs.getString(4)
 //                 + " in line " + i + " and column "+j);
-								} else if (!tmp_cities[j].contentEquals(val)) {
-									log.info("??? we have city in column: " + j);
-									// log.info("for line " + j + " tmp_cities[j] is " + tmp_cities[j] + " with val
-									// "
-									// + val);
-									column_types[inh][j] = "cities";
-									tmp_cities[j] = val;
+							} else if (!tmp_cities[j].contentEquals(val)) {
+								log.info("??? we have city in column: " + j);
+								// log.info("for line " + j + " tmp_cities[j] is " + tmp_cities[j] + " with val
+								// "
+								// + val);
+								column_types[inh][j] = "cities";
+								tmp_cities[j] = val;
 //                log.info("WE HAVE A CITY!!! with name " + rs.getString(2) + " for[" + val
 //                + "] , latitude is " + rs.getString(3) + " and longitude is " + rs.getString(4)
 //                + " in line " + i + " and column "+j);
-								}
-								// rs.close();
-								// conn.close();
-
 							}
+							// rs.close();
+							// conn.close();
 
-							// ParameterizedSparqlString qs =
-							// new ParameterizedSparqlString(
-							// "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> PREFIX dbo:
-							// <http://dbpedia.org/ontology/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>
-							// select distinct ?C ?Long ?Lat where {?X geo:lat ?Lat ; geo:long ?Long; a ?C .
-							// { { ?X foaf:name \""
-							// + val + "\"@en. } } } LIMIT 100 ");
-							//
-							//
-							// QueryExecution exec =
-							// QueryExecutionFactory
-							// .sparqlService("http://dbpedia.org/sparql", qs.asQuery());
-							//
-							//
-							//
-							// ResultSet results = exec.execSelect();
-							//
-							// // while (results.hasNext()) {
-							// // // As RobV pointed out, don't use the `?` in the variable
-							// // // name here. Use *just* the name of the variable.
-							// // System.out.println(results.next().get("resource"));
-							// // }
-							//
-							// ResultSetFormatter.out(results);
-						} else if (!val.matches(possiblenameRegex)) {
-
-							// we check that titles are not repeated
-							if (tmp_possiblenames[j] == null) {
-								column_types[inh][j] = "titles";
-								tmp_possiblenames[j] = val;
-							} else if (!tmp_possiblenames[j].contentEquals(val)) {
-								// log.info("for line " + j + " tmp_possiblenames[j] is " + tmp_possiblenames[j]
-								// + " with val " + val);
-								column_types[inh][j] = "titles";
-								tmp_possiblenames[j] = val;
-							}
 						}
+
+						// ParameterizedSparqlString qs =
+						// new ParameterizedSparqlString(
+						// "PREFIX geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> PREFIX dbo:
+						// <http://dbpedia.org/ontology/> PREFIX foaf: <http://xmlns.com/foaf/0.1/>
+						// select distinct ?C ?Long ?Lat where {?X geo:lat ?Lat ; geo:long ?Long; a ?C .
+						// { { ?X foaf:name \""
+						// + val + "\"@en. } } } LIMIT 100 ");
+						//
+						//
+						// QueryExecution exec =
+						// QueryExecutionFactory
+						// .sparqlService("http://dbpedia.org/sparql", qs.asQuery());
+						//
+						//
+						//
+						// ResultSet results = exec.execSelect();
+						//
+						// // while (results.hasNext()) {
+						// // // As RobV pointed out, don't use the `?` in the variable
+						// // // name here. Use *just* the name of the variable.
+						// // System.out.println(results.next().get("resource"));
+						// // }
+						//
+						// ResultSetFormatter.out(results);
+					} else if (!val.matches(possiblenameRegex)) {
+
+						// we check that titles are not repeated
+						if (tmp_possiblenames[j] == null) {
+							column_types[inh][j] = "titles";
+							tmp_possiblenames[j] = val;
+						} else if (!tmp_possiblenames[j].contentEquals(val)) {
+							// log.info("for line " + j + " tmp_possiblenames[j] is " + tmp_possiblenames[j]
+							// + " with val " + val);
+							column_types[inh][j] = "titles";
+							tmp_possiblenames[j] = val;
+						}
+					}
 					j++;
 				}
 
@@ -1405,8 +1406,9 @@ public class MainClass extends SetPropertiesPage {
 			loc.setDate_published(sdf.format(now).toString());
 			loc.setDate_updated(sdf.format(now).toString());
 			loc.setUsername(user);
-			log.info("ICON TO ADD IS:" + icon_marker);
-			loc.setIconmarker(icon_marker);
+			log.info("ICON TO ADD IS:" + icon_marker.toString());
+			loc.setIconmarker(icon_marker.toString());
+			log.info("after icon to add:" + loc.getIconmarker());
 
 			// j is the column position
 			int j = 0;
@@ -1440,20 +1442,19 @@ public class MainClass extends SetPropertiesPage {
 				// attributes search and graphs for any unrecognized field)
 				if (header[j] != null && !value[j].isEmpty()) {
 					if (loc.getOtherInfo() == null) {
-						loc.setOtherInfo("ID: " + loc.getId() + " ## Filename: " + file_name + " ## Published by: "
-								+ loc.getUsername() + " ## Last update: " + loc.getDate_updated() + " ## " + header[j]
-								+ ": " + value[j]);
+						loc.setOtherInfo("Filename: " + file_name + " ## Published by: " + loc.getUsername()
+								+ " ## Last update: " + loc.getDate_updated() + " ## " + header[j] + ": " + value[j]);
 					} else {
 						loc.setOtherInfo(loc.getOtherInfo() + " ## " + header[j] + ": " + value[j]);
 					}
 				}
 
-				log.info("VALUE BEFORE WAS: " + value[j]);
+//				log.info("VALUE BEFORE WAS: " + value[j]);
 
 				// We clean the value from any possible unwanted character
 				value[j] = value[j].replaceAll("\"", "").trim();
 
-				log.info("VALUE AFTER IS: " + value[j]);
+//				log.info("VALUE AFTER IS: " + value[j]);
 
 				// log.info("index is "+j+ " with size "+resul.length);
 				if (resul[j] != null && !value[j].isEmpty() && i > 0) {
@@ -1746,11 +1747,11 @@ public class MainClass extends SetPropertiesPage {
 			conn.close();
 
 		log.info(
-				"\n\n############################################################################################################################################################\n"
-						+ "############################################################################################################################################################\n");
+				"\n\n########################################################################################################\n"
+						+ "########################################################################################################\n");
 		outputinfo.append(
-				"\n\n############################################################################################################################################################\n"
-						+ "############################################################################################################################################################\n");
+				"\n\n########################################################################################################\n"
+						+ "########################################################################################################\n");
 
 	}
 

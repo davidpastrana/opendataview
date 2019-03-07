@@ -59,6 +59,8 @@ public class BasePage extends WebPage {
 
 	public BasePage() {
 
+		// Session.get().error(getMessage());
+
 		// add(new Label("menuItem", getMenuPageClass()));
 		add(new TopBarPanel("topBar"));
 		add(new FooterPanel("footer"));

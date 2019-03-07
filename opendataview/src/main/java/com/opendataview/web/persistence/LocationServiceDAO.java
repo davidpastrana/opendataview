@@ -33,12 +33,14 @@ public interface LocationServiceDAO {
 
 	boolean checkLocationExistanceByID(String queryidvalue);
 
-	boolean checkLocationExistanceByOtherName(String[] listValues);
+	boolean checkLocationExistanceByOtherName(List<String> listValues);
 
-	void updateQuery(String[] listValues, boolean hasid);
+	void updateQuery(List<String> listValues, boolean hasid);
 
 	void executeQuery(String query);
 
 	List<LocationModel> getLocationByID(String queryidvalue);
+
+	List<LocationModel> searchLocationByFileName(String filename) throws DataAccessException;
 
 }
