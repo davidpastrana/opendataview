@@ -24,7 +24,7 @@
     
 <meta
 	name="viewport"
-	content="width=device-width, initial-scale=1, maximum-scale=1 user-scalable=no"
+	content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
 >
 
 <title>OpenDataView - Visualizing and sharing Geodata</title>
@@ -63,12 +63,16 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" />
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" />
    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.4/leaflet.draw.css" />
-          	<link rel="stylesheet" type="text/css" href="/css/leaflet-openweathermap.css" />
+             	<link rel="stylesheet" type="text/css" href="/css/leaflet-openweathermap.css" />
+   
+
           	
 <!-- Icons SVG -->
 <link rel="stylesheet" type="text/css" href="/css/glyphicons.min.css" />
 <link rel="stylesheet" type="text/css" href="/css/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="/css/ion-icons.min.css" />
+
+    <link href='https://unpkg.com/mapillary-js@2.17.0/dist/mapillary.min.css' rel='stylesheet' />
 </wicket:link>
 </head>
 <body>
@@ -161,19 +165,25 @@
        	<script src='//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js'></script>
        	<script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js'></script>
 		<script src="/js/leaflet/leaflet-openweathermap.js"></script>
-		<script src="/js/leaflet/leaflet.markercluster.freezable.js"></script>
+		<!--  <script src="/js/leaflet/leaflet.markercluster.freezable.js"></script>-->
+		<script src="/js/leaflet/glify.js"></script>
 
 		<!-- Functions to manipulate Web UI -->
-		<script async defer src="/js/opendataview.ui.js"></script>
+				    <script async defer src='https://unpkg.com/mapillary-js@2.17.0/dist/mapillary.min.js'></script>
 		
-		<!-- Google Maps API and libraries -->
+		<script src="/js/opendataview.ui.js"></script>
+				    
+		
+		<!-- Google Maps API and libraries 
 		<script src="//maps.google.com/maps/api/js?v=3.35&libraries=places&key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o"></script>
        	<script src="/js/gmap/jquery.ui.map.min.js"></script>
-		<script src="/js/gmap/jquery.ui.map.services.js"></script>
+		<script src="/js/gmap/jquery.ui.map.services.js"></script>-->
 		
 		<!-- Distance slider around the marker location -->
 		<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
 		<script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
+		
+		
        <!-- <script src="http://js.api.here.com/v3/3.0/mapsjs-core.js"
   type="text/javascript" charset="utf-8"></script>
 <script src="http://js.api.here.com/v3/3.0/mapsjs-service.js"

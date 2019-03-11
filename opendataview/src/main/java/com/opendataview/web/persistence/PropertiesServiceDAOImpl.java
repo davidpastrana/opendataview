@@ -142,7 +142,7 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 					"select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname = ? order by population desc");
 			query.setParameter(38, "true");
 			query.setParameter(39, "[\\s\\S]{100,}");
-			query.setParameter(40, "01");
+			query.setParameter(40, "#F44336+10+0.8");
 
 			query.executeUpdate();
 			clone = entityManager.find(PropertiesModel.class, (long) 1);

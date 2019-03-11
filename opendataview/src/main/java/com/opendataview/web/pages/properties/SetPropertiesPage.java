@@ -420,7 +420,7 @@ public class SetPropertiesPage extends BasePage {
 							new PropertyModel<String>(item.getModelObject(), "possiblenameRegex")));
 					item.add(new TextField<String>("descriptionRegex",
 							new PropertyModel<String>(item.getModelObject(), "descriptionRegex")));
-					item.add(new TextArea<String>("iconmarker",
+					item.add(new TextField<String>("iconmarker",
 							new PropertyModel<String>(item.getModelObject(), "iconmarker")));
 //					item.add(new DropDownChoice<String>("iconmarker",
 //							new PropertyModel<String>(item.getModelObject(), "iconmarker"),

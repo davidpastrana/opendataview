@@ -59,8 +59,12 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		getRequestCycleListeners().add(new IRequestCycleListener() {
 			@Override
 			public IRequestHandler onException(RequestCycle cycle, Exception e) {
+
+				log.info("ERROR IS:" + e + ", CAUSE: " + e.getCause() + ", LOC MESSAGE: " + e.getLocalizedMessage()
+						+ ", MESSAGE: " + e.getMessage());
 				return new RenderPageRequestHandler(new PageProvider(new ErrorPage404(e)));
 			}
+
 		});
 
 		log.info("Uses usesDeploymentConfig: " + usesDeploymentConfig());

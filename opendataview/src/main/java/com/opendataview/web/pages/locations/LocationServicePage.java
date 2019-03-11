@@ -80,6 +80,7 @@ public class LocationServicePage extends BasePage {
 	PageParameters pageParameters = new PageParameters();
 
 	private static final long serialVersionUID = 1L;
+	final Form<String> formSearch = new Form<String>("formSearch");
 
 	@Override
 	public void renderHead(IHeaderResponse response) {
@@ -132,6 +133,7 @@ public class LocationServicePage extends BasePage {
 					"$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val(" + fullscreen + ");$('#mapType').val('"
 							+ mapType + "');$('#showGraph').val('" + showGraph + "');$('#disableClustering').val('"
 							+ disableClustering + "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
+
 		}
 		if (dist != null) {
 			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + dist + ")"));
@@ -151,6 +153,15 @@ public class LocationServicePage extends BasePage {
 			}
 		}
 	}
+
+	final TextField<String> viewPanels = new TextField<String>("viewPanels", Model.of("false"));
+	final TextField<String> mapType = new TextField<String>("mapType", Model.of("wikimedia"));
+	final TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("15"));
+	final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
+	final TextField<String> showGraph = new TextField<String>("showGraph", Model.of("false"));
+	final TextField<String> disableClustering = new TextField<String>("disableClustering", Model.of("false"));
+	final TextField<String> showPrivateMap = new TextField<String>("showPrivateMap", Model.of("false"));
+	private String json = "";
 
 	private String clustering_label = "Disable Clustering (lower performance)";
 	private String fullscreen_label = "Enable Fullscreen";
@@ -220,21 +231,23 @@ public class LocationServicePage extends BasePage {
 		return (rad * 180 / Math.PI);
 	}
 
-	final TextField<String> viewPanels = new TextField<String>("viewPanels", Model.of("false"));
-	final TextField<String> mapType = new TextField<String>("mapType", Model.of("wikimedia"));
-	final TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("15"));
-	final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
-	final TextField<String> showGraph = new TextField<String>("showGraph", Model.of("false"));
-	final TextField<String> disableClustering = new TextField<String>("disableClustering", Model.of("false"));
-	final TextField<String> showPrivateMap = new TextField<String>("showPrivateMap", Model.of("false"));
-	private String json = "";
-
 	final PageableListView<LocationModel> lview = displayList("rows", list, max_number_markers_perpage);
 
 	public LocationServicePage(PageParameters parameters) throws IOException {
 		setStatelessHint(false);
 		setVersioned(false);
 		WebSession session = WebSession.get();
+
+		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
+		if (zoom != null) {
+			mapZoomLevel.setModelObject(zoom);
+			formSearch.modelChanged();
+		}
+		log.info("The current zoom is:" + zoom);
+
+		// formSearch.modelChanged();
+
+		add(formSearch);
 		viewPanels.setOutputMarkupId(true);
 		mapType.setOutputMarkupId(true);
 		mapZoomLevel.setOutputMarkupId(true);
@@ -805,9 +818,6 @@ public class LocationServicePage extends BasePage {
 
 		initializeLocations(datacontainer);
 
-		final Form<String> formSearch = new Form<String>("formSearch");
-		add(formSearch);
-
 		final Form<String> formSearchExtraInfo = new Form<String>("formSearchExtraInfo");
 		add(formSearchExtraInfo);
 
@@ -1094,8 +1104,10 @@ public class LocationServicePage extends BasePage {
 
 			@Override
 			public void renderHead(IHeaderResponse response) {
-				response.render(OnDomReadyHeaderItem
-						.forScript("localStorage.setItem('jsonobj', JSON.stringify(" + json + "));"));
+				if (!json.isEmpty()) {
+					response.render(OnDomReadyHeaderItem
+							.forScript("localStorage.setItem('jsonobj', JSON.stringify(" + json + "));"));
+				}
 				super.renderHead(response);
 			}
 

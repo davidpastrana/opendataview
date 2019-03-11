@@ -79,8 +79,10 @@ public class LocationModel implements Serializable {
 	protected String iconmarker;
 	@Column(columnDefinition = "TEXT")
 	protected String percentage;
-	protected double rating = 0;
-	private int nrating = 0;
+	@Column(columnDefinition = "TEXT")
+	protected String private_mode;
+//	protected double rating = 0;
+//	private int nrating = 0;
 
 	@Column(columnDefinition = "TEXT")
 	protected String street;
@@ -319,21 +321,21 @@ public class LocationModel implements Serializable {
 		this.percentage = percentage;
 	}
 
-	public double getRating() {
-		return rating;
-	}
-
-	public void setRating(double rating) {
-		this.rating = rating;
-	}
-
-	public int getNrating() {
-		return nrating;
-	}
-
-	public void setNrating(int nrating) {
-		this.nrating = nrating;
-	}
+//	public double getRating() {
+//		return rating;
+//	}
+//
+//	public void setRating(double rating) {
+//		this.rating = rating;
+//	}
+//
+//	public int getNrating() {
+//		return nrating;
+//	}
+//
+//	public void setNrating(int nrating) {
+//		this.nrating = nrating;
+//	}
 
 	public String getStreet() {
 		return street;
@@ -361,6 +363,14 @@ public class LocationModel implements Serializable {
 
 	public void setIconmarker(String iconmarker) {
 		this.iconmarker = iconmarker;
+	}
+
+	public String getPrivate_mode() {
+		return private_mode;
+	}
+
+	public void setPrivate_mode(String private_mode) {
+		this.private_mode = private_mode;
 	}
 
 }

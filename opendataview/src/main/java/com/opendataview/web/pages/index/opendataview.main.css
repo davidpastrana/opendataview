@@ -163,11 +163,12 @@ section.contact-infos {
 	width: auto;
 }
 
-#mapid,.gmap {
+#mapid {
 	position: fixed;
 	top: 40px;
-	height: 100%;
+
 	width: 100%;
+		height: 100%;
     background: #f7f7f7 url(/images/gif/loading.gif) 50% 45% no-repeat;
     background-size: 27px;
 }
@@ -425,7 +426,7 @@ position: fixed;
 ----------------------------------------------------- */
 #sidebar {
     width: 315px;
-    position: relative;
+    position: absolute;
     top: 0;
     left: -315px;
     height: 100vh;
@@ -471,10 +472,7 @@ position: fixed;
     opacity: 0;
     transition: all 0.5s ease-in-out;
 }
-.overlay.active {
-    display: block;
-    opacity: 1;
-}
+
 
 #sidebar .sidebar-header {
     padding: 20px;
@@ -1196,7 +1194,7 @@ select.form-control:not([size]):not([multiple]) {
 	background: #eceaf0;
 }
 
-#map_canvas > div > div > div:nth-child(10) {
+/*#map_canvas > div > div > div:nth-child(10) {
 	border: 3px solid #d0d0d0;
 	border-radius:2px;
 	cursor: pointer;
@@ -1205,7 +1203,7 @@ select.form-control:not([size]):not([multiple]) {
 	background: #F8F9F9 !important;
 	box-shadow:none !important;
 	padding: 3px;
-}
+}*/
 #polygonCoordInput {
 	position: fixed;
 	left: 2px;
@@ -1462,27 +1460,39 @@ select.form-control:not([size]):not([multiple]) {
 	background: rgba(0, 0, 0, 0.5);
 	box-sizing: initial;
 }
-
+/*
 .streetview {
 	width: 293px !important;
 	height: 200px !important;
 	background: transparent !important;
 	border: 2px solid rgba(219, 68, 55, 0.6);
 	display: none;
+}*/
+#mly2 {
+    /* top: 0px; */
+    /* width: 313px; */
+    height: 200px;
+    background: #000;
+    /* border: 2px solid rgba(219, 68, 55, 0.6); */
+    /* position: absolute; */
 }
-
-.streetviewSize {
+.pcr-app {
+    width: 13em !important;
+}
+/*.streetviewSize {
 	width: 100%;
 	margin: 5px 0px 0px;
 	display: none;
-}
+}*/
 .other2 a:nth-child(1) {
 	background: #ffc36363;
 	padding: 8px 20px;
 }
-#streetview2 {
-	width: 315px !important;
-	height: 200px !important;
+#mly1 { position: absolute; height: 100%; width: 50%; }
+/*#streetview2,#mapillary {
+        float: left;
+        height: 100%;
+        width: 33%;
 }
 .streetview>div:nth-child(2)>div:nth-child(7) {
 	margin-left: -80px !important;
@@ -1517,7 +1527,7 @@ select.form-control:not([size]):not([multiple]) {
     max-height: 83px;
     max-width: 200px;
     word-break: break-all;
-}
+}*/
 
 .directionTableHeader td:nth-child(1) {
 	width: 34px;
@@ -1777,7 +1787,7 @@ div#goog-gt-tt {
 	margin: 2px;
 }
 
-  #custom-handle {
+#custom-handle, #custom-handle2 {
     width: 2em;
     height: 1.6em;
     top: 50%;
@@ -1992,6 +2002,7 @@ div#goog-gt-tt {
 
 
 #displayLocations, #hideLocations {
+	position: fixed
 	float: right;
 	margin: 0px;
 	cursor: pointer;
@@ -2035,7 +2046,6 @@ div#goog-gt-tt {
 	width: 100%;
     background: #CC4646;
     color: #fff;
-    margin-top: -23px;
     position: relative;
     z-index: 100;
 }
@@ -3783,6 +3793,7 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 .ui-state-default, .ui-widget-content .ui-state-default,
 	.ui-widget-header .ui-state-default {
 	background: #F8F9F9;
+	border: 1px dotted #CC4646;
 }
 
 .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited
@@ -4741,9 +4752,13 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 
 /* Starting from Phone portrait */
 @media (max-width:500px)  {
-	.overlay {
+	/*.overlay {
 	top:0px;
 	left:0px;
+}*/
+.overlay.active {
+    display: block;
+    opacity: 1;
 }
 }
 
