@@ -21,13 +21,13 @@
 
     <!-- iOS Safari -->
     <meta name="apple-mobile-web-app-status-bar-style" content="#cc4646"/>
-    
+    <meta http-equiv=X-UA-Compatible content="IE=edge">
 <meta
 	name="viewport"
 	content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
 >
 
-<title>OpenDataView - Visualizing and sharing Geodata</title>
+<title>OpenDataView - Location Data Visualized</title>
 
 <!-- SEO Stuff -->
 <meta name="audience" lang="en" content="all"/>
@@ -37,33 +37,33 @@
 <meta name="page-topic" content="Spatial Data"/>
 <meta
 	name="description"
-	content="Help your city government become a smart city through Open Data. Convey transparency and manage city resources through Location Intelligence."
+	content="OpenDataView Turns Your Location Data Into Visualized Shared Data."
 />
 <meta
 	name="keywords"
-	content="open data view, open data visualization, open data shared, geographic data, reasoning data, serialization of data, heuristic search, spatial data, gis data, field type recognition"
+	content="predict, location, opendata, visualization, search, share, geospatial"
 />
-<meta name="copyright" content="David Rodriguez-Pastrana Parareda"/>
 <meta
 	name="author"
 	content="David Rodriguez-Pastrana Parareda"
 />
-<wicket:link>
+<meta property=og:title content="OpenDataView - Location Data Visualized"> <meta property=og:description content="OpenDataView Turns Your Location Data Into Visualized Shared Data."> <meta property=og:type content="website"> <meta property=og:url content="https://opendataview.com/"> <meta property=og:image content=/imgages/logos/opendataview.png> <meta name=twitter:card content="summary"> <meta name=twitter:image content=/imgages/logos/opendataview.png> <meta name=twitter:site content=@opendataview> <meta name=twitter:title content="OpenDataView - Location Data Visualized"> <meta name=twitter:description content="OpenDataView Turns Your Location Data Into Visualized Shared Data.">
+<link rel=canonical href="https://opendataview.com/">
 <link
 	href="//plus.google.com/+openspatialdata"
 	rel="publisher"
 />
+<!-- Favicons
+<link rel="shortcut icon fluid-icon apple-touch-icon" sizes="any" href="/images/favicon/opendataview.svg" type="image/svg+xml" />
+<link rel="shortcut icon fluid-icon apple-touch-icon" sizes="any" href="/images/favicon/opendataview.png" type="image/png"> -->
+<link rel="shortcut icon" href=/images/favicon.ico>
+<wicket:link>
 
-<!-- Favicons -->
-<link rel="shortcut icon fluid-icon" sizes="any" href="/images/favicon/opendataview.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" sizes="any" href="/images/favicon/opendataview.svg" type="image/svg+xml">
 
 <!-- Leaflet Maps -->
-    <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet/v1.4.0/leaflet.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/MarkerCluster.Default.css" />
+   <link rel="stylesheet" type="text/css" href="http://cdn.leafletjs.com/leaflet/v1.4.0/leaflet.css" />
    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/0.2.4/leaflet.draw.css" />
-             	<link rel="stylesheet" type="text/css" href="/css/leaflet-openweathermap.css" />
+   <!--  <link rel="stylesheet" type="text/css" href="/css/leaflet-openweathermap.css" />-->
    
 
           	
@@ -159,29 +159,32 @@
 	<wicket:child />
 
 		<!--  <script src="//gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>-->
-	
+			
+
+<!--  <script src="https://code.jquery.com/jquery-1.12.4.min.js"></script>-->
+		<!-- jquery UI Slider to arrange distances/ marker size -->
+		<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
+		<script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
+
+		<!-- <wicket:container wicket:id="footer-container"/> -->
+
 		<!-- Leaflet libraries -->
 	    <script src='//cdn.leafletjs.com/leaflet/v1.4.0/leaflet.js'></script>
-       	<script src='//cdnjs.cloudflare.com/ajax/libs/leaflet.markercluster/1.4.1/leaflet.markercluster.js'></script>
-       	<script src='https://cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js'></script>
-		<script src="/js/leaflet/leaflet-openweathermap.js"></script>
-		<!--  <script src="/js/leaflet/leaflet.markercluster.freezable.js"></script>-->
-		<script src="/js/leaflet/glify.js"></script>
+       	<script src='//cdnjs.cloudflare.com/ajax/libs/leaflet.draw/1.0.4/leaflet.draw.js'></script>
+		<script src="/js/leaflet/leaflet-openweathermap.min.js"></script>
+		<script src="/js/leaflet/glify.min.js"></script>
 
 		<!-- Functions to manipulate Web UI -->
-				    <script async defer src='https://unpkg.com/mapillary-js@2.17.0/dist/mapillary.min.js'></script>
+		<script src='https://unpkg.com/mapillary-js@2.17.0/dist/mapillary.min.js'></script>
 		
 		<script src="/js/opendataview.ui.js"></script>
-				    
-		
+
 		<!-- Google Maps API and libraries 
 		<script src="//maps.google.com/maps/api/js?v=3.35&libraries=places&key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o"></script>
        	<script src="/js/gmap/jquery.ui.map.min.js"></script>
 		<script src="/js/gmap/jquery.ui.map.services.js"></script>-->
 		
-		<!-- Distance slider around the marker location -->
-		<script src="//code.jquery.com/ui/1.12.1/jquery-ui.min.js"></script>
-		<script src="//cdnjs.cloudflare.com/ajax/libs/jQuery-ui-Slider-Pips/1.11.4/jquery-ui-slider-pips.min.js"></script>
+
 		
 		
        <!-- <script src="http://js.api.here.com/v3/3.0/mapsjs-core.js"

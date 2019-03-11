@@ -37,6 +37,11 @@ public class WicketApplication extends AuthenticatedWebApplication {
 	private final static Logger log = LoggerFactory.getLogger(BasePage.class);
 
 	@Override
+	public RuntimeConfigurationType getConfigurationType() {
+		return RuntimeConfigurationType.DEVELOPMENT;
+	}
+
+	@Override
 	public Class<? extends WebPage> getHomePage() {
 		return LocationServicePage.class;
 	}
@@ -51,9 +56,27 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		return LoginUserPage.class;
 	}
 
+	/*
+	 * public class JavaScriptToBucketResponseDecorator implements
+	 * IHeaderResponseDecorator { private String bucketName;
+	 * 
+	 * public JavaScriptToBucketResponseDecorator(String bucketName) {
+	 * this.bucketName = bucketName; }
+	 * 
+	 * @Override public IHeaderResponse decorate(IHeaderResponse response) { return
+	 * new JavaScriptFilteredIntoFooterHeaderResponse(response, bucketName); } }
+	 */
+
 	@Override
 	public void init() {
 		super.init();
+
+		// Send js libraries to the footer
+		// setHeaderResponseDecorator(new
+		// JavaScriptToBucketResponseDecorator("footer-container"));
+
+		// Avoid DEVELOPMENT failure checks
+		getDebugSettings().setComponentUseCheck(false);
 
 		// Catch runtime exceptions this way:
 		getRequestCycleListeners().add(new IRequestCycleListener() {
@@ -168,11 +191,6 @@ public class WicketApplication extends AuthenticatedWebApplication {
 //		IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
 //		setRootRequestMapper(cryptoMapper);
 
-	}
-
-	@Override
-	public RuntimeConfigurationType getConfigurationType() {
-		return RuntimeConfigurationType.DEPLOYMENT;
 	}
 
 	protected Class<? extends WicketApplication> getMenuPageClass() {

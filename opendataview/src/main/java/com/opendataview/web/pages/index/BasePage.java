@@ -3,7 +3,7 @@ package com.opendataview.web.pages.index;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
-import org.apache.wicket.markup.head.OnDomReadyHeaderItem;
+import org.apache.wicket.markup.head.filter.HeaderResponseContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.protocol.http.WebSession;
@@ -35,15 +35,16 @@ public class BasePage extends WebPage {
 		super.renderHead(response);
 
 		response.render(CssHeaderItem.forReference(BootstrapCssReference.instance()));
-//		response.render(CssHeaderItem.forReference(FontAwesomeCssReference.instance()));
+//		response.render(
+//				CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "opendataview.main.css")));
 		response.render(
 				CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "opendataview.main.css")));
 		response.render(CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "styles.css")));
+//		response.render(JavaScriptHeaderItem
+//				.forReference(new JavaScriptResourceReference(BasePage.class, "opendataview.ui.js")));
 
-		response.render(
-				OnDomReadyHeaderItem.forScript("$('#backgroundLoading').fadeOut(0);$('#showLoading').fadeOut(0);"));
-
-//    response.render(getJavaScriptLibrarySettings().setJQueryReference(JQueryResourceReference.getV1()));
+//		response.render(
+//				OnDomReadyHeaderItem.forScript("$('#backgroundLoading').fadeOut(0);$('#showLoading').fadeOut(0);"));
 
 	}
 
@@ -65,6 +66,8 @@ public class BasePage extends WebPage {
 		add(new TopBarPanel("topBar"));
 		add(new FooterPanel("footer"));
 		add(new CopyRightPanel("copyright"));
+
+		add(new HeaderResponseContainer("footer-container", "footer-container"));
 
 		final BookmarkablePageLink<Object> locationsLink = new BookmarkablePageLink<Object>("locationsLink",
 				LocationServicePage.class);
