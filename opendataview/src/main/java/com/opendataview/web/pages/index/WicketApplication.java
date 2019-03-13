@@ -38,7 +38,7 @@ public class WicketApplication extends AuthenticatedWebApplication {
 
 	@Override
 	public RuntimeConfigurationType getConfigurationType() {
-		return RuntimeConfigurationType.DEVELOPMENT;
+		return RuntimeConfigurationType.DEPLOYMENT;
 	}
 
 	@Override

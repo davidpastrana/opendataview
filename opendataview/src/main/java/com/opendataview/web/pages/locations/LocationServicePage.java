@@ -53,7 +53,6 @@ import com.opendataview.web.model.PieChartModel;
 import com.opendataview.web.pages.index.BasePage;
 import com.opendataview.web.persistence.LocationServiceDAO;
 import com.opendataview.web.persistence.PropertiesServiceDAO;
-import com.opendataview.web.persistence.RouteServiceDAO;
 import com.opendataview.web.persistence.UserServiceDAO;
 
 import de.adesso.wickedcharts.highcharts.options.ChartOptions;
@@ -147,9 +146,9 @@ public class LocationServicePage extends BasePage {
 						.forScript("window.onload = function () {map2.locate({setView: true, maxZoom: 15})}"));
 			} else {
 				String coords_format = "[" + coords.toString().replaceAll("\\(", "new L.LatLng(") + "]";
-				response.render(
-						OnDomReadyHeaderItem.forScript("$(window).on('load', function() { var shape = new L.Polygon("
-								+ coords_format + ").addTo(editableLayers);  });"));
+				response.render(OnDomReadyHeaderItem
+						.forScript("$(window).on('load',function(){ var shape = new L.Polygon(" + coords_format
+								+ ");shape.setStyle({fillColor:'#1c9099',color:'white',weight:3});shape.addTo(editableLayers)});"));
 			}
 		}
 	}
@@ -165,7 +164,7 @@ public class LocationServicePage extends BasePage {
 
 	private String clustering_label = "Disable Clustering (lower performance)";
 	private String fullscreen_label = "Enable Fullscreen";
-	private String privatemaps_label = "Enable Private Maps";
+	private String privatemaps_label = "Enable Private";
 	private String graphs_label = "Enable Graphs (lower performance)";
 	private List<LocationModel> list = new ArrayList<LocationModel>();
 	private List<LocationModel> list2 = new ArrayList<LocationModel>();
@@ -196,9 +195,6 @@ public class LocationServicePage extends BasePage {
 
 	@SpringBean
 	private LocationServiceDAO locationServiceDAO;
-
-	@SpringBean
-	private RouteServiceDAO routeServiceDAO;
 
 	@SpringBean
 	private UserServiceDAO userServiceDAO;
@@ -238,12 +234,12 @@ public class LocationServicePage extends BasePage {
 		setVersioned(false);
 		WebSession session = WebSession.get();
 
-		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
-		if (zoom != null) {
-			mapZoomLevel.setModelObject(zoom);
-			formSearch.modelChanged();
-		}
-		log.info("The current zoom is:" + zoom);
+//		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
+//		if (zoom != null) {
+//			mapZoomLevel.setModelObject(zoom);
+//			formSearch.modelChanged();
+//		}
+//		log.info("The current zoom is:" + zoom);
 
 		// formSearch.modelChanged();
 
@@ -870,7 +866,7 @@ public class LocationServicePage extends BasePage {
 				saveVisibleLocFile.setVisible(false);
 				saveSqlLocBackup.setVisible(false);
 				target.add(wmc);
-				target.appendJavaScript("markerClusters.clearLayers()");
+				// target.appendJavaScript("markerClusters.clearLayers()");
 				PageParameters pageParameters = new PageParameters();
 				setResponsePage(LocationServicePage.class, pageParameters);
 			}
@@ -1044,13 +1040,12 @@ public class LocationServicePage extends BasePage {
 				pageParameters.set("graph", showGraphValue);
 				pageParameters.set("disable_clustering", disableClusteringValue);
 				pageParameters.set("private", showPrivateMapValue);
-				if (polygonCoordInputValue == null) { // used when using current location - we must get the coords
-														// from the url params
+				if (polygonCoordInputValue == null) { // used when using check my current location
 					pageParameters.set("coords", parameters.get("coords"));
-					log.info("polygonCoordInputValue:" + parameters.get("coords"));
+					// log.info("polygonCoordInputValue:" + parameters.get("coords"));
 				} else {
 					pageParameters.set("coords", polygonCoordInputValue);
-					log.info("coords2 from input fied are:" + polygonCoordInputValue);
+					// log.info("coords2 from input fied are:" + polygonCoordInputValue);
 				}
 				setResponsePage(getPage().getClass(), pageParameters);
 
@@ -1105,8 +1100,7 @@ public class LocationServicePage extends BasePage {
 			@Override
 			public void renderHead(IHeaderResponse response) {
 				if (!json.isEmpty()) {
-					response.render(OnDomReadyHeaderItem
-							.forScript("localStorage.setItem('jsonobj', JSON.stringify(" + json + "));"));
+					response.render(OnDomReadyHeaderItem.forScript("jsonObj = JSON.stringify(" + json + ")"));
 				}
 				super.renderHead(response);
 			}
@@ -1142,8 +1136,9 @@ public class LocationServicePage extends BasePage {
 //						.put("lat", obj.getLatitude()).put("lng", obj.getLongitude());
 //
 //				log.info("json created:" + json);
+				String name = obj.getName().replaceAll("\\+", "");
 				if (list.size() == 1) {
-					json = "[{\"id\":\"" + obj.getId() + "\",\"name\":\"" + obj.getName() + "\",\"icon\":\""
+					json = "[{\"id\":\"" + obj.getId() + "\",\"name\":\"" + name + "\",\"icon\":\""
 							+ obj.getIconmarker() + "\",\"lat\":\"" + obj.getLatitude() + "\",\"lng\":\""
 							+ obj.getLongitude() + "\"}]";
 
@@ -1153,7 +1148,7 @@ public class LocationServicePage extends BasePage {
 					if (count == 0) {
 						json = "[";
 					} else {
-						json += "{\"id\":\"" + obj.getId() + "\",\"name\":\"" + obj.getName() + "\",\"icon\":\""
+						json += "{\"id\":\"" + obj.getId() + "\",\"name\":\"" + name + "\",\"icon\":\""
 								+ obj.getIconmarker() + "\",\"lat\":\"" + obj.getLatitude() + "\",\"lng\":\""
 								+ obj.getLongitude() + "\"},";
 
@@ -1372,10 +1367,10 @@ public class LocationServicePage extends BasePage {
 					log.info("not graph maps");
 					target.appendJavaScript("$('#showGraph').val('false');$('#demo-panel').hide()");
 				}
-				if (!clustering) {
-					log.info("not cluster maps");
-					target.appendJavaScript("markerClusters.enableClustering();$('#disableClustering').val('false');");
-				}
+//				if (!clustering) {
+//					log.info("not cluster maps");
+//					target.appendJavaScript("markerClusters.enableClustering();$('#disableClustering').val('false');");
+//				}
 			}
 		};
 		listConfig.add(check2);
@@ -1396,7 +1391,8 @@ public class LocationServicePage extends BasePage {
 					list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
 				if (list2.isEmpty()) {
-					target.appendJavaScript("markerClusters.clearLayers();");
+					// target.appendJavaScript("markerClusters.clearLayers();");
+
 				} else {
 					list.addAll(list2);
 					setResponsePage(getPage());
@@ -1527,7 +1523,7 @@ public class LocationServicePage extends BasePage {
 			}
 		};
 		displayLocations.setOutputMarkupId(true);
-		displayLocations.setMarkupId("initDisplayLocations");
+		// displayLocations.setMarkupId("initDisplayLocations");
 	}
 
 	@Override

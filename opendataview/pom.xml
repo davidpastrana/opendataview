@@ -31,14 +31,14 @@
 		<java.version>1.8</java.version>
 		<wicket.version>8.3.0</wicket.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M8</wicket-bootstrap-extensions.version>
-		<jetty-maven-plugin.version>9.4.14.v20181114</jetty-maven-plugin.version>
+		<jetty-maven-plugin.version>9.4.15.v20190215</jetty-maven-plugin.version>
 		<jetty-all-server.version>8.2.0.v20160908</jetty-all-server.version>
-		<spring.version>5.1.4.RELEASE</spring.version>
+		<spring.version>5.1.5.RELEASE</spring.version>
 		<hibernate.version>5.4.1.Final</hibernate.version>
 		<dbcp.version>1.4</dbcp.version>
 		<postgresql.version>42.2.5</postgresql.version>
 		<wordutils.version>3.8.1</wordutils.version>
-		<slf4j.version>1.7.25</slf4j.version>
+		<slf4j.version>1.7.26</slf4j.version>
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
 		<geonames.version>1.0</geonames.version>
@@ -58,7 +58,6 @@
 			<version>${spring.version}</version>
 		</dependency>
 		<!-- Wicket -->
-
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-core</artifactId>
@@ -104,29 +103,13 @@
 		    <groupId>org.wicketstuff</groupId>
 		    <artifactId>wicketstuff-stateless</artifactId>
 		    <version>8.0.0-M2</version>
-		</dependency>-->
+		</dependency>
+		-->
 		<dependency>
 		    <groupId>com.fasterxml.jackson.core</groupId>
 		    <artifactId>jackson-annotations</artifactId>
 		    <version>2.9.8</version>
 		</dependency>
-		
-		<!-- Multiselect
-		<dependency>
-	    <groupId>com.googlecode.wicket-jquery-ui</groupId>
-	    <artifactId>wicket-jquery-ui</artifactId>
-	    <version>8.1.0</version>
-		</dependency>
-		<dependency>
-			<groupId>com.googlecode.wicket-jquery-ui</groupId>
-			<artifactId>wicket-jquery-ui-theme-uilightness</artifactId>
-			<version>8.1.0</version>
-		</dependency>
-<dependency>
-    <groupId>com.googlecode.wicket-jquery-ui</groupId>
-    <artifactId>wicket-jquery-ui-samples</artifactId>
-    <version>8.0.0-M1.1</version>
-</dependency> -->
 
 		<!-- Spring -->
 		<dependency>
@@ -314,27 +297,6 @@
 			<artifactId>mockito-all</artifactId>
 			<version>1.10.19</version>
 		</dependency>
-		
-<!-- Highcharts usage 		
-<dependency>
-    <groupId>de.adesso.wicked-charts</groupId>
-    <artifactId>wicked-charts-wicket8</artifactId>
-    <version>3.1.0</version>
-</dependency>
-
-<dependency>
-    <groupId>com.fasterxml.jackson.core</groupId>
-    <artifactId>jackson-annotations</artifactId>
-    <version>2.9.8</version>
-</dependency>-->
-
-<!-- Highcharts usage
-<dependency>
-    <groupId>com.pingunaut</groupId>
-    <artifactId>wicket-chartjs</artifactId>
-    <version>7.0.1</version>
-</dependency>
-		-->
 		<dependency>
     <groupId>de.adesso.wicked-charts</groupId>
     <artifactId>wicked-charts-wicket8</artifactId>
