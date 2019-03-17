@@ -36,7 +36,6 @@ import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.list.PageableListView;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.protocol.http.WebSession;
@@ -44,6 +43,8 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -72,6 +73,7 @@ import de.adesso.wickedcharts.highcharts.options.functions.RedirectFunction;
 import de.adesso.wickedcharts.highcharts.options.series.Point;
 import de.adesso.wickedcharts.highcharts.options.series.PointSeries;
 import de.adesso.wickedcharts.highcharts.options.series.Series;
+import de.adesso.wickedcharts.highcharts.options.series.SimpleSeries;
 import de.adesso.wickedcharts.wicket8.highcharts.Chart;
 
 public class LocationServicePage extends BasePage {
@@ -93,53 +95,35 @@ public class LocationServicePage extends BasePage {
 		String mapType = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
 		boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
 				.toBoolean();
-		boolean disableClustering = RequestCycle.get().getRequest().getRequestParameters()
-				.getParameterValue("disable_clustering").toBoolean();
-		boolean showPrivateMap = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("private")
-				.toBoolean();
+		String total = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("total").toString();
+		String group = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group").toString();
+		String showPrivateMap = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user")
+				.toString();
 
-		if (fullscreen) {
-			log.info("in fullscreen maps");
-
-			config_names_select.add(fullscreen_label);
-//			target.appendJavaScript(
-//					"$('.header').hide();$('#mapid').attr('style','top:0px!important');$('#viewHidePanels').val('true');");
-			response.render(OnDomReadyHeaderItem.forScript(
-					"$('.header').hide();$('#mapid').attr('style','top:0px!important');$('#viewHidePanels').val('true');"));
-		}
-		if (showPrivateMap) {
-			log.info("in private maps");
-
+		if (showPrivateMap != null) {
 			config_names_select.add(privatemaps_label);
-			response.render(OnDomReadyHeaderItem.forScript("$('#showPrivateMap').val('true');"));
+			response.render(OnDomReadyHeaderItem.forScript("$('.header').show();$('#viewHidePanels').val('false');"));
+		}
+		if (fullscreen) {
+			config_names_select.add(fullscreen_label);
+			response.render(OnDomReadyHeaderItem.forScript("$('.header').hide();$('#viewHidePanels').val('true');"));
+		} else {
+			response.render(OnDomReadyHeaderItem.forScript("$('.header').show();$('#viewHidePanels').val('false');"));
 		}
 		if (showGraph) {
-			log.info("in graph maps");
 			config_names_select.add(graphs_label);
 			response.render(OnDomReadyHeaderItem.forScript("$('#showGraph').val('true');"));
+		} else {
+			response.render(OnDomReadyHeaderItem.forScript("$('#showGraph').val('false');$('#demo-panel').hide()"));
 		}
-		if (disableClustering) {
-			log.info("in cluster maps");
-			config_names_select.add(clustering_label);
-			response.render(OnDomReadyHeaderItem.forScript(
-					"window.onload = function () {markerClusters.disableClustering();$('#disableClustering').val('true'); }"));
-//			target.appendJavaScript(
-//					"markerClusters.disableClustering();$('#disableClustering').val('false');");
-		}
-
-		if (zoom != null || mapType != null || dist != null) {
-			response.render(OnDomReadyHeaderItem.forScript(
-					"$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val(" + fullscreen + ");$('#mapType').val('"
-							+ mapType + "');$('#showGraph').val('" + showGraph + "');$('#disableClustering').val('"
-							+ disableClustering + "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
-
-		}
+		response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val("
+				+ fullscreen + ");$('#mapType').val('" + mapType + "');$('#showGraph').val('" + showGraph
+				+ "');$('#chart_total').val('" + total + "');$('#chart_group').val('" + group
+				+ "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
 		if (dist != null) {
 			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + dist + ")"));
 		}
-
 		if (coords != null) {
-
 			String[] att = coords.substring(1, coords.length() - 1).split("\\),\\(");
 			if (att.length == 1) {
 				response.render(OnDomReadyHeaderItem
@@ -148,24 +132,22 @@ public class LocationServicePage extends BasePage {
 				String coords_format = "[" + coords.toString().replaceAll("\\(", "new L.LatLng(") + "]";
 				response.render(OnDomReadyHeaderItem
 						.forScript("$(window).on('load',function(){ var shape = new L.Polygon(" + coords_format
-								+ ");shape.setStyle({fillColor:'#1c9099',color:'white',weight:3});shape.addTo(editableLayers)});"));
+								+ ");shape.setStyle({fillColor:'transparent',color:'#c4d6e6',weight:3});shape.addTo(editableLayers)});"));
 			}
 		}
 	}
 
-	final TextField<String> viewPanels = new TextField<String>("viewPanels", Model.of("false"));
-	final TextField<String> mapType = new TextField<String>("mapType", Model.of("wikimedia"));
-	final TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("15"));
-	final TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
-	final TextField<String> showGraph = new TextField<String>("showGraph", Model.of("false"));
-	final TextField<String> disableClustering = new TextField<String>("disableClustering", Model.of("false"));
-	final TextField<String> showPrivateMap = new TextField<String>("showPrivateMap", Model.of("false"));
-	private String json = "";
-
-	private String clustering_label = "Disable Clustering (lower performance)";
+	private TextField<String> viewPanels = new TextField<String>("viewPanels", Model.of(""));
+	private TextField<String> mapType = new TextField<String>("mapType", Model.of(""));
+	private TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("15"));
+	private TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
+	private TextField<String> showGraph = new TextField<String>("showGraph", Model.of("false"));
+	private TextField<String> showChart_total = new TextField<String>("chart_total", Model.of(""));
+	private TextField<String> showChart_group = new TextField<String>("chart_group", Model.of(""));
+	private TextField<String> showPrivateMap = new TextField<String>("showPrivateMap", Model.of(""));
 	private String fullscreen_label = "Enable Fullscreen";
-	private String privatemaps_label = "Enable Private";
-	private String graphs_label = "Enable Graphs (lower performance)";
+	private String privatemaps_label = "Enable Private mode";
+	private String graphs_label = "Enable Graphs";
 	private List<LocationModel> list = new ArrayList<LocationModel>();
 	private List<LocationModel> list2 = new ArrayList<LocationModel>();
 	private List<LocationModel> origList = new ArrayList<LocationModel>();
@@ -177,21 +159,19 @@ public class LocationServicePage extends BasePage {
 	private List<LocationModel> temp_list = new ArrayList<LocationModel>();
 	private List<LocationModel> temp_list2 = new ArrayList<LocationModel>();
 
-	List<String> addlinks = null;
+	private String username = null;
+	private List<String> addlinks = null;
 
 	private static Options chart_options = new Options();
+	private static Options chart_options2 = new Options();
 	private Chart pie_chart = new Chart("chart", chart_options);
 	private List<PieChartModel> pieChartList = new ArrayList<PieChartModel>();
-
+	private Chart column_chart = new Chart("chart2", chart_options2);
 	private List<String> allAttributes = new ArrayList<String>();
 	private List<Integer> allSums = new ArrayList<Integer>();
 	private static Series<Point> series = new PointSeries();
 
-	private int max_number_markers_perpage = 1000000;
-
 	private final static Logger log = LoggerFactory.getLogger(LocationServicePage.class);
-
-	String selected = null;
 
 	@SpringBean
 	private LocationServiceDAO locationServiceDAO;
@@ -227,30 +207,17 @@ public class LocationServicePage extends BasePage {
 		return (rad * 180 / Math.PI);
 	}
 
-	final PageableListView<LocationModel> lview = displayList("rows", list, max_number_markers_perpage);
+	final Label locations_counter = new Label("locations_counter", Model.of(""));
+	final ListView<LocationModel> lview = displayList("rows", list);
 
 	public LocationServicePage(PageParameters parameters) throws IOException {
 		setStatelessHint(false);
 		setVersioned(false);
 		WebSession session = WebSession.get();
 
-//		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
-//		if (zoom != null) {
-//			mapZoomLevel.setModelObject(zoom);
-//			formSearch.modelChanged();
-//		}
-//		log.info("The current zoom is:" + zoom);
-
-		// formSearch.modelChanged();
-
+		add(lview);
 		add(formSearch);
-		viewPanels.setOutputMarkupId(true);
-		mapType.setOutputMarkupId(true);
-		mapZoomLevel.setOutputMarkupId(true);
-		geoCoordDistance.setOutputMarkupId(true);
-		showGraph.setOutputMarkupId(true);
-		disableClustering.setOutputMarkupId(true);
-		showPrivateMap.setOutputMarkupId(true);
+
 		String username = null;
 		if (session.getAttribute("user_name") != null) {
 			username = session.getAttribute("user_name").toString();
@@ -258,26 +225,26 @@ public class LocationServicePage extends BasePage {
 		final WebMarkupContainer datacontainer = new WebMarkupContainer("data");
 		datacontainer.setOutputMarkupId(true);
 		add(datacontainer);
+
 		chart_options.setExporting(new ExportingOptions().setEnableImages(false).setEnabled(false));
 		chart_options.setChartOptions(new ChartOptions().setType(SeriesType.PIE));
 		chart_options.setCredits(new CreditOptions().setEnabled(false));
 		chart_options.setTitle(new Title("").setEnabled(true));
 		pie_chart.setVisible(false);
 		datacontainer.add(pie_chart);
-
-		final WebMarkupContainer wmc = new WebMarkupContainer("wmc");
-		wmc.setVersioned(false);
-		wmc.setOutputMarkupId(true);
-		add(wmc);
+		chart_options2.setExporting(new ExportingOptions().setEnableImages(false).setEnabled(false));
+		chart_options2.setChartOptions(new ChartOptions().setType(SeriesType.COLUMN));
+		chart_options2.setCredits(new CreditOptions().setEnabled(false));
+		chart_options2.setTitle(new Title("").setEnabled(true));
+		column_chart.setVisible(true);
+		datacontainer.add(column_chart);
 
 		final WebMarkupContainer wmc2 = new WebMarkupContainer("wmc2");
 		wmc2.setOutputMarkupId(true);
 		add(wmc2);
 
 		origList = locationServiceDAO.readLocationModel();
-
-		lview.setOutputMarkupId(true);
-		wmc.add(lview);
+		wmc2.add(locations_counter);
 
 		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
 		AjaxButton showMarkerInfoBttn = new AjaxButton("showMarkerInfoBttn") {
@@ -297,21 +264,7 @@ public class LocationServicePage extends BasePage {
 		showMarkerInfo.add(idInput2);
 		datacontainer.add(showMarkerInfo);
 		showMarkerInfo.add(showMarkerInfoBttn);
-		// showMarkerInfoBttn.setDefaultFormProcessing(false);
 
-		if (!parameters.get("id").isNull()) {
-			log.info("we will query id=" + parameters.get("id"));
-			int id = parameters.get("id").toInt();
-			for (int i = 0; i < origList.size(); i++) {
-
-				if (origList.get(i).getId() == id) {
-					list2.add(origList.get(i));
-				}
-
-			}
-
-			list.addAll(list2);
-		}
 		if (!parameters.get("value").isNull()) {
 			list2 = locationServiceDAO.searchLocationModel(parameters.get("value").toString().toLowerCase());
 			list.addAll(list2);
@@ -354,11 +307,6 @@ public class LocationServicePage extends BasePage {
 				}
 				myPolygon.closePath();
 
-//				if (att.length == 1) {
-//					modelLat.setObject(coordXY[0]);
-//					modelLng.setObject(coordXY[1]);
-//				}
-
 				list.clear();
 
 				for (LocationModel loc : origList) {
@@ -390,12 +338,9 @@ public class LocationServicePage extends BasePage {
 			private static final long serialVersionUID = 1L;
 
 			String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
-			String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
-					.toString();
+			boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
+					.toBoolean();
 			String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
-//			String fullscreen = viewPanels.getModelObject();
-//			String maptype = mapType.getModelObject();
-//			String zoom = mapZoomLevel.getModelObject();
 
 			@Override
 			public void populateItem(final ListItem<LocationModel> item) {
@@ -410,11 +355,6 @@ public class LocationServicePage extends BasePage {
 				} else {
 					item.add(new Label("name2").setVisible(false));
 				}
-//				if (username != null) {
-//					item.add(new Label("userSession", username));
-//				} else {
-//					item.add(new Label("userSession", "no active user"));
-//				}
 				if (obj.getCsvName() != null && !obj.getCsvName().isEmpty()) {
 					item.add(new Label("csvName2", obj.getCsvName()));
 				} else {
@@ -474,7 +414,7 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("email2").setVisible(false));
 				}
 				if (obj.getPhone() != null && !obj.getPhone().isEmpty()) {
-					item.add(new Label("phoneTag2", "Tlf.: "));
+					item.add(new Label("phoneTag2", "Telephone: "));
 					item.add(new Label("phone2", obj.getPhone()));
 				} else {
 					item.add(new Label("phoneTag2").setVisible(false));
@@ -542,15 +482,20 @@ public class LocationServicePage extends BasePage {
 			}
 		};
 		wmc2.add(showMarkerInfoList);
-		// wmc2.add(new DirectionPanel("direction2"));
 
-		final Form<?> formSaveLoc = new Form<Void>("saveLocationsForm");
-		datacontainer.add(formSaveLoc);
+		locationsForm = new Form<Void>("locationsForm");
+		locationsForm.setOutputMarkupId(true);
+		add(locationsForm);
+
+		Label downloadLabel = new Label("downloadLabel", "Download search:");
+		downloadLabel.setEscapeModelStrings(false);
+		downloadLabel.setVisible(false);
+		locationsForm.add(downloadLabel);
 
 		Date now = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy'-'HHmm");
 		File saveVisibleLoc = new File(Files.createTempDir(), "view-" + sdf.format(now) + ".csv");
-		formSaveLoc.add(new DownloadLink("saveVisibleLoc", saveVisibleLoc));
+		locationsForm.add(new DownloadLink("saveVisibleLoc", saveVisibleLoc));
 
 		final AjaxButton saveVisibleLocFile = new AjaxButton("saveVisibleLocFile") {
 
@@ -637,15 +582,14 @@ public class LocationServicePage extends BasePage {
 			}
 
 		};
-		saveVisibleLocFile.setOutputMarkupPlaceholderTag(true);
 		saveVisibleLocFile.setVisible(false);
-		formSaveLoc.add(saveVisibleLocFile);
+		locationsForm.add(saveVisibleLocFile);
 
 		now = new Date();
 		sdf = new SimpleDateFormat("ddMMyyyy'-'HHmm");
 
 		File sqlLocBackup = new File(Files.createTempDir(), "backup-" + sdf.format(now) + ".sql");
-		formSaveLoc.add(new DownloadLink("sqlLocBackup", sqlLocBackup));
+		locationsForm.add(new DownloadLink("sqlLocBackup", sqlLocBackup));
 
 		final AjaxButton saveSqlLocBackup = new AjaxButton("saveSqlLocBackup") {
 
@@ -779,25 +723,22 @@ public class LocationServicePage extends BasePage {
 				target.prependJavaScript("$('#linkSqlLocBackup').trigger('click');");
 			}
 		};
-		saveSqlLocBackup.setOutputMarkupPlaceholderTag(true);
+		// saveSqlLocBackup.setOutputMarkupPlaceholderTag(true);
 		saveSqlLocBackup.setVisible(false);
-		formSaveLoc.add(saveSqlLocBackup);
+		locationsForm.add(saveSqlLocBackup);
 
 		if (!list.isEmpty()) {
+			downloadLabel.setVisible(true);
 			saveVisibleLocFile.setVisible(true);
 			saveSqlLocBackup.setVisible(true);
 		}
 
-		/*
-		 * Current Navigation page LoadableDetachableModel<Object> model = new
-		 * LoadableDetachableModel<Object>() {
-		 * 
-		 * private static final long serialVersionUID = 1L;
-		 * 
-		 * @Override public Object load() { return
-		 * pagination.getPageable().getCurrentPage() + 1; } };
-		 * currentPage.setDefaultModel(model);
-		 */
+		Label active_user = new Label("active_user", "");
+		locationsForm.add(active_user);
+
+		if (WebSession.get().getAttribute("user_name") != null) {
+			active_user.setDefaultModelObject("Active user: " + WebSession.get().getAttribute("user_name"));
+		}
 
 		names.clear();
 		namesSelect.clear();
@@ -825,8 +766,6 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected Iterator<String> getChoices(String input) {
 
-				log.info("WRITEN TEXT IS:" + input);
-
 				List<String> choices = new ArrayList<String>();
 				int count = 0;
 				String tmp_duplicate = "no match";
@@ -834,7 +773,7 @@ public class LocationServicePage extends BasePage {
 
 					String name = loc.getOtherInfo();
 					if (name != null) {
-						name = name.replaceAll("\\s+", "").replaceAll("##", " ").toLowerCase();
+						name = name.replaceAll(" ## ", " ").toLowerCase();
 
 						if (name.matches("(.*)" + input.toLowerCase() + "(.*)")) {
 
@@ -865,8 +804,7 @@ public class LocationServicePage extends BasePage {
 				list.clear();
 				saveVisibleLocFile.setVisible(false);
 				saveSqlLocBackup.setVisible(false);
-				target.add(wmc);
-				// target.appendJavaScript("markerClusters.clearLayers()");
+				target.add(wmc2);
 				PageParameters pageParameters = new PageParameters();
 				setResponsePage(LocationServicePage.class, pageParameters);
 			}
@@ -886,67 +824,66 @@ public class LocationServicePage extends BasePage {
 				String mapTypeInputValue = mapType.getModelObject();
 				String zoomLevelInputValue = mapZoomLevel.getModelObject();
 				String showGraphInput = showGraph.getModelObject();
-				String disableClusteringInput = disableClustering.getModelObject();
+				String chart_total = showChart_total.getModelObject();
+				String chart_group = showChart_group.getModelObject();
 				String showPrivateMapInput = showPrivateMap.getModelObject();
 
 				if (name != null) {
 					list.clear();
 					list2.clear();
-//					boolean found = false;
 					boolean found2 = false;
-//					int total = 0;
-//					for (LocationModel loc : origList) {
-//
-//						// single search restricted to 5 possible choices coming out from: inputField
-//						if (loc.getOtherInfo() != null && loc.getOtherInfo().replaceAll("##", "").toLowerCase()
-//								.contentEquals(name.toLowerCase())) {
-//							list.add(loc);
-//							found = true;
-//							break;
-//						}
-//						total++;
-//
-//						// there was not attribute found, we search globally
-//						if (!found && total == origList.size()) {
-//
-//							// get multiple search of locations by querying database
-//							list2 = locationServiceDAO.searchLocationModel(name);
-//							if (!list2.isEmpty()) {
-//								list.addAll(list2);
-//								found2 = true;
-//							}
-//						}
-//					}
+					/*
+					 * boolean found = false; int total = 0; for (LocationModel loc : origList) {
+					 * 
+					 * // single search restricted to 5 possible choices coming out from: inputField
+					 * if (loc.getOtherInfo() != null && loc.getOtherInfo().replaceAll("##",
+					 * "").toLowerCase() .contentEquals(name.toLowerCase())) { list.add(loc); found
+					 * = true; break; } total++;
+					 * 
+					 * // there was not attribute found, we search globally if (!found && total ==
+					 * origList.size()) {
+					 * 
+					 * // get multiple search of locations by querying database list2 =
+					 * locationServiceDAO.searchLocationModel(name); if (!list2.isEmpty()) {
+					 * list.addAll(list2); found2 = true; } } }
+					 */
 					list2 = locationServiceDAO.searchLocationModel(name);
 					if (!list2.isEmpty()) {
 						list.addAll(list2);
 						found2 = true;
 					}
 					PageParameters pageParameters = new PageParameters();
-//					// used for a single search depending on the chosen location
-//					if (found) {
-//						pageParameters.set("name", list.get(0).getName());
-//						pageParameters.set("id", list.get(0).getId());
-//						pageParameters.set("lat", list.get(0).getLatitude());
-//						pageParameters.set("lng", list.get(0).getLongitude());
-//						pageParameters.set("zoom", zoomLevelInputValue);
-//						pageParameters.set("fullscreen", viewPanelsInputValue);
-//						pageParameters.set("map", mapTypeInputValue);
-//					}
+					// used for a single search depending on the chosen location
+					/*
+					 * if (found) { pageParameters.set("name", list.get(0).getName());
+					 * pageParameters.set("id", list.get(0).getId()); pageParameters.set("lat",
+					 * list.get(0).getLatitude()); pageParameters.set("lng",
+					 * list.get(0).getLongitude()); pageParameters.set("zoom", zoomLevelInputValue);
+					 * pageParameters.set("fullscreen", viewPanelsInputValue);
+					 * pageParameters.set("map", mapTypeInputValue); }
+					 */
 					// user for multiple results by querying with a like %otherinfo% statement
 					if (found2) {
 						String searched_value = inputField.getModelObject();
 						pageParameters.set("value", searched_value);
 						pageParameters.set("zoom", zoomLevelInputValue);
-						pageParameters.set("fullscreen", viewPanelsInputValue);
-						pageParameters.set("map", mapTypeInputValue);
-						pageParameters.set("graph", showGraphInput);
-						pageParameters.set("disable_clustering", disableClusteringInput);
-						pageParameters.set("private", showPrivateMapInput);
+
+						if (viewPanelsInputValue != null)
+							pageParameters.set("fullscreen", viewPanelsInputValue);
+						if (!mapTypeInputValue.equals("null"))
+							pageParameters.set("map", mapTypeInputValue);
+						if (showGraphInput != null)
+							pageParameters.set("graph", showGraphInput);
+						if (!chart_total.equals("null"))
+							pageParameters.set("total", chart_total);
+						if (!chart_group.equals("null"))
+							pageParameters.set("group", chart_group);
+						if (!showPrivateMapInput.equals("null"))
+							pageParameters.set("user", showPrivateMapInput);
 					}
 					setResponsePage(LocationServicePage.class, pageParameters);
 				}
-				target.add(wmc);
+				target.add(wmc2);
 			}
 
 		});
@@ -968,7 +905,8 @@ public class LocationServicePage extends BasePage {
 				String zoomLevelInputValue = mapZoomLevel.getModelObject();
 				String geoCoordDistanceValue = geoCoordDistance.getModelObject();
 				String showGraphValue = showGraph.getModelObject();
-				String disableClusteringValue = disableClustering.getModelObject();
+				String chart_total = showChart_total.getModelObject();
+				String chart_group = showChart_group.getModelObject();
 				String showPrivateMapValue = showPrivateMap.getModelObject();
 
 				String polygonCoordInputValue = polygonCoordInput.getModelObject();
@@ -1028,29 +966,32 @@ public class LocationServicePage extends BasePage {
 					target.add(saveVisibleLocFile);
 					target.add(saveSqlLocBackup);
 				}
-				target.add(wmc);
+				target.add(wmc2);
 
 				PageParameters pageParameters = new PageParameters();
 				pageParameters.set("zoom", zoomLevelInputValue);
-				pageParameters.set("fullscreen", viewPanelsInputValue);
-				pageParameters.set("map", mapTypeInputValue);
 				if (att.length == 1) {
 					pageParameters.set("dist", geoCoordDistanceValue);
 				}
-				pageParameters.set("graph", showGraphValue);
-				pageParameters.set("disable_clustering", disableClusteringValue);
-				pageParameters.set("private", showPrivateMapValue);
+				if (viewPanelsInputValue != null)
+					pageParameters.set("fullscreen", viewPanelsInputValue);
+				if (!mapTypeInputValue.equals("null"))
+					pageParameters.set("map", mapTypeInputValue);
+				if (!showGraphValue.equals("null"))
+					pageParameters.set("graph", showGraphValue);
+				if (!chart_total.equals("null"))
+					pageParameters.set("total", chart_total);
+				if (!chart_group.equals("null"))
+					pageParameters.set("group", chart_group);
+				if (!showPrivateMapValue.equals("null"))
+					pageParameters.set("user", showPrivateMapValue);
 				if (polygonCoordInputValue == null) { // used when using check my current location
 					pageParameters.set("coords", parameters.get("coords"));
-					// log.info("polygonCoordInputValue:" + parameters.get("coords"));
 				} else {
 					pageParameters.set("coords", polygonCoordInputValue);
-					// log.info("coords2 from input fied are:" + polygonCoordInputValue);
 				}
 				setResponsePage(getPage().getClass(), pageParameters);
-
 			}
-
 		};
 
 		formSearch.add(viewPanels);
@@ -1059,58 +1000,50 @@ public class LocationServicePage extends BasePage {
 		formSearch.add(geoCoordDistance);
 		formSearch.add(polygonCoordInput);
 		formSearch.add(showGraph);
-		formSearch.add(disableClustering);
+		formSearch.add(showChart_total);
+		formSearch.add(showChart_group);
 		formSearch.add(showPrivateMap);
 		formSearch.add(savePolygonCoordinates);
 		add(formSearch);
 	}
 
-//	final AjaxPagingNavigator tableNavigator = new AjaxPagingNavigator("tableNavigator", lview) {
-//		private static final long serialVersionUID = 1L;
-//
-//		@Override
-//		protected void onAjaxEvent(AjaxRequestTarget target) {
-//			super.onAjaxEvent(target);
-//			// target.add(currentPage);
-//
-//			target.appendJavaScript("initMarkers(true);showLocationTableIfNavigatorChange();");
-//		}
-//	};
+	JSONArray json = new JSONArray();
 
-	public PageableListView<LocationModel> displayList(String id, List<LocationModel> list, int num)
-			throws IOException {
+	public ListView<LocationModel> displayList(String id, List<LocationModel> list) throws IOException {
 
 		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
-		String fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
-				.toString();
-		String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
-		Boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
+		boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toBoolean();
-		String disableClustering = RequestCycle.get().getRequest().getRequestParameters()
-				.getParameterValue("disable_clustering").toString();
-		String showPrivateMap = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("private")
-				.toString();
+		String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
+		boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
+				.toBoolean();
+		String user = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user").toString();
+		String chart = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("total").toString();
+		String chart2 = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group").toString();
 
-//		final JsonFactory jsonfactory = null;
-//		JsonGenerator generator = null;
+		List<String> visited = new ArrayList<String>();
+		List<Integer> visited_id = new ArrayList<Integer>();
+		List<Integer> visited_sum = new ArrayList<Integer>();
+		List<Integer> valuerep = new ArrayList<Integer>();
 
-		PageableListView<LocationModel> listView = new PageableListView<LocationModel>(id, list, num) {
+		ListView<LocationModel> listView = new ListView<LocationModel>(id, list) {
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void renderHead(IHeaderResponse response) {
-				if (!json.isEmpty()) {
+				if (!json.isEmpty())
 					response.render(OnDomReadyHeaderItem.forScript("jsonObj = JSON.stringify(" + json + ")"));
-				}
 				super.renderHead(response);
 			}
 
 			int count = 0;
+			List<String> listchart = null;
 
 			@Override
 			protected void onBeforeRender() {
 				count = 0;
-
+				chart_options.clearSeries();
+				chart_options2.clearSeries();
 				if (showGraph) {
 					if (series.getData() != null) {
 						series.getData().clear();
@@ -1122,54 +1055,127 @@ public class LocationServicePage extends BasePage {
 				super.onBeforeRender();
 			}
 
+			JSONObject o;
+			LocationModel obj;
+
+			Series<Number> serie4 = null;
+
 			@Override
+			@SuppressWarnings("unchecked")
 			public void populateItem(final ListItem<LocationModel> item) {
-				final LocationModel obj = item.getModelObject();
+				obj = item.getModelObject();
 
-//				log.info("count is: " + count);
-//				log.info("lsize is: " + list.size());
+				// We have three variants: 1. marker not private and without url-user defined,
+				// 2. user accesses seeing his own markers, 3. private mode is defined with
+				// url-user in case of sharing the url
+				if (obj.getPrivate_mode() == false && !obj.getUsername().equals(user)
+						|| obj.getUsername().equals(username) || obj.getUsername().equals(user)) {
 
-				// when is only one json obj element
+					o = new JSONObject();
+					o.put("id", obj.getId());
+					o.put("name", obj.getName());
+					o.put("icon", obj.getIconmarker());
+					o.put("lat", obj.getLatitude());
+					o.put("lng", obj.getLongitude());
+					json.add(o);
+				}
 
-//				json = new JSONObject();
-//				json.put("id", obj.getId()).put("name", obj.getName()).put("icon", obj.getIconmarker())
-//						.put("lat", obj.getLatitude()).put("lng", obj.getLongitude());
-//
-//				log.info("json created:" + json);
-				String name = obj.getName().replaceAll("\\+", "");
-				if (list.size() == 1) {
-					json = "[{\"id\":\"" + obj.getId() + "\",\"name\":\"" + name + "\",\"icon\":\""
-							+ obj.getIconmarker() + "\",\"lat\":\"" + obj.getLatitude() + "\",\"lng\":\""
-							+ obj.getLongitude() + "\"}]";
+				if (count == list.size() - 1) {
+					locations_counter.setMarkupId("locations_counter");
+					locations_counter.setDefaultModelObject("Total Markers: " + list.size());
+					locations_counter.modelChanged();
+				}
 
-					// when we have more than one json elements
-				} else {
+				if (chart != null) {
 
-					if (count == 0) {
-						json = "[";
-					} else {
-						json += "{\"id\":\"" + obj.getId() + "\",\"name\":\"" + name + "\",\"icon\":\""
-								+ obj.getIconmarker() + "\",\"lat\":\"" + obj.getLatitude() + "\",\"lng\":\""
-								+ obj.getLongitude() + "\"},";
+					listchart = new ArrayList<String>(Arrays.asList(chart.split(",")));
+					addlinks = new ArrayList<>(Arrays.asList(obj.getOtherInfo().split("##")));
+					for (int i = 0; i < listchart.size(); i++) {
+						for (int j = 0; j < addlinks.size(); j++) {
+							String[] values = addlinks.get(j).split(":");
+							if (values[0].toLowerCase().trim().equals(listchart.get(i).toLowerCase())) {
 
-						if (count == list.size() - 1 || list.size() == 2) {
-							json = json.replaceAll(",$", "");
-							json += "]";
+								String val = values[1].trim();
+
+								if (StringUtils.isNumeric(val)) {
+									Integer val_rep = Integer.valueOf(val);
+									String visit = values[0].toLowerCase().trim();
+
+									if (visited.contains(listchart.get(i))) {
+										int k = visited.indexOf(listchart.get(i));
+										valuerep.set(k, valuerep.get(k) + val_rep);
+									} else if (!visited.contains(listchart.get(i))) {
+										valuerep.add(i, val_rep);
+										visited.add(i, visit);
+									}
+								}
+							}
 						}
 					}
+					if (count == list.size() - 1 && !listchart.isEmpty() && !valuerep.isEmpty()) {
+						for (int i = 0; i < listchart.size(); i++) {
+							serie4 = new SimpleSeries();
+							serie4.setName(listchart.get(i));
+							serie4.setData(valuerep.get(i));
+							chart_options2.setTooltip(new Tooltip().setFormatter(
+									new Function().setFunction("return ''+ this.series.name +': '+ this.y +' rep';")));
+							chart_options2.addSeries(serie4);
+						}
+					}
+					column_chart.setVisible(true);
 				}
-//				if (count == list.size() - 1) {
-//					log.info("json to execute: " + json);
-//				}
+				if (chart2 != null) {
+					listchart = new ArrayList<String>(Arrays.asList(chart2.split(",")));
+					addlinks = new ArrayList<>(Arrays.asList(obj.getOtherInfo().split("##")));
+					int id = Integer.valueOf(obj.getId().toString());
+
+					for (int i = 0; i < listchart.size(); i++) {
+						for (int j = 0; j < addlinks.size(); j++) {
+
+							String[] values = addlinks.get(j).split(":");
+							if (values[0].toLowerCase().trim().equals(listchart.get(i).toLowerCase())) {
+
+								String val = values[1].trim();
+
+								if (StringUtils.isNumeric(val)) {
+									Integer val_rep = Integer.valueOf(val);
+									String visit = values[0].toLowerCase().trim();
+
+									if (!visited_id.contains(id)) {
+										if (valuerep.contains(val_rep)) {
+											int k = valuerep.indexOf(val_rep);
+											visited_sum.set(k, visited_sum.get(k) + 1);
+											visited_id.add(id);
+										} else if (!valuerep.contains(val_rep)) {
+
+											valuerep.add(val_rep);
+											visited.add(i, visit);
+											visited_sum.add(1);
+											visited_id.add(id);
+										}
+									}
+								}
+							}
+						}
+					}
+					if (count == list.size() - 1 && !listchart.isEmpty()) {
+						for (int i = 0; i < valuerep.size(); i++) {
+							serie4 = new SimpleSeries();
+
+							serie4.setName(valuerep.get(i).toString());
+							serie4.setData(visited_sum.get(i));
+							chart_options2.setTooltip(new Tooltip().setFormatter(
+									new Function().setFunction("return ''+ this.series.name +': '+ this.y +' rep';")));
+							chart_options2.addSeries(serie4);
+						}
+					}
+					column_chart.setVisible(true);
+				}
 
 				if (showGraph) {
 					addlinks = new ArrayList<>(Arrays.asList(obj.getOtherInfo().split("##")));
-					String newinfo = "";
 
 					for (int i = 0; i < addlinks.size(); i++) {
-
-						newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+") + "&zoom="
-								+ zoom + "&fullscreen=" + fullscreen + "'>" + addlinks.get(i) + "</a><br />";
 
 						PieChartModel pc = new PieChartModel();
 						boolean found = false;
@@ -1185,35 +1191,29 @@ public class LocationServicePage extends BasePage {
 							if (found) {
 								pieChartList.get(pos).setRepetitions(pieChartList.get(pos).getRepetitions() + 1);
 
-							} else if (addlinks.get(i) != null) {
+							} else if (addlinks.get(i) != null && pieChartList.size() < 500) {
 								pc.setAttribute(addlinks.get(i));
 								pc.setRepetitions(1);
-
 								pieChartList.add(pc);
 							}
 						}
-
 					}
-					if (count == list.size() - 1 && pieChartList.size() > addlinks.size()) {
 
+					if (count == list.size() - 1) {
 						series = new PointSeries();
-						pie_chart.setVisible(true);
 
 						for (int i = 0; i < pieChartList.size(); i++)
 							Collections.sort(pieChartList, Collections.reverseOrder());
 
 						for (int i = 0; i < pieChartList.size(); i++) {
-
 							if (pieChartList.get(i).getRepetitions() != null
 									&& pieChartList.get(i).getRepetitions() > 1) {
-
 								series.addPoint(new Point(pieChartList.get(i).getAttribute(),
 										pieChartList.get(i).getRepetitions())
 												.setEvents(new Events().setClick(new RedirectFunction("search?&value="
 														+ pieChartList.get(i).getAttribute().trim().replaceAll(" ", "")
 														+ "&zoom=" + zoom + "&fullscreen=" + fullscreen + "&map="
-														+ maptype + "&graph=" + showGraph + "&clustering="
-														+ disableClustering + "&private=" + showPrivateMap))));
+														+ maptype + "&graph=" + showGraph))));
 							}
 						}
 						series.setShowInLegend(false);
@@ -1226,9 +1226,11 @@ public class LocationServicePage extends BasePage {
 										.setProperty("font-family", "sans-serif, verdana").setProperty("width", "60px"))
 								.setAlign(HorizontalAlignment.RIGHT));
 						chart_options.setTooltip(new Tooltip().setFormatter(
-								new Function().setFunction(" return ''+ this.point.name +': '+ this.y +' rep';")));
+								new Function().setFunction("return ''+ this.point.name +': '+ this.y +' rep';")));
 						chart_options.addSeries(series);
-					} else {
+						pie_chart.setVisible(true);
+
+					} else if (list.isEmpty()) {
 						pie_chart.setVisible(false);
 					}
 				}
@@ -1256,13 +1258,8 @@ public class LocationServicePage extends BasePage {
 		editForm.setOutputMarkupId(true);
 		datacontainer.add(editForm);
 
-		locationsForm = new Form<Void>("locationsForm");
-		locationsForm.setOutputMarkupId(true);
-		add(locationsForm);
-
 		WebSession session = WebSession.get();
 
-		String username = null;
 		if (WebSession.get().getAttribute("user_name") != null) {
 			username = session.getAttribute("user_name").toString();
 		}
@@ -1297,6 +1294,7 @@ public class LocationServicePage extends BasePage {
 		Label configLabel = new Label("configLabel", "Configuration:");
 		Label importedFilesLabel = new Label("importedFilesLabel", "Imported datasets:");
 		Label removeSelectedLabel = new Label("removeSelectedLabel", "Files to remove:");
+
 		if (names.isEmpty()) {
 			importedFilesLabel.setVisible(false);
 			removeSelectedLabel.setVisible(false);
@@ -1314,7 +1312,7 @@ public class LocationServicePage extends BasePage {
 		config_names.add(fullscreen_label);
 		config_names.add(privatemaps_label);
 		config_names.add(graphs_label);
-		config_names.add(clustering_label);
+
 		CheckBoxMultipleChoice<String> listConfig = new CheckBoxMultipleChoice<String>("listConfig",
 				new Model<ArrayList<String>>(config_names_select), config_names);
 		listConfig.setSuffix("<br />");
@@ -1325,52 +1323,31 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 
-				boolean fullscreen = false;
-				boolean privatemaps = false;
-				boolean graphs = false;
-				boolean clustering = false;
+				PageParameters pageParameters = new PageParameters();
 
 				for (int j = 0; j < config_names_select.size(); j++) {
 					if (config_names_select.get(j).equals(fullscreen_label)) {
-						log.info("in fullscreen");
-						target.appendJavaScript(
-								"$('.header').hide();$('#mapid').attr('style','top:0px!important');$('#viewHidePanels').val('true');");
-						fullscreen = true;
+						pageParameters.set("fullscreen", true);
 					}
 					if (config_names_select.get(j).equals(privatemaps_label)) {
-						log.info("in private maps");
-						target.appendJavaScript("$('#showPrivateMap').val('true');");
-						privatemaps = true;
+						if (username == null) {
+							target.appendJavaScript("alert('Sorry, but you must be first logged in!')");
+						} else {
+							target.appendJavaScript("$('#showPrivateMap').val('" + username + "')");
+							log.info("username is " + username);
+							log.info("username2 is " + session.getAttribute("user_name"));
+							pageParameters.set("user", username);
+						}
 					}
 					if (config_names_select.get(j).equals(graphs_label)) {
-						log.info("in graph maps");
-						target.appendJavaScript("$('#showGraph').val('true');$('#demo-panel').show()");
-						graphs = true;
-					}
-					if (config_names_select.get(j).equals(clustering_label)) {
-						log.info("in cluster maps");
-						target.appendJavaScript(
-								"markerClusters.disableClustering();$('#disableClustering').val('true');");
-						clustering = true;
+						pageParameters.set("graph", true);
+						setResponsePage(getPage().getClass(), pageParameters);
 					}
 				}
-				if (!fullscreen) {
-					log.info("not fullscreen");
-					target.appendJavaScript(
-							"$('.header').show();$('#mapid').attr('style','top:40px!important');$('#viewHidePanels').val('false');");
+				if (username != null) {
+					setResponsePage(getPage().getClass(), pageParameters);
 				}
-				if (!privatemaps) {
-					log.info("not private maps");
-					target.appendJavaScript("$('#showPrivateMap').val('false');");
-				}
-				if (!graphs) {
-					log.info("not graph maps");
-					target.appendJavaScript("$('#showGraph').val('false');$('#demo-panel').hide()");
-				}
-//				if (!clustering) {
-//					log.info("not cluster maps");
-//					target.appendJavaScript("markerClusters.enableClustering();$('#disableClustering').val('false');");
-//				}
+
 			}
 		};
 		listConfig.add(check2);
@@ -1385,13 +1362,16 @@ public class LocationServicePage extends BasePage {
 
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
+
+				json.clear();
 				list.clear();
 				list2.clear();
+
 				for (int j = 0; j < namesSelect.size(); j++) {
 					list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
 				if (list2.isEmpty()) {
-					// target.appendJavaScript("markerClusters.clearLayers();");
+					target.appendJavaScript("point_markers.remove()");
 
 				} else {
 					list.addAll(list2);
@@ -1472,23 +1452,21 @@ public class LocationServicePage extends BasePage {
 				editForm.setVisible(true);
 
 				final String idInputValue = idInput.getModelObject();
-				log.info("YOU JUST CLICKED OVER MARKER EDIT: " + idInputValue);
 
-//				int i = 0;
-//				boolean find = false;
-//				listEdit.clear();
-//
-//				while (find == false) {
-//					if (origList.get(i).getId().toString().contentEquals(idInputValue)) {
-//						listEdit.add(origList.get(i));
-//						find = true;
-//					}
-//					i++;
-//				}
-//				target.add(datacontainer);
-//				saveLocation.setVisible(true);
-//				setResponsePage(getPage());
-//				closeEdit.setVisible(true);
+				int i = 0;
+				boolean find = false;
+				temp_list.clear();
+
+				while (find == false) {
+					if (origList.get(i).getId().toString().contentEquals(idInputValue)) {
+						temp_list.add(origList.get(i));
+						find = true;
+					}
+					i++;
+				}
+				saveLocation.setVisible(true);
+				setResponsePage(getPage());
+				closeEdit.setVisible(true);
 			}
 		};
 		editFormTriggerClick.add(editInfoButton);
@@ -1523,7 +1501,6 @@ public class LocationServicePage extends BasePage {
 			}
 		};
 		displayLocations.setOutputMarkupId(true);
-		// displayLocations.setMarkupId("initDisplayLocations");
 	}
 
 	@Override

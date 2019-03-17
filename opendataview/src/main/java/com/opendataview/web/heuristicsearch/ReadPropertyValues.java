@@ -74,6 +74,7 @@ public class ReadPropertyValues extends MainClass {
 				dictionary_matches = origList.get(0).getDictionaryMatches();
 //        missinggeoreference_dir = origList.get(0).getMissinggeoreference_dir();
 
+				private_mode = origList.get(0).getPrivate_mode();
 				icon_marker = origList.get(0).getIconmarker();
 				country_code = origList.get(0).getCountrycode();
 

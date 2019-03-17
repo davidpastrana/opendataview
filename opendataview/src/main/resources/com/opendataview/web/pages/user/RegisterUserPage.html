@@ -14,7 +14,6 @@
 			<div class="container">
 				<div class="form-wrapper">
 					<pre
-						class="error"
 						wicket:id="feedback"
 					/>
 					<form
@@ -36,14 +35,14 @@
 								class="form-control"
 								placeholder="User ID"
 								autofocus
-							><input
+							/><input
 								wicket:id="email"
 								name="emailsignup"
 								required="required"
 								type="email"
 								class="form-control"
 								placeholder="Email"
-							><input
+							/><input
 								wicket:id="password"
 								name="passwordsignup"
 								required="required"
@@ -51,7 +50,7 @@
 								class="form-control"
 								maxlength="20"
 								placeholder="Password"
-							><input
+							/><input
 								wicket:id="cpassword"
 								id="passwordsignup_confirm"
 								name="passwordsignup_confirm"
@@ -60,8 +59,8 @@
 								class="form-control"
 								maxlength="20"
 								placeholder="Please Confirm Password"
-							><label
-								for="passwordsignup"
+							/><label
+								for="passwordsignup pull-left"
 								class="checkbox"
 							> <input
 								type="checkbox"
@@ -69,18 +68,16 @@
 							> </input> I agree to the Terms of Service and Privacy Policy
 							</label>
 							<button
-								class="btn btn-lg btn-primary"
+								class="btn btn-lg btn-primary pull-right"
 								type="submit"
 							>Submit</button>
 							<div
 								class="registration"
 								style="margin-top: 8px;"
 							>
-								Already Registered ? <span class="pull-right"> <a
-									class=""
+								Already Registered ? <a
 									href="/login"
 								> Login </a>
-								</span>
 							</div>
 						</div>
 					</form>

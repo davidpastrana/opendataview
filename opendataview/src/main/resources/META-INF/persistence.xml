@@ -13,10 +13,10 @@
 			<property name="hibernate.generate_statistics" value="false" />
 			<property name="show_sql" value="false" />
 
-			<property name="hibernate.dialect"
-				value="org.hibernate.dialect.PostgreSQLDialect" />
-			<property name="hibernate.hbm2ddl.auto" value="create" />
-			<property name="hibernate.hbm2ddl.auto" value="validate" />
+			<property name="hibernate.dialect" value="org.hibernate.spatial.dialect.postgis.PostgisDialect" />
+			<!-- <property name="hibernate.dialect"
+				value="org.hibernate.dialect.PostgreSQLDialect" /> -->
+			<property name="hibernate.hbm2ddl.auto" value="update" />
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
 			<property name="hibernate.connection.driver_class"

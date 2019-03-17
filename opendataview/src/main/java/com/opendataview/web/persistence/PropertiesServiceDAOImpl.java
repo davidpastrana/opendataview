@@ -38,7 +38,6 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 		Query query = getEntityManager().createQuery("select a from properties a where a.username='" + user + "'",
 				PropertiesModel.class);
 		List<PropertiesModel> resultList = query.getResultList();
-		log.info("PROPIEDADES..." + resultList.size());
 		return resultList;
 	}
 
@@ -88,14 +87,14 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 
 			// 38 field in properties table
 			Query query = getEntityManager().createNativeQuery(
-					"INSERT INTO properties(id,mapsAPI,executeSQLqueries,autodetectSchema,fieldtypesdebugmode,active_dictionary,dictionary_matches,nrowchecks,pvalue_nrowchecks,imageRegex, phoneRegex,cityRegex,archiveRegex,documentRegex,openinghoursRegex,dateRegex,yearRegex,currencyRegex,percentageRegex,postcodeRegex, nutsRegex,shapeRegex,latitudeRegex,longitudeRegex,latlngRegex,possiblenameRegex,countrycode,geonames_dbdriver,geonames_dburl,geonames_dbusr, geonames_dbpwd,web_dbdriver,web_dburl,web_dbusr,web_dbpwd,st1postcode,st1city,geonamesdebugmode,descriptionRegex,iconmarker) VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?)");
+					"INSERT INTO properties(id,mapsAPI,executeSQLqueries,autodetectSchema,fieldtypesdebugmode,active_dictionary,dictionary_matches,nrowchecks,pvalue_nrowchecks,imageRegex, phoneRegex,cityRegex,archiveRegex,documentRegex,openinghoursRegex,dateRegex,yearRegex,currencyRegex,percentageRegex,postcodeRegex, nutsRegex,shapeRegex,latitudeRegex,longitudeRegex,latlngRegex,possiblenameRegex,countrycode,geonames_dbdriver,geonames_dburl,geonames_dbusr, geonames_dbpwd,web_dbdriver,web_dburl,web_dbusr,web_dbpwd,st1postcode,st1city,geonamesdebugmode,descriptionRegex,iconmarker,private_mode) VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)");
 
 			query.setParameter(1, 1);
 			query.setParameter(2, "AIzaSyDadUi1huN5fz0Z15duVzgiS1mjXsE89oE");
-			query.setParameter(3, "false");
-			query.setParameter(4, "true");
-			query.setParameter(5, "true");
-			query.setParameter(6, "true");
+			query.setParameter(3, false);
+			query.setParameter(4, true);
+			query.setParameter(5, true);
+			query.setParameter(6, true);
 			query.setParameter(7,
 					"%title%, %name%, nom%, artbez, parkanlage, bezeichnung, station : titles;\n"
 							+ "%description%, %comment%, bemerkung: description;\n"
@@ -140,9 +139,10 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 					"select p.name,admin3name,code,p.latitude,p.longitude,g.population,g.elevation from postalcodes p inner join geoname g on p.admin3 = g.admin3 where code like ? order by code asc");
 			query.setParameter(37,
 					"select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname = ? order by population desc");
-			query.setParameter(38, "true");
+			query.setParameter(38, true);
 			query.setParameter(39, "[\\s\\S]{100,}");
-			query.setParameter(40, "#F44336+10+0.8");
+			query.setParameter(40, "E91E63#12#120.9");
+			query.setParameter(41, false);
 
 			query.executeUpdate();
 			clone = entityManager.find(PropertiesModel.class, (long) 1);

@@ -1,6 +1,5 @@
 package com.opendataview.web.persistence;
 
-import java.util.Arrays;
 import java.util.List;
 
 import javax.persistence.EntityManager;
@@ -14,7 +13,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.opendataview.web.model.LocationModel;
-import com.opendataview.web.model.RatingModel;
 
 @Service
 public class LocationServiceDAOImpl implements LocationServiceDAO {
@@ -94,31 +92,32 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 
 	@Override
 	@Transactional
-	public boolean checkLocationExistanceByOtherName(List<String> listValues) {
+	public boolean checkLocationExistanceByOtherName(LocationModel locationModel) {
 
-		String latitude = listValues.get(6);
-		String longitude = listValues.get(7);
-		String csvname = listValues.get(13);
+//		log.info("values to check2" + Arrays.asList(listValues));
+//
+//		String latitude = listValues.get(6);
+//		String longitude = listValues.get(7);
+//		String csvname = listValues.get(13);
+//
+//		log.info("values to check" + Arrays.asList(listValues));
 
-		log.info("values to check" + Arrays.asList(listValues));
+		log.info("QUERY TO CHECK: select l from locations l where l.latitude = '" + locationModel.getLatitude()
+				+ "' and l.longitude = '" + locationModel.getLongitude() + "' and lower(csvname) = '"
+				+ locationModel.getCsvName().toLowerCase() + "'");
 
-		log.info("QUERY TO CHECK: select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '"
-				+ longitude + "' and lower(csvname) = '" + csvname.toLowerCase() + "'");
-
-		if (listValues != null) {
+		if (locationModel != null) {
 
 //		 //we get the desired info to check if is an update, being after the third double-hash symbol
 //		  String value = listValues[21].substring(listValues[21].indexOf(" ## ", 1 + listValues[21].indexOf(" ## ", 1 + listValues[21].indexOf(" ## ")))+4);
 ////		  log.info("DESIRED INFO "+value);
-			log.info("select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '" + longitude
-					+ "' and lower(csvname) = '" + csvname.toLowerCase() + "'");
+//			log.info("select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '" + longitude
+//					+ "' and lower(csvname) = '" + csvname.toLowerCase() + "'");
 //		  Query query = getEntityManager().createQuery("select l from locations l where lower(otherinfo) like '%"+value.toLowerCase()+"'",
 
-			Query query = getEntityManager()
-					.createQuery(
-							"select l from locations l where l.latitude = '" + latitude + "' and l.longitude = '"
-									+ longitude + "' and lower(csvname) = '" + csvname.toLowerCase() + "'",
-							LocationModel.class);
+			Query query = getEntityManager().createQuery("select l from locations l where l.latitude = '"
+					+ locationModel.getLatitude() + "' and l.longitude = '" + locationModel.getLongitude()
+					+ "' and lower(csvname) = '" + locationModel.getCsvName().toLowerCase() + "'", LocationModel.class);
 
 			if (query.getResultList() == null || query.getResultList().isEmpty()) {
 				return false;
@@ -153,7 +152,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 			query = entityManager.createNativeQuery(
 					"update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
 							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
-							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,otherinfo=:otherinfo,rating=:rating,nrating=:nrating,iconmarker=:iconmarker where id = :id",
+							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,otherinfo=:otherinfo where id = :id",
 					LocationModel.class);
 			query.setParameter("id", new Float(listValues.get(0)));
 
@@ -197,14 +196,14 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 			log.info(
 					"QUERY TO UPDATE: update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
 							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
-							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,otherinfo=:otherinfo,rating=:rating,nrating=:nrating where latitude = '"
+							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,otherinfo=:otherinfo where latitude = '"
 							+ latitude + "' and longitude = '" + longitude + "' and lower(csvname) = '"
 							+ csvname.toLowerCase() + "'");
 
 			query = entityManager.createNativeQuery(
 					"update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
 							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
-							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,otherinfo=:otherinfo,rating=:rating,nrating=:nrating where latitude = '"
+							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,otherinfo=:otherinfo where latitude = '"
 							+ latitude + "' and longitude = '" + longitude + "' and lower(csvname) = '"
 							+ csvname.toLowerCase() + "'",
 					LocationModel.class);
@@ -261,9 +260,8 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 		// query.setParameter("date_published", listValues.get(18));
 		query.setParameter("date_updated", listValues.get(19));
 		query.setParameter("iconmarker", listValues.get(20));
-		query.setParameter("otherinfo", listValues.get(21));
-		query.setParameter("rating", Double.parseDouble(listValues.get(22)));
-		query.setParameter("nrating", Integer.parseInt(listValues.get(23)));
+		query.setParameter("private_mode", listValues.get(21));
+		query.setParameter("otherinfo", listValues.get(22));
 		query.executeUpdate();
 	}
 
@@ -361,27 +359,6 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 		// query.setParameter(1, "%"+location_value+"%");
 		List<LocationModel> resultList = query.getResultList();
 		return resultList;
-	}
-
-	@Override
-	@Transactional
-	public List<RatingModel> readRatingModel() throws DataAccessException {
-		Query query = getEntityManager().createQuery("select r from ratings r", RatingModel.class);
-		List<RatingModel> resultList = query.getResultList();
-		return resultList;
-	}
-
-	@Override
-	@Transactional
-	public void updateRatingModel(RatingModel ratingModel) {
-		RatingModel item = entityManager.merge(ratingModel);
-		entityManager.merge(item);
-	}
-
-	@Override
-	@Transactional
-	public void storeRatingModel(RatingModel rating) {
-		entityManager.persist(rating);
 	}
 
 }

@@ -8,10 +8,15 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
+
+import org.hibernate.search.annotations.Indexed;
+import org.hibernate.search.annotations.Latitude;
+import org.hibernate.search.annotations.Longitude;
+import org.hibernate.search.annotations.Spatial;
 
 @Entity(name = "locations")
-@Table(name = "locations")
+@Spatial
+@Indexed
 public class LocationModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -38,8 +43,10 @@ public class LocationModel implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	protected String population;
 	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+	@Latitude
 	protected Float latitude;
 	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+	@Longitude
 	protected Float longitude;
 	@Column(columnDefinition = "TEXT")
 	private String website;
@@ -79,11 +86,8 @@ public class LocationModel implements Serializable {
 	protected String iconmarker;
 	@Column(columnDefinition = "TEXT")
 	protected String percentage;
-	@Column(columnDefinition = "TEXT")
-	protected String private_mode;
-//	protected double rating = 0;
-//	private int nrating = 0;
-
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean private_mode;
 	@Column(columnDefinition = "TEXT")
 	protected String street;
 	@Column(columnDefinition = "TEXT")
@@ -321,22 +325,6 @@ public class LocationModel implements Serializable {
 		this.percentage = percentage;
 	}
 
-//	public double getRating() {
-//		return rating;
-//	}
-//
-//	public void setRating(double rating) {
-//		this.rating = rating;
-//	}
-//
-//	public int getNrating() {
-//		return nrating;
-//	}
-//
-//	public void setNrating(int nrating) {
-//		this.nrating = nrating;
-//	}
-
 	public String getStreet() {
 		return street;
 	}
@@ -365,11 +353,11 @@ public class LocationModel implements Serializable {
 		this.iconmarker = iconmarker;
 	}
 
-	public String getPrivate_mode() {
+	public boolean getPrivate_mode() {
 		return private_mode;
 	}
 
-	public void setPrivate_mode(String private_mode) {
+	public void setPrivate_mode(boolean private_mode) {
 		this.private_mode = private_mode;
 	}
 

@@ -16,6 +16,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opendataview.web.model.LocationModel;
 import com.opendataview.web.persistence.LocationServiceDAO;
 
 public class RunSqlScript {
@@ -64,10 +65,35 @@ public class RunSqlScript {
 			List<String> listValues = new ArrayList<String>();
 			listValues = Arrays.asList(line.replaceAll("'", "").split("VALUES\\(")[1].split("\\);$")[0].split(","));
 
+			LocationModel o = new LocationModel();
+			o.setName(listValues.get(0));
+			o.setDescription(listValues.get(1));
+			o.setType(listValues.get(2));
+			o.setAddress(listValues.get(3));
+			o.setPostcode(listValues.get(4));
+			o.setCity(listValues.get(5));
+			o.setLatitude(Float.valueOf(listValues.get(6)));
+			o.setLongitude(Float.valueOf(listValues.get(7)));
+			o.setWebsite(listValues.get(8));
+			o.setPhone(listValues.get(9));
+			o.setDate(listValues.get(10));
+			o.setSchedule(listValues.get(11));
+			o.setEmail(listValues.get(12));
+			o.setCsvName(listValues.get(13));
+			o.setPopulation(listValues.get(14));
+			o.setElevation(listValues.get(15));
+			o.setUsername(listValues.get(16));
+			o.setSource(listValues.get(17));
+			o.setDate_published(listValues.get(18));
+			o.setDate_updated(listValues.get(19));
+			o.setIconmarker(listValues.get(20));
+			o.setPrivate_mode(Boolean.valueOf(listValues.get(21)));
+			o.setOtherInfo(listValues.get(22));
 			log.info("\n\nvalues " + Arrays.asList(listValues));
 
 			// check if requires an sql update or not, by executing the inster query
 
+			log.info("list size is: " + listValues.size());
 			log.info("query id value is: " + queryid_value);
 			if (listValues != null) {
 				if (queryid_field.contentEquals("id")) {
@@ -75,7 +101,7 @@ public class RunSqlScript {
 					isupdate = locationServiceDAO.checkLocationExistanceByID(queryid_value);
 				} else {
 
-					isupdate = locationServiceDAO.checkLocationExistanceByOtherName(listValues);
+					isupdate = locationServiceDAO.checkLocationExistanceByOtherName(o);
 
 				}
 

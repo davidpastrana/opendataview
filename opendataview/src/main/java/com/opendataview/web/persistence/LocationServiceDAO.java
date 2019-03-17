@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.dao.DataAccessException;
 
 import com.opendataview.web.model.LocationModel;
-import com.opendataview.web.model.RatingModel;
 
 public interface LocationServiceDAO {
 
@@ -14,12 +13,6 @@ public interface LocationServiceDAO {
 	void removeLocationModel(LocationModel locationModel);
 
 	void updateLocationModel(LocationModel locationModel);
-
-	void updateRatingModel(RatingModel ratingModel);
-
-	void storeRatingModel(RatingModel rating);
-
-	List<RatingModel> readRatingModel() throws DataAccessException;
 
 	void storeLocationModel(List<LocationModel> locationlist);
 
@@ -33,7 +26,7 @@ public interface LocationServiceDAO {
 
 	boolean checkLocationExistanceByID(String queryidvalue);
 
-	boolean checkLocationExistanceByOtherName(List<String> listValues);
+	boolean checkLocationExistanceByOtherName(LocationModel locationModel);
 
 	void updateQuery(List<String> listValues, boolean hasid);
 

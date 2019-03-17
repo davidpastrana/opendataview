@@ -109,6 +109,8 @@ public class GenerateFile extends MainClass {
 			wr.append(DELIMITER);
 			wr.append(loc.getIconmarker());
 			wr.append(DELIMITER);
+			wr.append(String.valueOf(loc.getPrivate_mode()));
+			wr.append(DELIMITER);
 			wr.append(loc.getOtherInfo());
 			wr.append(NEW_LINE);
 		}
@@ -184,7 +186,7 @@ public class GenerateFile extends MainClass {
 				// ADD VALUE WHEN WE INSERT SOME NEW FIELD INTO LOCATIONS TABLE - ALWAYS TO ADD
 				// AT THE END - MAKE SURE IS SAME ORDER
 				buffer.append(
-						"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,otherinfo,rating,nrating) VALUES(");
+						"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,otherinfo) VALUES(");
 				j = 0;
 				while (j < value.length) {
 					value[j] = value[j].replaceAll("\'", "").replaceAll("\"", "").replaceAll(",", ";");
@@ -211,7 +213,7 @@ public class GenerateFile extends MainClass {
 					}
 					j++;
 				}
-				buffer.append(",0,0);");
+				buffer.append(");");
 				buffer.append(NEW_LINE);
 			} else {
 				no_inserts++;

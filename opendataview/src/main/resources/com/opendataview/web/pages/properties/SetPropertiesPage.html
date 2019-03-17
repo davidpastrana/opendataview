@@ -23,11 +23,11 @@
    }
  }*/
 </script>
-		<div wicket:id="wmc">
+		<div id="wmc" wicket:id="wmc">
 			<div id="bysy_indicator">
 				<span class="loading-gif"><span class="loading-text">Processing
-						files...<br /> <br />Please be patient, when option <strong>Upload
-						results into database</strong> is enabled, can take time to insert,update,geocode data, etc.
+						files...<br /> <br />Please be patient and be aware that option <strong>Upload
+						results into database</strong> can take considerable time depending on the number of inserts, updates, geocoding, etc.
 				</span></span>
 			</div>
 			<!-- Title -->
@@ -253,8 +253,19 @@
 												class="form-control schema-relationships"
 											/></td>
 									</tr>
-									
-									<tr class="">
+									<tr class="main-config" >
+										<td>Private mode (only visible with your logged user): <i
+											class="fa fa-info-circle"
+											data-toggle="tooltip"
+											data-placement="right"
+											title="You can then share your private maps by including your user in the url"
+										/></td>
+										<td><select
+											wicket:id="private_mode"
+											class="form-control"
+										/></td>
+									</tr>
+									<tr class="hide">
 										<td>Icon Marker: <i
 											class="fa fa-info-circle"
 											data-toggle="tooltip"
@@ -821,9 +832,9 @@
 
 function changeMarker() {
 	//<svg height="'+sc1+'" width="'+sc1+'"> <circle cx="50" cy="50" r="40" stroke="gray" stroke-width="3" fill="'+cc1+'" /> </svg>
-	  $('#marker-design').html('<svg xmlns="http://www.w3.org/2000/svg" height="'+sc1+'" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(45)"></g></defs><circle style="fill:gray" r="80" opacity="'+oc1+'" /><circle r="65" stroke-width="5" fill="'+cc1+'" opacity="'+oc1+'" /></svg>');
+	  $('#marker-design').html('<svg xmlns="http://www.w3.org/2000/svg" height="'+sc1+'" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(45)"></g></defs><circle style="fill:gray" r="80" opacity="'+oc1+'" /><circle r="65" stroke-width="5" fill="#'+cc1+'" opacity="'+oc1+'" /></svg>');
 	  //$('#iconmarker').val(cc1+'.'+cc2+'.'+sc1+'.'+sc2);
-	  $('#iconmarker').val(cc1+'+'+sc1+'+'+oc1);
+	  $('#iconmarker').val(cc1+'#'+sc1+'#'+oc1);
 }
 function hideBusysign() {
 	document.getElementById('bysy_indicator').style.display ='none';
@@ -831,13 +842,13 @@ function hideBusysign() {
 function showBusysign() {
 	document.getElementById('bysy_indicator').style.display ='inline';
 }
-var cc1 = "#F44336";
+var cc1 = "E91E63";
 var sc1 = "12";
 var oc1 = "0.9";
 $(function() {
 
 	
-	var marker_info = $('#iconmarker').val().split("+");
+	var marker_info = $('#iconmarker').val().split("#");
 	console.log("ccs is "+marker_info[0]);
 	console.log("sc1 is "+marker_info[1]);
 	console.log("oc1 is "+marker_info[2]);
@@ -919,7 +930,7 @@ $(function() {
 	const pickr = new Pickr({
 	    el: '.color-picker',
 	    comparison: false,
-	    default: cc1,
+	    default: '#'+cc1,
 	    swatches: [
 	        '#F44336',
 	        '#E91E63',
@@ -938,7 +949,7 @@ $(function() {
 	    ],
 	    onChange(hsva, instance) {
 		    	if (pickr.isOpen() == true) {
-				cc1 = hsva.toHEX();
+				cc1 = String(hsva.toHEX()).substring(1);
 				changeMarker();
 				pickr.applyColor(false);
 		    	}

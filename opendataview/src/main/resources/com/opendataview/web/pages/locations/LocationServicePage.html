@@ -10,7 +10,7 @@
 <body>
 	<wicket:extend>
 	<div class="parent-wrapper">
-	<div id="mapid"></div>
+				<div id="mapid"></div>
 	<div class="map-panels">
 		<div
 			id="searchView"
@@ -65,8 +65,13 @@
 					type="text"
 				/>
 				<input class="hide"
-					id="disableClustering"
-					wicket:id="disableClustering"
+					id="chart_total"
+					wicket:id="chart_total"
+					type="text"
+				/>
+				<input class="hide"
+					id="chart_group"
+					wicket:id="chart_group"
 					type="text"
 				/>	
 				<input class="hide"
@@ -132,6 +137,7 @@
 					class="glyphicon glyphicon-cog custom-displayloc"
 				/>
 				<div id="hideLocation">
+				    <div id ="active_user" wicket:id="active_user" />
 									<p
 						class="h3 list-route"
 						wicket:id="configLabel"
@@ -149,6 +155,22 @@
 						wicket:id="listLocations"
 					></div>
 					<br />
+										<p
+						class="h3 list-route breakline"
+						wicket:id="downloadLabel"
+					>Download search:</p>
+						<span
+							id="linkSaveVisibleLoc"
+							class="hide"
+							wicket:id="saveVisibleLoc"
+						/>
+						<span
+							id="linkSqlLocBackup"
+							class="hide"
+							wicket:id="sqlLocBackup"
+						/>
+						<a href="#" wicket:id="saveVisibleLocFile" class="breakline">Download CSV</a>
+						<a href="#" wicket:id="saveSqlLocBackup" class="padding-bottom breakline">Download SQL Backup</a>
 					<p
 						class="h3 list-route"
 						wicket:id="removeSelectedLabel"
@@ -163,14 +185,17 @@
 					>Remove selected</button>
 				</div>
 			</form>
+
 	</div>
 		<div wicket:id="data">
 		
-
-	
-	<div id="demo-panel" class="wrapper">
-    	<div id="container" wicket:id="chart"></div>
+	<div id="demo-panel2" class="wrapper">
+    	<div id="container2" wicket:id="chart2" />
 	</div>
+	<div id="demo-panel" class="wrapper">
+    	<div id="container" wicket:id="chart" />
+	</div>
+
 			<!--  <form wicket:id="coordGeoForm">
 
 			</form>-->
@@ -195,33 +220,11 @@
 				  <button id="zoomOut" class="btn" title="Zoom Out">-</button>
 				  <button id="zoomIn" class="btn" title="Zoom In">+</button>
 			</div>
+
 			<button id="attribution-button" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" title="Maps Attribution">?</button>
 			<div id="panel">
 
-					<form
-						id="saveLocationsForm"
-						wicket:id="saveLocationsForm"
-					>
-						<span
-							id="linkSaveVisibleLoc"
-							class="hide"
-							wicket:id="saveVisibleLoc"
-						/>
-						<i id="saveVisibleLocFile" name="download"
-							class="glyphicon glyphicon-file"
-							wicket:id="saveVisibleLocFile"
-											title="Download current view in CSV format"
-						/>
-						<i
-							id="linkSqlLocBackup"
-							class="hide"
-							wicket:id="sqlLocBackup"
-						/>
-						<i id="saveSqlLocBackup"
-							class="glyphicon glyphicon-save"
-							wicket:id="saveSqlLocBackup"
-											title="Backup current view in SQL format" />
-					</form>
+
 					<!--  <span class="mapTypeId"> <select
 						id="mapTypeId"
 						class="form-control"
@@ -395,6 +398,7 @@
         </div>
 		
 		<div wicket:id="wmc2">
+			    <span wicket:id="locations_counter" />
 							<!--<form wicket:id="showMarkerForm" id="showMarkerForm" />
 							  <i
 					id="closeEdit"
@@ -435,7 +439,7 @@
 														/><br /> <span
 															wicket:id="userPublishedTag2"
 															
-														/> <span
+														/> <span id="userPublished2"
 															wicket:id="userPublished2"
 															class="h5"
 														/> <!-- <span
@@ -450,13 +454,13 @@
 														/></td>
 														<td>
 														<i
-									class="fa fa-pencil fa-2x iconEditInfo"
-									onclick="getIdMarker(id)"
-								/>
-								 <i
-									class="fa fa-map fa-2x iconDirection"
-									onclick="displayDirectionTable()"
-								/>
+																class="fa fa-pencil fa-2x iconEditInfo"
+																onclick="editMarkerInfo()"
+															/><!--  
+															 <i
+																class="fa fa-map fa-2x iconDirection"
+																onclick="displayDirectionTable()"
+															/>-->
 														</td>
 													</tr>
 													
@@ -566,8 +570,7 @@
 													<tr>
 														<td>Location ID:</td>
 														<td>
-															<span wicket:id="id_location2"
-															class="id_DB" />
+															<span id="location_id" wicket:id="id_location2" />
 														</td>
 													</tr>
 												</table>
@@ -587,14 +590,16 @@
 			</table>
 			
 
+
 		</div>
 		   </nav>
 
 </div>
-	<div id="jsonObject" />
+	<span id="jsonObject" />
     <!-- IMPORTANT - Dark Overlay element when click out from the Markerinfo Sidebar -->
     <div class="overlay" />
-	<div wicket:id="wmc" />
+
+	<!--  ><div wicket:id="wmc" />-->
 </div>
 </wicket:extend>
 </body>

@@ -345,19 +345,22 @@ public class SetPropertiesPage extends BasePage {
 							new PropertyModel<String>(item.getModelObject(), "mapsAPI")));
 //            item.add(new TextField<String>("testfile",new PropertyModel<String>(item.getModelObject(),
 //                    "testfile")));
-					item.add(new DropDownChoice<String>("executeSQLqueries",
-							new PropertyModel<String>(item.getModelObject(), "executeSQLqueries"),
-							Arrays.asList("true", "false")));
-					item.add(new DropDownChoice<String>("autodetectSchema",
-							new PropertyModel<String>(item.getModelObject(), "autodetectSchema"),
-							Arrays.asList("true", "false")));
-					item.add(new DropDownChoice<String>("geonamesdebugmode",
-							new PropertyModel<String>(item.getModelObject(), "geonamesdebugmode"),
-							Arrays.asList("true", "false")));
+					item.add(new DropDownChoice<Boolean>("private_mode",
+							new PropertyModel<Boolean>(item.getModelObject(), "private_mode"),
+							Arrays.asList(true, false)));
+					item.add(new DropDownChoice<Boolean>("executeSQLqueries",
+							new PropertyModel<Boolean>(item.getModelObject(), "executeSQLqueries"),
+							Arrays.asList(true, false)));
+					item.add(new DropDownChoice<Boolean>("autodetectSchema",
+							new PropertyModel<Boolean>(item.getModelObject(), "autodetectSchema"),
+							Arrays.asList(true, false)));
+					item.add(new DropDownChoice<Boolean>("geonamesdebugmode",
+							new PropertyModel<Boolean>(item.getModelObject(), "geonamesdebugmode"),
+							Arrays.asList(true, false)));
 
-					item.add(new DropDownChoice<String>("fieldtypesdebugmode",
-							new PropertyModel<String>(item.getModelObject(), "fieldtypesdebugmode"),
-							Arrays.asList("true", "false")));
+					item.add(new DropDownChoice<Boolean>("fieldtypesdebugmode",
+							new PropertyModel<Boolean>(item.getModelObject(), "fieldtypesdebugmode"),
+							Arrays.asList(true, false)));
 
 //            item.add(new TextField<String>("csvfiles_dir",new PropertyModel<String>(item.getModelObject(),
 //                    "csvfiles_dir")));
@@ -371,9 +374,9 @@ public class SetPropertiesPage extends BasePage {
 //                    "sqlinserts_file")));
 //    item.add(new TextField<String>("newformat_dir",new PropertyModel<String>(item.getModelObject(),
 //                    "newformat_dir")));
-					item.add(new DropDownChoice<String>("active_dictionary",
-							new PropertyModel<String>(item.getModelObject(), "active_dictionary"),
-							Arrays.asList("true", "false")));
+					item.add(new DropDownChoice<Boolean>("active_dictionary",
+							new PropertyModel<Boolean>(item.getModelObject(), "active_dictionary"),
+							Arrays.asList(true, false)));
 
 					item.add(new TextArea<String>("dictionary_matches",
 							new PropertyModel<String>(item.getModelObject(), "dictionary_matches")));

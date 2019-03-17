@@ -8,10 +8,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.SequenceGenerator;
-import javax.persistence.Table;
 
 @Entity(name = "properties")
-@Table(name = "properties")
 public class PropertiesModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -23,30 +21,18 @@ public class PropertiesModel implements Serializable {
 	protected Long id;
 	@Column(columnDefinition = "TEXT")
 	protected String mapsAPI;
-//  @Column(columnDefinition = "TEXT")
-//  protected String testfile;
-	@Column(columnDefinition = "TEXT")
-	protected String executeSQLqueries;
-	@Column(columnDefinition = "TEXT")
-	protected String autodetectSchema;
-	@Column(columnDefinition = "TEXT")
-	protected String geonamesdebugmode;
-	@Column(columnDefinition = "TEXT")
-	protected String fieldtypesdebugmode;
-//  @Column(columnDefinition = "TEXT")
-//  protected String csvfiles_dir;
-//  @Column(columnDefinition = "TEXT")
-//  protected String tmp_dir;
-	@Column(columnDefinition = "TEXT")
-	protected String active_dictionary;
-//  @Column(columnDefinition = "TEXT")
-//  protected String newformat_dir;
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean executeSQLqueries;
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean autodetectSchema;
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean geonamesdebugmode;
+	@Column(columnDefinition = "BOOLEAN DEFAULT FALSE")
+	protected boolean fieldtypesdebugmode;
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean active_dictionary;
 	@Column(columnDefinition = "TEXT")
 	protected String dictionary_matches;
-//  @Column(columnDefinition = "TEXT")
-//  protected String missinggeoreference_dir;
-//  @Column(columnDefinition = "TEXT")
-//  protected String sqlinserts_file;
 	@Column(columnDefinition = "TEXT")
 	protected String nrowchecks;
 	@Column(columnDefinition = "TEXT")
@@ -91,8 +77,6 @@ public class PropertiesModel implements Serializable {
 	protected String iconmarker;
 	@Column(columnDefinition = "TEXT")
 	protected String countrycode;
-//  @Column(columnDefinition = "TEXT")
-//  protected String shapes_file;
 	@Column(columnDefinition = "TEXT")
 	protected String geonames_dbdriver;
 	@Column(columnDefinition = "TEXT")
@@ -111,20 +95,10 @@ public class PropertiesModel implements Serializable {
 	protected String web_dbpwd;
 	@Column(columnDefinition = "TEXT")
 	protected String st1postcode;
-//  @Column(columnDefinition = "TEXT")
-//  protected String st2postcode;
 	@Column(columnDefinition = "TEXT")
 	protected String st1city;
-//  @Column(columnDefinition = "TEXT")
-//  protected String st2city;
-//  @Column(columnDefinition = "TEXT")
-//  protected String st3city;
-//  @Column(columnDefinition = "TEXT")
-//  protected String fileName1;
-//  @Column(columnDefinition = "TEXT")
-//  protected String fileName2;
-//  @Column(columnDefinition = "TEXT")
-//  protected String fileName3;
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean private_mode;
 	@Column(columnDefinition = "TEXT")
 	protected String username;
 
@@ -144,70 +118,46 @@ public class PropertiesModel implements Serializable {
 		this.mapsAPI = mapsAPI;
 	}
 
-//public String getTestfile() {
-//	return testfile;
-//}
-//public void setTestfile(String testfile) {
-//	this.testfile = testfile;
-//}
-	public String getExecuteSQLqueries() {
+	public boolean getExecuteSQLqueries() {
 		return executeSQLqueries;
 	}
 
-	public void setExecuteSQLqueries(String executeSQLqueries) {
+	public void setExecuteSQLqueries(boolean executeSQLqueries) {
 		this.executeSQLqueries = executeSQLqueries;
 	}
 
-	public String getAutoDetectSchema() {
+	public boolean getAutoDetectSchema() {
 		return autodetectSchema;
 	}
 
-	public void setAutoDetectSchema(String autodetectSchema) {
+	public void setAutoDetectSchema(boolean autodetectSchema) {
 		this.autodetectSchema = autodetectSchema;
 	}
 
-	public String getGeonamesdebugmode() {
+	public boolean getGeonamesdebugmode() {
 		return geonamesdebugmode;
 	}
 
-	public void setGeonamesdebugmode(String geonamesdebugmode) {
+	public void setGeonamesdebugmode(boolean geonamesdebugmode) {
 		this.geonamesdebugmode = geonamesdebugmode;
 	}
 
-	public String getFieldtypesdebugmode() {
+	public boolean getFieldtypesdebugmode() {
 		return fieldtypesdebugmode;
 	}
 
-	public void setFieldtypesdebugmode(String fieldtypesdebugmode) {
+	public void setFieldtypesdebugmode(boolean fieldtypesdebugmode) {
 		this.fieldtypesdebugmode = fieldtypesdebugmode;
 	}
 
-//public String getCsvfiles_dir() {
-//	return csvfiles_dir;
-//}
-//public void setCsvfiles_dir(String csvfiles_dir) {
-//	this.csvfiles_dir = csvfiles_dir;
-//}
-//public String getTmp_dir() {
-//	return tmp_dir;
-//}
-//public void setTmp_dir(String tmp_dir) {
-//	this.tmp_dir = tmp_dir;
-//}
-	public String getActiveDictionary() {
+	public boolean getActiveDictionary() {
 		return active_dictionary;
 	}
 
-	public void setActiveDictionary(String active_dictionary) {
+	public void setActiveDictionary(boolean active_dictionary) {
 		this.active_dictionary = active_dictionary;
 	}
 
-//public String getNewformat_dir() {
-//	return newformat_dir;
-//}
-//public void setNewformat_dir(String newformat_dir) {
-//	this.newformat_dir = newformat_dir;
-//}
 	public String getDictionaryMatches() {
 		return dictionary_matches;
 	}
@@ -216,18 +166,6 @@ public class PropertiesModel implements Serializable {
 		this.dictionary_matches = dictionary_matches;
 	}
 
-//public String getMissinggeoreference_dir() {
-//	return missinggeoreference_dir;
-//}
-//public void setMissinggeoreference_dir(String missinggeoreference_dir) {
-//	this.missinggeoreference_dir = missinggeoreference_dir;
-//}
-//public String getSqlinserts_file() {
-//	return sqlinserts_file;
-//}
-//public void setSqlinserts_file(String sqlinserts_file) {
-//	this.sqlinserts_file = sqlinserts_file;
-//}
 	public String getNrowchecks() {
 		return nrowchecks;
 	}
@@ -404,12 +342,6 @@ public class PropertiesModel implements Serializable {
 		this.countrycode = countrycode;
 	}
 
-//public String getShapes_file() {
-//	return shapes_file;
-//}
-//public void setShapes_file(String shapes_file) {
-//	this.shapes_file = shapes_file;
-//}
 	public String getGeonames_dbdriver() {
 		return geonames_dbdriver;
 	}
@@ -482,12 +414,6 @@ public class PropertiesModel implements Serializable {
 		this.st1postcode = st1postcode;
 	}
 
-//public String getSt2postcode() {
-//	return st2postcode;
-//}
-//public void setSt2postcode(String st2postcode) {
-//	this.st2postcode = st2postcode;
-//}
 	public String getSt1city() {
 		return st1city;
 	}
@@ -496,45 +422,23 @@ public class PropertiesModel implements Serializable {
 		this.st1city = st1city;
 	}
 
-//public String getSt2city() {
-//	return st2city;
-//}
-//public void setSt2city(String st2city) {
-//	this.st2city = st2city;
-//}
-//public String getSt3city() {
-//	return st3city;
-//}
-//public void setSt3city(String st3city) {
-//	this.st3city = st3city;
-//}
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
 
-//public String getFileName1() {
-//	return fileName1;
-//}
-//public void setFileName1(String fileName1) {
-//	this.fileName1 = fileName1;
-//}
-//public String getFileName2() {
-//	return fileName2;
-//}
-//public void setFileName2(String fileName2) {
-//	this.fileName2 = fileName2;
-//}
-//public String getFileName3() {
-//	return fileName3;
-//}
-//public void setFileName3(String fileName3) {
-//	this.fileName3 = fileName3;
-//}
 	public String getUsername() {
 		return username;
 	}
 
 	public void setUsername(String username) {
 		this.username = username;
+	}
+
+	public boolean getPrivate_mode() {
+		return private_mode;
+	}
+
+	public void setPrivate_mode(boolean private_mode) {
+		this.private_mode = private_mode;
 	}
 }

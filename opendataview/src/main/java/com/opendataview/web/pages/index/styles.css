@@ -208,6 +208,12 @@ a:hover {
 	padding-right: 0 !important;
 	padding-left: 0 !important;
 }
+.login-bg>.container {
+	min-height: calc(100vh - 300px);
+}
+#wmc > div.container {
+	min-height: calc(100vh - 380px);
+}
 
 .navbar-inverse .navbar-toggle .icon-bar {
 	/*background-color: #CC4646;*/;

@@ -11,8 +11,9 @@ function getSearchParams(k){
 }
 function showSidebar(id) {
   $('#idInput2').val(id);
+  if($('#active_user').text().split(": ")[1] === $('#userPublished2').text()) {$('.iconEditInfo').show()} else {$('.iconEditInfo').hide()}
+  if($('#sidebar').not('.active')){$('#sidebar').addClass('active');$('.overlay').addClass('active');}
   $('#showMarkerInfoBttn').trigger('click');
-	if($('#sidebar').not('.active')){$('#sidebar').addClass('active');$('.overlay').addClass('active');}
 }
 function customMarker() {
 	return 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(45)"></g></defs><g fill="#F39C123D"><circle fill="#724600" r="38px" /><circle fill="#f39c12" r="30" /><circle r="100" /><use xlink:href="#a"/><g transform="rotate(120)"><use xlink:href="#a"/></g><g transform="rotate(240)"><use xlink:href="#a"/></g></g></svg>');
@@ -131,6 +132,10 @@ function windroseAdded(e) {
 		}
 	}
 }
+function editMarkerInfo() {
+	$('#idInput').val($('#location_id').text());
+	$('#editInfoButton').trigger('click');
+}
 function fromHex(hex) {
     if (hex.length < 6) return null;
     hex = hex.toLowerCase();
@@ -144,7 +149,7 @@ function fromHex(hex) {
 
     return {r: r / 255, g: g / 255, b: b / 255};
   };
-  var mly;
+var mly;
   var key_image;
   var map2;
   var editableLayers;
@@ -247,7 +252,8 @@ $(function() {
 					  "Public Transport":OpenPtMap,
 					  "Railway":OpenRailwayMap,
 				};
-		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed: true}).addTo(map2);
+		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true}).addTo(map2);
+		  layerControl.setPosition('topright');
 			$('#icon-mylocation').on('click', function(){
 				  map2.locate();
 			});
@@ -287,6 +293,7 @@ $(function() {
 //		  if(getSearchParams("zoom") != undefined) {
 //			  map2.setZoom(getSearchParams("zoom"));
 //		  }
+		    $('#mapZoomLevel').val(map2.getZoom());
 		  map2.on('zoom', function() {
 			  $('#mapZoomLevel').val(map2.getZoom());
 			});
@@ -297,7 +304,7 @@ $(function() {
 				  //map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[markers.length-1].lat,markers[markers.length-1].lng]]);
 			  		var markers2 = [];
 				  for (var i=0; i<markers.length; ++i){
-					  markers2.push([JSON.parse(markers[i].lat),JSON.parse(markers[i].lng),markers[i].name+"+"+markers[i].id+"+"+markers[i].icon]);
+					  markers2.push([JSON.parse(markers[i].lat),JSON.parse(markers[i].lng),markers[i].name+"#"+markers[i].id+"#"+markers[i].icon]);
 				  }
 				  var color;
 				  var size=12;
@@ -317,18 +324,12 @@ $(function() {
 				  
 				  
 				  point_markers = L.glify.points({
-
 				        map: map2,
-				        color: function(index,point){if(!colorsel)color=fromHex(point[2].split('+')[2]);return color},
-				        //color: function(index,point){return fromHex('#000000')},
+				        color: function(index,point){if(!colorsel){color=fromHex('#'+point[2].split('#')[2])};return color},
 				        opacity: opacity,
 				        click: function(e,point,xy) {
-				          L.popup()
-				              .setLatLng([point[0],point[1]])
-				              .setContent(point[2].split('+')[0],callStreetView(point[0],point[1]),showSidebar(point[2].split('+')[1])) //
-				              .openOn(map2);
+				        L.popup().setLatLng([point[0],point[1]]).setContent(point[2].split('#')[0],callStreetView(point[0],point[1]),showSidebar(point[2].split('#')[1])).openOn(map2);
 				        },
-				        //onMouseOver: function (e, point, xy) {e.target.openPopup()},
 				        data: markers2,
 				        size: size,		        
 				      });

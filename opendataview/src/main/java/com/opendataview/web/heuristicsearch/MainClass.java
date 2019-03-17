@@ -84,7 +84,7 @@ public class MainClass extends SetPropertiesPage {
 	protected static final String NEW_LINE = "\n";
 
 	protected static StringBuilder outputinfo = new StringBuilder("");
-
+	protected static boolean private_mode = false;
 	protected static String icon_marker = "01";
 	protected static String country_code = "AT";
 
@@ -96,7 +96,7 @@ public class MainClass extends SetPropertiesPage {
 	protected static String newformat_dir = "file: config.properties";
 	protected static String dictionary_matches = "file: config.properties";
 	protected static String missinggeoreference_dir = "file: config.properties";
-	protected static String active_dictionary = "file: config.properties";
+	protected static boolean active_dictionary = false;
 //  protected static String sqlinserts_file = "file: config.properties";
 
 	protected static String geonames_dbdriver = "org.postgresql.Driver";
@@ -1336,8 +1336,9 @@ public class MainClass extends SetPropertiesPage {
 				loc.setLongitude(new Float(latlng[1]));
 			}
 			break;
-		case "titles":
-			loc.setName(value);
+		case "titles": // "#"is used to not create conflict with the iconmarker in the JS as it
+						// contains 3 hash simbols
+			loc.setName(value.replaceAll("#", ""));
 			break;
 		case "descriptions":
 			log.info("WE FOUND A DESCRIPTION with value " + value + "!!! in fil " + x + " and col " + y);
@@ -1406,9 +1407,9 @@ public class MainClass extends SetPropertiesPage {
 			loc.setDate_published(sdf.format(now).toString());
 			loc.setDate_updated(sdf.format(now).toString());
 			loc.setUsername(user);
-			log.info("ICON TO ADD IS:" + icon_marker.toString());
 			loc.setIconmarker(icon_marker.toString());
-			log.info("after icon to add:" + loc.getIconmarker());
+			loc.setPrivate_mode(private_mode);
+			// log.info("after icon to add:" + loc.getIconmarker());
 
 			// j is the column position
 			int j = 0;
