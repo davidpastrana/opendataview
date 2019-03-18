@@ -1672,7 +1672,7 @@ public class MainClass extends SetPropertiesPage {
 					outputinfo.append("\n\nYou can now check your data going to the menu Locations.");
 				} else {
 					outputinfo.append(
-							"Backup has not been executed. Please enable the option: Execute results found (production mode)");
+							"Backup has not been executed. Please enable the option: Upload results into database (production mode)");
 				}
 				textResult.setObject(outputinfo.toString());
 			}
@@ -1726,9 +1726,9 @@ public class MainClass extends SetPropertiesPage {
 					bw_sql_inserts.close();
 				} else {
 					log.info(
-							"You are in Test mode, please enable \"Upload results into database (production mode)\" to upload data.");
+							"You are in Test mode, enable \"Upload results into database (production mode)\" to upload data.");
 					outputinfo.append(
-							"\n\nYou are in Test mode, please enable \"Upload results into database (production mode)\" to upload data.");
+							"\n\nYou are in Test mode, enable \"Upload results into database (production mode)\" to upload data.");
 				}
 				// End create sql file and we execute in case is required
 			}

@@ -514,11 +514,12 @@ public class LocationServicePage extends BasePage {
 						// KEEPING THE SAME ORDER - SAME FOR THE INSERT SQL
 						wr.append("Id" + DELIMITER + "Title" + DELIMITER + "Description" + DELIMITER + "Type"
 								+ DELIMITER + "Address" + DELIMITER + "Postal code" + DELIMITER + "City" + DELIMITER
-								+ "Website" + DELIMITER + "Latitude" + DELIMITER + "Longitude" + DELIMITER + "Phone"
+								+ "Latitude" + DELIMITER + "Longitude" + DELIMITER + "Website" + DELIMITER + "Phone"
 								+ DELIMITER + "Date" + DELIMITER + "Schedule" + DELIMITER + "Email" + DELIMITER
 								+ "CsvName" + DELIMITER + "Population" + DELIMITER + "Elevation" + DELIMITER
 								+ "Last editor" + DELIMITER + "Data publisher" + DELIMITER + "Published date: "
-								+ DELIMITER + "Last update" + DELIMITER + "Icon Marker" + DELIMITER + "Extra info");
+								+ DELIMITER + "Last update" + DELIMITER + "Icon Marker" + DELIMITER + "Private Mode"
+								+ DELIMITER + "Extra info");
 						wr.append(NEW_LINE);
 
 						for (LocationModel loc : list) {
@@ -536,11 +537,11 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(loc.getCity());
 							wr.append(DELIMITER);
-							wr.append(loc.getWebsite());
-							wr.append(DELIMITER);
 							wr.append(String.valueOf(loc.getLatitude()));
 							wr.append(DELIMITER);
 							wr.append(String.valueOf(loc.getLongitude()));
+							wr.append(DELIMITER);
+							wr.append(loc.getWebsite());
 							wr.append(DELIMITER);
 							wr.append(loc.getPhone());
 							wr.append(DELIMITER);
@@ -566,7 +567,9 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(loc.getIconmarker());
 							wr.append(DELIMITER);
-							wr.append(loc.getOtherInfo());
+							wr.append(String.valueOf(loc.getPrivate_mode()));
+							wr.append(DELIMITER);
+							wr.append(loc.getOtherInfo().replaceAll(";", ","));
 							wr.append(NEW_LINE);
 						}
 					} else {
@@ -606,9 +609,33 @@ public class LocationServicePage extends BasePage {
 				try {
 					PrintWriter wr = new PrintWriter(saveVisibleLoc, "utf-8");
 					if (!list.isEmpty()) {
+
+//						o.setName(listValues.get(0));
+//						o.setDescription(listValues.get(1));
+//						o.setType(listValues.get(2));
+//						o.setAddress(listValues.get(3));
+//						o.setPostcode(listValues.get(4));
+//						o.setCity(listValues.get(5));
+//						o.setLatitude(Float.valueOf(listValues.get(6)));
+//						o.setLongitude(Float.valueOf(listValues.get(7)));
+//						o.setWebsite(listValues.get(8));
+//						o.setPhone(listValues.get(9));
+//						o.setDate(listValues.get(10));
+//						o.setSchedule(listValues.get(11));
+//						o.setEmail(listValues.get(12));
+//						o.setCsvName(listValues.get(13));
+//						o.setPopulation(listValues.get(14));
+//						o.setElevation(listValues.get(15));
+//						o.setUsername(listValues.get(16));
+//						o.setSource(listValues.get(17));
+//						o.setDate_published(listValues.get(18));
+//						o.setDate_updated(listValues.get(19));
+//						o.setIconmarker(listValues.get(20));
+//						o.setPrivate_mode(Boolean.valueOf(listValues.get(21)));
+//						o.setOtherInfo(listValues.get(22));
 						for (LocationModel loc : list) {
-							wr.append(loc.getId().toString());
-							wr.append(DELIMITER);
+//							wr.append(loc.getId().toString());
+//							wr.append(DELIMITER);
 							wr.append(loc.getName().toString());
 							wr.append(DELIMITER);
 							wr.append(loc.getDescription());
@@ -621,11 +648,11 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(loc.getCity());
 							wr.append(DELIMITER);
-							wr.append(loc.getWebsite());
-							wr.append(DELIMITER);
 							wr.append(String.valueOf(loc.getLatitude()));
 							wr.append(DELIMITER);
 							wr.append(String.valueOf(loc.getLongitude()));
+							wr.append(DELIMITER);
+							wr.append(loc.getWebsite());
 							wr.append(DELIMITER);
 							wr.append(loc.getPhone());
 							wr.append(DELIMITER);
@@ -651,7 +678,9 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(loc.getIconmarker());
 							wr.append(DELIMITER);
-							wr.append(loc.getOtherInfo());
+							wr.append(String.valueOf(loc.getPrivate_mode()));
+							wr.append(DELIMITER);
+							wr.append(loc.getOtherInfo().replaceAll(";", ","));
 							wr.append(NEW_LINE);
 							to_backup = true;
 						}
@@ -672,26 +701,28 @@ public class LocationServicePage extends BasePage {
 					if (to_backup == true) {
 
 						String line;
+						int fil_lat = 6;
+						int fil_lng = 7;
 						while ((line = br.readLine()) != null) {
 
 							String[] value = line.split(DELIMITER);
 							int j = 0;
 							// we create the insert just if we have latitude and longitude
-							if (!value[7].contentEquals("null") && !value[8].contentEquals("null")) {
+							if (!value[fil_lat].contentEquals("null") && !value[fil_lng].contentEquals("null")) {
 								buffer.append(
-										"INSERT INTO locations(id,name,description,type,address,postcode,city,website,latitude,longitude,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,otherinfo,rating,nrating) VALUES(");
+										"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,otherinfo) VALUES(");
 								j = 0;
 								while (j < value.length) {
 									value[j] = value[j].replaceAll("\'", "").replaceAll("\"", "").replaceAll("null",
 											"");
 									// we add just strings with single quotes except for lat and lng
-									if (!value[j].contentEquals("") && j != 8 && j != 9) {
+									if (!value[j].contentEquals("") && j != fil_lat && j != fil_lng) {
 										buffer.append("'");
 										buffer.append(value[j]);
 										buffer.append("'");
 
 										// we add lat and long without quotes
-									} else if (j == 8 || j == 9) {
+									} else if (j == fil_lat || j == fil_lng) {
 										buffer.append(value[j]);
 									} else {
 										buffer.append("''");
@@ -703,7 +734,7 @@ public class LocationServicePage extends BasePage {
 									}
 									j++;
 								}
-								buffer.append(",0,0);");
+								buffer.append(");");
 								buffer.append(NEW_LINE);
 							}
 						}
@@ -1068,8 +1099,10 @@ public class LocationServicePage extends BasePage {
 				// We have three variants: 1. marker not private and without url-user defined,
 				// 2. user accesses seeing his own markers, 3. private mode is defined with
 				// url-user in case of sharing the url
-				if (obj.getPrivate_mode() == false && !obj.getUsername().equals(user)
-						|| obj.getUsername().equals(username) || obj.getUsername().equals(user)) {
+//				if (obj.getPrivate_mode() == false && !obj.getUsername().equals(user)
+//						|| obj.getUsername().equals(username) || obj.getUsername().equals(user)) {
+
+				if (obj.getPrivate_mode() == false || obj.getUsername().equals(user)) {
 
 					o = new JSONObject();
 					o.put("id", obj.getId());

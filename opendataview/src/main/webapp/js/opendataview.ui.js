@@ -239,21 +239,21 @@ $(function() {
 					"Transport":transport,
 				};
 		  var overlayLayers = {
-				    "Current Weather (min Zoom 5)": city,
-				    "Temperature": temp,
-				    "Precipitation": precipitation,
-				    "Rain": rain,
-				    "Clouds": clouds,
-				    "Wind Rose": windrose,
-				    "Snowing": snow,
-					  "Toner Lines":Stamen_TonerLines,
-					  "Toner Labels":Stamen_TonerLabels,
-					  "RoadsAndLabels":Hydda_RoadsAndLabels,
-					  "Public Transport":OpenPtMap,
-					  "Railway":OpenRailwayMap,
+				  "Public Transport":OpenPtMap,
+				  "Railway":OpenRailwayMap,
+				  "Toner Lines":Stamen_TonerLines,
+				  "Toner Labels":Stamen_TonerLabels,
+				  "RoadsAndLabels":Hydda_RoadsAndLabels,
+				  "Current Weather (min Zoom 5)": city,
+				  "Temperature": temp,
+				  "Precipitation": precipitation,
+				  "Rain": rain,
+				  "Clouds": clouds,
+				  "Wind Rose": windrose,
+				  "Snowing": snow,
 				};
 		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true}).addTo(map2);
-		  layerControl.setPosition('topright');
+		  //layerControl.setPosition('topright');
 			$('#icon-mylocation').on('click', function(){
 				  map2.locate();
 			});
@@ -280,7 +280,7 @@ $(function() {
 		    	light.addTo(map2);
 		    }
 		 map2.on('baselayerchange', function (e) {
-			    console.log(e.name);
+			    //console.log(e.name);
 			    $('#mapType').val(e.name.toLowerCase());
 			});
 		    L.DomEvent.on(L.DomUtil.get('zoomIn'), 'click', function () {
@@ -293,7 +293,7 @@ $(function() {
 //		  if(getSearchParams("zoom") != undefined) {
 //			  map2.setZoom(getSearchParams("zoom"));
 //		  }
-		    $('#mapZoomLevel').val(map2.getZoom());
+		    //$('#mapZoomLevel').val(map2.getZoom());
 		  map2.on('zoom', function() {
 			  $('#mapZoomLevel').val(map2.getZoom());
 			});
@@ -320,9 +320,7 @@ $(function() {
 				  if(getSearchParams("opacity")!=null) {
 					  opacity=getSearchParams("opacity");
 				  }
-				  
-				  
-				  
+
 				  point_markers = L.glify.points({
 				        map: map2,
 				        color: function(index,point){if(!colorsel){color=fromHex('#'+point[2].split('#')[2])};return color},
@@ -343,7 +341,7 @@ $(function() {
 								  	setTimeout(function(){
 								  	map2.panTo([lat,lng]);
 								  	},500); 
-							  },800); 
+							  },600); 
 						  } else {
 							  map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[markers.length-1].lat,markers[markers.length-1].lng]]);
 							  map2.setZoom(getSearchParams("zoom"));

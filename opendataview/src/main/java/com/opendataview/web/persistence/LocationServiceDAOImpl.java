@@ -260,7 +260,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 		// query.setParameter("date_published", listValues.get(18));
 		query.setParameter("date_updated", listValues.get(19));
 		query.setParameter("iconmarker", listValues.get(20));
-		query.setParameter("private_mode", listValues.get(21));
+		query.setParameter("private_mode", Boolean.valueOf(listValues.get(21)));
 		query.setParameter("otherinfo", listValues.get(22));
 		query.executeUpdate();
 	}

@@ -1493,12 +1493,12 @@ input.selectCSV {
 
 #custom-handle, #custom-handle2 {
     width: 2em;
-    height: 1.6em;
-    top: 50%;
+    height: 1.2em;
+    top: 6px;
     margin-top: -.8em;
     margin-left: -1em;
     text-align: center;
-    line-height: 1.6em;
+    line-height: 1.1em;
   }
 .formSearch {
 	 width: 295px;
@@ -2443,7 +2443,7 @@ to {
 .slider_wrapper {
 	width: 230px;
 	height: 50px;
-	margin: 12px 15px 0px;
+	margin: 0px 26px 0px;
 	display: none;
 }
 
@@ -2465,19 +2465,13 @@ to {
 }
 
 .ui-slider-pips .ui-slider-pip {
-	width: 2em;
-	height: 1em;
-	line-height: 1em;
-	position: absolute;
-	font-size: 0.8em;
-	color: #CC4646;
-	overflow: visible;
-	text-align: center;
-	top: 20px;
-	left: 20px;
-	margin-left: -1em;
-	cursor: pointer;
-	font-weight: 600;
+    line-height: 1em;
+    position: absolute;
+    font-size: 0.8em;
+    color: #999;
+    top: 20px;
+    cursor: pointer;
+    font-weight: 600;
 }
 
 .ui-slider-pips .ui-slider-line {
@@ -3552,7 +3546,7 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 
 .ui-widget-header {
 	border: 1px solid #dddddd;
-	background: #CC4646;
+	background: #6c757d;
 	color: #444444;
 	font-weight: bold;
 }
