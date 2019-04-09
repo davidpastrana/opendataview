@@ -1,6 +1,6 @@
 #!/bin/bash
 
-DIR="/Users/david/Desktop/thesis"
+DIR=`pwd`
 DBHOST="127.0.0.1"
 DBPORT="5432"
 DBUSER="postgres"
@@ -73,7 +73,7 @@ psql -e -U $DBUSER -h $DBHOST -p $DBPORT geonames <<EOT
 
 ALTER TABLE geoname DROP COLUMN fclass, DROP COLUMN fcode, DROP COLUMN cc2, DROP COLUMN admin4, DROP COLUMN gtopo30, DROP COLUMN timezone, DROP COLUMN moddate;
 UPDATE geoname SET asciiname=lower(asciiname);
-CREATE INDEX geoname_coord_idx ON geoname (asciiname,latitude,longitude,population,elevation);
+CREATE INDEX geoname_coord_idx ON geonames (asciiname,latitude,longitude,population,elevation);
 
 EOT
 echo "DONE"

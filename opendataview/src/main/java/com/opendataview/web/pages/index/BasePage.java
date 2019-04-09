@@ -11,9 +11,10 @@ import org.apache.wicket.request.resource.PackageResourceReference;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.opendataview.web.pages.contact.AboutUsPage;
+import com.opendataview.web.pages.contact.AboutPage;
 import com.opendataview.web.pages.contact.ContactPage;
 import com.opendataview.web.pages.locations.LocationServicePage;
+import com.opendataview.web.pages.locations.SamplesPage;
 import com.opendataview.web.pages.properties.SetPropertiesPage;
 import com.opendataview.web.pages.user.LoginUserPage;
 import com.opendataview.web.pages.user.LogoutUserPage;
@@ -76,6 +77,13 @@ public class BasePage extends WebPage {
 		}
 		add(locationsLink);
 
+		final BookmarkablePageLink<Object> samplesLink = new BookmarkablePageLink<Object>("samplesLink",
+				SamplesPage.class);
+		if (samplesLink.linksTo(getPage())) {
+			samplesLink.add(new AttributeModifier("class", "active"));
+		}
+		add(samplesLink);
+
 		final BookmarkablePageLink<Object> configLink = new BookmarkablePageLink<Object>("configLink",
 				SetPropertiesPage.class);
 		if (configLink.linksTo(getPage())) {
@@ -84,8 +92,7 @@ public class BasePage extends WebPage {
 		configLink.setVisible(false);
 		add(configLink);
 
-		final BookmarkablePageLink<Object> aboutLink = new BookmarkablePageLink<Object>("aboutUsLink",
-				AboutUsPage.class);
+		final BookmarkablePageLink<Object> aboutLink = new BookmarkablePageLink<Object>("aboutUsLink", AboutPage.class);
 		if (aboutLink.linksTo(getPage())) {
 			aboutLink.add(new AttributeModifier("class", "active"));
 		}

@@ -1,5 +1,9 @@
 package com.opendataview.web.pages.index;
 
+import java.util.EnumSet;
+
+import javax.servlet.SessionTrackingMode;
+
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -11,6 +15,8 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.request.IRequestHandler;
 import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.resource.IResource;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
@@ -18,13 +24,15 @@ import org.slf4j.LoggerFactory;
 import org.wicketstuff.htmlcompressor.HtmlCompressingMarkupFactory;
 
 import com.googlecode.htmlcompressor.compressor.HtmlCompressor;
-import com.opendataview.web.pages.contact.AboutUsPage;
+import com.opendataview.web.api.LocationsRestResource;
+import com.opendataview.web.pages.contact.AboutPage;
 import com.opendataview.web.pages.contact.ContactPage;
 import com.opendataview.web.pages.error.AccessDeniedPage;
 import com.opendataview.web.pages.error.ErrorPage404;
 import com.opendataview.web.pages.error.InternalErrorPage;
 import com.opendataview.web.pages.error.PageExpiredErrorPage;
 import com.opendataview.web.pages.locations.LocationServicePage;
+import com.opendataview.web.pages.locations.SamplesPage;
 import com.opendataview.web.pages.properties.SetPropertiesPage;
 import com.opendataview.web.pages.user.LoginUserPage;
 import com.opendataview.web.pages.user.LogoutUserPage;
@@ -56,35 +64,17 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		return LoginUserPage.class;
 	}
 
-	/*
-	 * public class JavaScriptToBucketResponseDecorator implements
-	 * IHeaderResponseDecorator { private String bucketName;
-	 * 
-	 * public JavaScriptToBucketResponseDecorator(String bucketName) {
-	 * this.bucketName = bucketName; }
-	 * 
-	 * @Override public IHeaderResponse decorate(IHeaderResponse response) { return
-	 * new JavaScriptFilteredIntoFooterHeaderResponse(response, bucketName); } }
-	 */
-
 	@Override
 	public void init() {
 		super.init();
 
-		// Send js libraries to the footer
-		// setHeaderResponseDecorator(new
-		// JavaScriptToBucketResponseDecorator("footer-container"));
-
-		// Avoid DEVELOPMENT failure checks
+		// Avoid DEVELOPMENT with failure checks
 		getDebugSettings().setComponentUseCheck(false);
 
 		// Catch runtime exceptions this way:
 		getRequestCycleListeners().add(new IRequestCycleListener() {
 			@Override
 			public IRequestHandler onException(RequestCycle cycle, Exception e) {
-
-//				log.info("ERROR IS:" + e + ", CAUSE: " + e.getCause() + ", LOC MESSAGE: " + e.getLocalizedMessage()
-//						+ ", MESSAGE: " + e.getMessage());
 				return new RenderPageRequestHandler(new PageProvider(new ErrorPage404(e)));
 			}
 
@@ -107,44 +97,21 @@ public class WicketApplication extends AuthenticatedWebApplication {
 
 		Bootstrap.install(this);
 
-//    WicketWebjars.install(this);
+		mountResource("/api", new ResourceReference("restReference") {
+			private static final long serialVersionUID = 1L;
 
-//    
-//    Map<String, Object> map = new HashMap<>();
-//    map.put("integer", 123);
-//    map.put("string", "message");
-//    
-//    LambdaRestMounter restMounter = new LambdaRestMounter(this);
-//    
-//    //return plain string
-//    restMounter.get("/api", (attributes) -> "hello!", Object::toString);
-//    //specify a function to transform the returned object into text (json in this case)
-//
-//    
-//    //return id value from url segment
-//    restMounter.options("/api/${id}", (attributes) -> {
-//        PageParameters pageParameters = attributes.getPageParameters();
-//        return pageParameters.get("id");
-//       }
-//    , Object::toString);
-//    LambdaRestMounter mounter = new LambdaRestMounter(this);
-//    mounter.get("/", (attributes) -> attributes.getWebResponse().write("bravo!"));
+			LocationsRestResource locationsAPI = new LocationsRestResource();
 
-//    mountResource("/api", new ResourceReference("restReference") {
-//
-//		private static final long serialVersionUID = 1L;
-//		MyPostHandler resource = new MyPostHandler();
-//
-//        @Override
-//        public IResource getResource() {
-//            return (IResource) resource;
-//        }
-//    });
+			@Override
+			public IResource getResource() {
+				return locationsAPI;
+			}
+		});
 
 		mountPage("/search", getHomePage());
-
+		mountPage("/samples", SamplesPage.class);
 		mountPage("/config/#{usr}", SetPropertiesPage.class);
-		mountPage("/about", AboutUsPage.class);
+		mountPage("/about", AboutPage.class);
 		mountPage("/contact", ContactPage.class);
 		mountPage("/register", RegisterUserPage.class);
 		mountPage("/login", LoginUserPage.class);
@@ -161,11 +128,11 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		getResourceSettings().getResourceFinders()
 				.add(new WebApplicationPath(getServletContext(), "/src/main/resources/"));
-//		getStoreSettings().setInmemoryCacheSize(50);
+		getStoreSettings().setInmemoryCacheSize(50);
 		getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
 		// set cookie mode to keep open the same session id
-		// getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+		getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
 
 		// set error pages
 		getApplicationSettings().setPageExpiredErrorPage(LoginUserPage.class);
@@ -187,10 +154,6 @@ public class WicketApplication extends AuthenticatedWebApplication {
 
 		// RTFACT-4636
 		getPageSettings().setVersionPagesByDefault(false);
-
-//		IRequestMapper cryptoMapper = new CryptoMapper(getRootRequestMapper(), this);
-//		setRootRequestMapper(cryptoMapper);
-
 	}
 
 	protected Class<? extends WicketApplication> getMenuPageClass() {

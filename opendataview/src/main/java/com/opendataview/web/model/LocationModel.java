@@ -1,22 +1,33 @@
 package com.opendataview.web.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
 
-import org.hibernate.search.annotations.Indexed;
+import org.hibernate.annotations.Cache;
+import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.search.annotations.Field;
+import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Latitude;
 import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Spatial;
+import org.hibernate.search.annotations.SpatialMode;
+import org.hibernate.search.annotations.Store;
+import org.hibernate.search.spatial.Coordinates;
+import org.springframework.stereotype.Indexed;
 
-@Entity(name = "locations")
-@Spatial
+@Spatial(spatialMode = SpatialMode.HASH)
 @Indexed
+@Entity(name = "locations")
+@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
+@NamedQuery(name = "findAllLocations", query = "SELECT l FROM locations l")
 public class LocationModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -26,7 +37,30 @@ public class LocationModel implements Serializable {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "locations_sequence")
 	@Column(name = "id", updatable = false, nullable = false)
 	protected Long id;
-	@Column(columnDefinition = "TEXT")
+
+	public LocationModel(String id, String address) {
+		this.id = Long.valueOf(id);
+		this.address = address;
+	}
+
+	public LocationModel(String id, String address, String archive, String city, String country, String csvname,
+			String currency, String date, String date_published, String date_updated, String description,
+			String document, String elevation, String email, String iconmarker, String latitude, String longitude,
+			String name, String number, String otherinfo, String percentage, String phone, String population,
+			String postcode, String private_mode, String schedule, String source, String street, String type,
+			String urlimage, String username, String website, String year) {
+		this.id = Long.valueOf(id);
+		this.address = address;
+		this.archive = archive;
+		this.name = name;
+		this.description = description;
+		this.private_mode = Boolean.valueOf(private_mode);
+		this.website = website;
+		this.csvName = csvname;
+	}
+
+	@Field(store = Store.YES, index = Index.YES)
+	@Column(name = "name", columnDefinition = "TEXT")
 	protected String name;
 	@Column(columnDefinition = "TEXT")
 	protected String type;
@@ -42,15 +76,23 @@ public class LocationModel implements Serializable {
 	protected String elevation;
 	@Column(columnDefinition = "TEXT")
 	protected String population;
+
+//	@Field(store = Store.YES, index = Index.YES)
+//	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+//	private Point point;
+
+	@Field(store = Store.YES, index = Index.YES)
 	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
 	@Latitude
-	protected Float latitude;
+	protected Double latitude;
+
+	@Field(store = Store.YES, index = Index.YES)
 	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
 	@Longitude
-	protected Float longitude;
-	@Column(columnDefinition = "TEXT")
+	protected Double longitude;
+	@Column(name = "website", columnDefinition = "TEXT")
 	private String website;
-	@Column(columnDefinition = "TEXT")
+	@Column(name = "description", columnDefinition = "TEXT")
 	private String description;
 	@Column(columnDefinition = "TEXT")
 	private String email;
@@ -72,6 +114,8 @@ public class LocationModel implements Serializable {
 	protected String source;
 	@Column(columnDefinition = "TEXT")
 	protected String username;
+
+	@Field(store = Store.YES, index = Index.YES)
 	@Column(columnDefinition = "TEXT")
 	protected String otherInfo;
 	@Column(columnDefinition = "TEXT")
@@ -93,8 +137,26 @@ public class LocationModel implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	protected String number;
 
+	public LocationModel() {
+	}
+
 	public Long getId() {
 		return id;
+	}
+
+	@Spatial(spatialMode = SpatialMode.HASH)
+	public Coordinates getLocation() {
+		return new Coordinates() {
+			@Override
+			public Double getLatitude() {
+				return latitude;
+			}
+
+			@Override
+			public Double getLongitude() {
+				return longitude;
+			}
+		};
 	}
 
 	public void setId(Long id) {
@@ -165,19 +227,19 @@ public class LocationModel implements Serializable {
 		this.population = population;
 	}
 
-	public Float getLatitude() {
+	public Double getLatitude() {
 		return latitude;
 	}
 
-	public void setLatitude(Float latitude) {
+	public void setLatitude(Double latitude) {
 		this.latitude = latitude;
 	}
 
-	public Float getLongitude() {
+	public Double getLongitude() {
 		return longitude;
 	}
 
-	public void setLongitude(Float longitude) {
+	public void setLongitude(Double longitude) {
 		this.longitude = longitude;
 	}
 
@@ -360,5 +422,18 @@ public class LocationModel implements Serializable {
 	public void setPrivate_mode(boolean private_mode) {
 		this.private_mode = private_mode;
 	}
+
+	public List<LocationModel> findAll() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+//	public Point getPoint() {
+//		return point;
+//	}
+//
+//	public void setPoint(Point point) {
+//		this.point = point;
+//	}
 
 }

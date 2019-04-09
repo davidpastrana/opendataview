@@ -74,10 +74,41 @@ http://www.springframework.org/schema/tx
 		<property name="packagesToScan" value="com.springapp.model"/>
 		<property name="hibernateProperties">
 		<props>
-		<prop key="hibernate.dialect">org.hibernate.dialect.MySQL5Dialect</prop>
-		<prop key="hibernate.hbm2ddl.auto">update</prop>
-		<prop key="hibernate.show_sql">true</prop>
-		<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				
+				
+				<prop key="hibernate.show_sql">true</prop> 
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.hbm2ddl.auto">update</prop>
+				
+				
+				
+				<prop key="hibernate.jdbc.batch_size">20</prop>
+				
+				<!-- hibernate cache 
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				  <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
+				<prop key="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</prop>
+				<prop key="net.sf.ehcache.configurationResourceName">ehcache.xml</prop>-->
+				
+				<!-- hibernate search configuration 
+				<prop key="hibernate.search.default.indexmanager">elasticsearch</prop>
+				<prop key="hibernate.search.default.elasticsearch.index_schema_management_strategy">MERGE</prop>
+				
+				<prop key="hibernate.search.lucene_version">LUCENE_CURRENT</prop>
+				<prop key="hibernate.search.default.directory_provider">filesystem</prop>
+				<prop key="hibernate.search.default.indexBase">near-real-time</prop>
+				<prop key="hibernate.search.default.chunk_size">128000</prop>
+				<prop key="hibernate.search.default.exclusive_index_use">false</prop>
+				<prop key="hibernate.search.default.worker.execution">async</prop>
+				<prop key="hibernate.search.default.worker.thread_pool.size">2</prop>
+				<prop key="hibernate.search.default.worker.buffer_queue.size">50</prop>
+
+				
+				hibernate search Index Optimization 
+				<prop key="hibernate.search.default.optimizer.operation_limit.max">1000</prop>
+				<prop key="hibernate.search.default.optimizer.transaction_limit.max">100</prop>-->
 		</props>
 		</property>
 	</bean>
@@ -91,6 +122,11 @@ http://www.springframework.org/schema/tx
 
 	<bean id="persistenceExceptionTranslationPostProcessor"
 		class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+		
+ <!--  
+    <bean name="elasticsearchTemplate" class="org.springframework.data.elasticsearch.core.ElasticsearchTemplate">
+        <constructor-arg name="client" ref="client"/>
+    </bean>-->
 
 	<tx:annotation-driven />
 

@@ -72,8 +72,8 @@ public class RunSqlScript {
 			o.setAddress(listValues.get(3));
 			o.setPostcode(listValues.get(4));
 			o.setCity(listValues.get(5));
-			o.setLatitude(Float.valueOf(listValues.get(6)));
-			o.setLongitude(Float.valueOf(listValues.get(7)));
+			o.setLatitude(Double.valueOf(listValues.get(6)));
+			o.setLongitude(Double.valueOf(listValues.get(7)));
 			o.setWebsite(listValues.get(8));
 			o.setPhone(listValues.get(9));
 			o.setDate(listValues.get(10));

@@ -29,12 +29,13 @@
 	</licenses>
 	<properties>
 		<java.version>1.8</java.version>
-		<wicket.version>8.3.0</wicket.version>
+		<wicket.version>8.4.0</wicket.version>
+		<wicketstuff.version>8.3.0</wicketstuff.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M8</wicket-bootstrap-extensions.version>
 		<jetty-maven-plugin.version>9.4.15.v20190215</jetty-maven-plugin.version>
 		<jetty-all-server.version>8.2.0.v20160908</jetty-all-server.version>
-		<spring.version>5.1.5.RELEASE</spring.version>
-		<hibernate.version>5.4.1.Final</hibernate.version>
+		<spring.version>5.1.6.RELEASE</spring.version>
+		<hibernate.version>5.4.2.Final</hibernate.version>
 		<dbcp.version>1.4</dbcp.version>
 		<postgresql.version>42.2.5</postgresql.version>
 		<wordutils.version>3.8.1</wordutils.version>
@@ -42,7 +43,7 @@
 		<log4j.version>1.2.17</log4j.version>
 		<junit.version>4.12</junit.version>
 		<geonames.version>1.0</geonames.version>
-		<nominatim.version>1.9.13</nominatim.version>
+		<nominatim.version>1.9.4</nominatim.version>
 		<fileutils.version>2.6</fileutils.version>
 		<validator.version>1.6</validator.version>
 		<geotools.version>15-RC1</geotools.version>
@@ -57,6 +58,27 @@
 			<artifactId>spring-test</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<!-- Elastic Search via Lucene & Spring 
+		<dependency>
+		    <groupId>org.springframework.data</groupId>
+		    <artifactId>spring-data-elasticsearch</artifactId>
+		    <version>3.1.6.RELEASE</version>
+		</dependency>
+		<dependency>
+		  <groupId>org.apache.lucene</groupId>
+		  <artifactId>lucene-core</artifactId>
+		  <version>7.2.1</version>
+		</dependency>-->
+		<!--  <dependency>
+		    <groupId>org.apache.lucene</groupId>
+		    <artifactId>lucene-backward-codecs</artifactId>
+		    <version>8.0.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.apache.solr</groupId>
+		    <artifactId>solr-core</artifactId>
+		    <version>8.0.0</version>
+		</dependency>-->
 		<!-- Wicket -->
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
@@ -76,22 +98,34 @@
 		<dependency>
 			<groupId>org.apache.wicket</groupId>
 			<artifactId>wicket-auth-roles</artifactId>
-			<version>${wicket.version}</version>
+			<version>${wicketstuff.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.wicketstuff</groupId>
 			<artifactId>wicketstuff-rest-lambda</artifactId>
-			<version>${wicket.version}</version>
+			<version>${wicketstuff.version}</version>
 		</dependency>
+		
+		<dependency>
+		    <groupId>org.wicketstuff</groupId>
+		    <artifactId>wicketstuff-restannotations</artifactId>
+		    <version>6.10.0</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.wicketstuff</groupId>
+		    <artifactId>wicketstuff-restannotations-json</artifactId>
+		    <version>6.10.0</version>
+		</dependency>
+		
 		<dependency>
 			<groupId>org.wicketstuff</groupId>
 			<artifactId>wicketstuff-htmlcompressor</artifactId>
-			<version>${wicket.version}</version>
+			<version>${wicketstuff.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.wicketstuff</groupId>
 			<artifactId>wicketstuff-sitemap-xml</artifactId>
-			<version>${wicket.version}</version>
+			<version>${wicketstuff.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>de.agilecoders.wicket</groupId>
@@ -157,6 +191,11 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-spatial</artifactId>
+		    <version>${hibernate.version}</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-search-orm</artifactId>
 		    <version>5.11.1.Final</version>
 		</dependency>
@@ -196,12 +235,7 @@
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
 		</dependency>
-		<!-- Nominatim -->
-		<dependency>
-			<groupId>me.atlis</groupId>
-			<artifactId>nominatim-api</artifactId>
-			<version>RELEASE</version>
-		</dependency>
+
 
 		<!-- HEURISTIC SERACH -->
 		<!-- JSON -->

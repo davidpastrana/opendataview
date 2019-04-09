@@ -236,7 +236,7 @@ public class LocationServicePage extends BasePage {
 		chart_options2.setChartOptions(new ChartOptions().setType(SeriesType.COLUMN));
 		chart_options2.setCredits(new CreditOptions().setEnabled(false));
 		chart_options2.setTitle(new Title("").setEnabled(true));
-		column_chart.setVisible(true);
+		column_chart.setVisible(false);
 		datacontainer.add(column_chart);
 
 		final WebMarkupContainer wmc2 = new WebMarkupContainer("wmc2");
@@ -337,7 +337,6 @@ public class LocationServicePage extends BasePage {
 
 			private static final long serialVersionUID = 1L;
 
-			String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
 			boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 					.toBoolean();
 			String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
@@ -440,8 +439,8 @@ public class LocationServicePage extends BasePage {
 					String newinfo = "";
 
 					for (int i = 0; i < addlinks.size(); i++) {
-						newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+") + "&zoom="
-								+ zoom + "&fullscreen=" + fullscreen + "&map=" + maptype + "'>" + addlinks.get(i)
+						newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+")
+								+ "&fullscreen=" + fullscreen + "&map=" + maptype + "'>" + addlinks.get(i)
 								+ "</a><br />";
 					}
 					item.add(new Label("other2", newinfo).setEscapeModelStrings(false));
@@ -610,32 +609,7 @@ public class LocationServicePage extends BasePage {
 					PrintWriter wr = new PrintWriter(saveVisibleLoc, "utf-8");
 					if (!list.isEmpty()) {
 
-//						o.setName(listValues.get(0));
-//						o.setDescription(listValues.get(1));
-//						o.setType(listValues.get(2));
-//						o.setAddress(listValues.get(3));
-//						o.setPostcode(listValues.get(4));
-//						o.setCity(listValues.get(5));
-//						o.setLatitude(Float.valueOf(listValues.get(6)));
-//						o.setLongitude(Float.valueOf(listValues.get(7)));
-//						o.setWebsite(listValues.get(8));
-//						o.setPhone(listValues.get(9));
-//						o.setDate(listValues.get(10));
-//						o.setSchedule(listValues.get(11));
-//						o.setEmail(listValues.get(12));
-//						o.setCsvName(listValues.get(13));
-//						o.setPopulation(listValues.get(14));
-//						o.setElevation(listValues.get(15));
-//						o.setUsername(listValues.get(16));
-//						o.setSource(listValues.get(17));
-//						o.setDate_published(listValues.get(18));
-//						o.setDate_updated(listValues.get(19));
-//						o.setIconmarker(listValues.get(20));
-//						o.setPrivate_mode(Boolean.valueOf(listValues.get(21)));
-//						o.setOtherInfo(listValues.get(22));
 						for (LocationModel loc : list) {
-//							wr.append(loc.getId().toString());
-//							wr.append(DELIMITER);
 							wr.append(loc.getName().toString());
 							wr.append(DELIMITER);
 							wr.append(loc.getDescription());
@@ -713,17 +687,19 @@ public class LocationServicePage extends BasePage {
 										"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,otherinfo) VALUES(");
 								j = 0;
 								while (j < value.length) {
-									value[j] = value[j].replaceAll("\'", "").replaceAll("\"", "").replaceAll("null",
-											"");
+									value[j] = value[j].replaceAll(",", ";").replaceAll("\'", "").replaceAll("\"", "")
+											.replaceAll("null", "");
 									// we add just strings with single quotes except for lat and lng
-									if (!value[j].contentEquals("") && j != fil_lat && j != fil_lng) {
-										buffer.append("'");
-										buffer.append(value[j]);
-										buffer.append("'");
-
-										// we add lat and long without quotes
-									} else if (j == fil_lat || j == fil_lng) {
-										buffer.append(value[j]);
+//									if (!value[j].contentEquals("") && j != fil_lat && j != fil_lng) {
+//										buffer.append("'");
+//										buffer.append(value[j]);
+//										buffer.append("'");
+//
+//										// we add lat and long without quotes
+//									} else if (j == fil_lat || j == fil_lng) {
+//										buffer.append(value[j]);
+									if (!value[j].isEmpty()) {
+										buffer.append("'" + value[j] + "'");
 									} else {
 										buffer.append("''");
 									}
@@ -922,6 +898,15 @@ public class LocationServicePage extends BasePage {
 		final TextField<String> polygonCoordInput = new TextField<String>("polygonCoordInput", Model.of(""));
 		polygonCoordInput.setOutputMarkupId(true);
 
+//		QueryBuilder builder = fullTextSession.getSearchFactory()
+//				   .buildQueryBuilder().forEntity( POI.class ).get();
+//		Query luceneQuery = builder.spatial()
+//			      .onCoordinates("location")
+//			      .within(100, Unit.KM)
+//			      .ofLatitude(centerLatitude)
+//			      .andLongitude(centerLongitude)
+//			   .createQuery();
+
 		AjaxButton savePolygonCoordinates = new AjaxButton("savePolygonCoordinates") {
 
 			private static final long serialVersionUID = 1L;
@@ -981,9 +966,15 @@ public class LocationServicePage extends BasePage {
 									list.add(loc);
 								}
 							} else {
+
+								// log.info("My polygon is " + myPolygon);
 								if (myPolygon.contains(loc.getLatitude().doubleValue(),
 										loc.getLongitude().doubleValue())) {
 									list.add(loc);
+
+//									Query query = builder.spatial().onCoordinates("location").within(51, Unit.KM)
+//											.ofCoordinates(coordinates).createQuery();
+									// log.info("we add location being: " + loc);
 								}
 							}
 
@@ -1095,24 +1086,15 @@ public class LocationServicePage extends BasePage {
 			@SuppressWarnings("unchecked")
 			public void populateItem(final ListItem<LocationModel> item) {
 				obj = item.getModelObject();
-
-				// We have three variants: 1. marker not private and without url-user defined,
-				// 2. user accesses seeing his own markers, 3. private mode is defined with
-				// url-user in case of sharing the url
-//				if (obj.getPrivate_mode() == false && !obj.getUsername().equals(user)
-//						|| obj.getUsername().equals(username) || obj.getUsername().equals(user)) {
-
 				if (obj.getPrivate_mode() == false || obj.getUsername().equals(user)) {
-
 					o = new JSONObject();
 					o.put("id", obj.getId());
 					o.put("name", obj.getName());
-					o.put("icon", obj.getIconmarker());
-					o.put("lat", obj.getLatitude());
-					o.put("lng", obj.getLongitude());
+					o.put("icon", obj.getIconmarker().split("#")[0]);
+					o.put("lat", String.format("%.5f", obj.getLatitude()));
+					o.put("lng", String.format("%.5f", obj.getLongitude()));
 					json.add(o);
 				}
-
 				if (count == list.size() - 1) {
 					locations_counter.setMarkupId("locations_counter");
 					locations_counter.setDefaultModelObject("Total Markers: " + list.size());
@@ -1201,8 +1183,11 @@ public class LocationServicePage extends BasePage {
 									new Function().setFunction("return ''+ this.series.name +': '+ this.y +' rep';")));
 							chart_options2.addSeries(serie4);
 						}
+						column_chart.setVisible(true);
+					} else {
+						column_chart.setVisible(false);
 					}
-					column_chart.setVisible(true);
+
 				}
 
 				if (showGraph) {
@@ -1326,7 +1311,7 @@ public class LocationServicePage extends BasePage {
 
 		Label configLabel = new Label("configLabel", "Configuration:");
 		Label importedFilesLabel = new Label("importedFilesLabel", "Imported datasets:");
-		Label removeSelectedLabel = new Label("removeSelectedLabel", "Files to remove:");
+		Label removeSelectedLabel = new Label("removeSelectedLabel", "Remove files:");
 
 		if (names.isEmpty()) {
 			importedFilesLabel.setVisible(false);
@@ -1514,7 +1499,7 @@ public class LocationServicePage extends BasePage {
 				names.clear();
 				namesSelect.clear();
 
-				// we refresh the list to add all the locations that belong to name selected
+				// we refresh the list to add all the locations that belong to the selected name
 				list2.clear();
 
 				for (int i = 0; i < origList.size(); i++) {

@@ -36,8 +36,8 @@ public class GeonamesSQLQueries extends MainClass {
 
 	public static void setGeonameResult(LocationModel loc, ResultSet rs) throws NumberFormatException, SQLException {
 
-		loc.setLatitude(new Float(rs.getString(3)));
-		loc.setLongitude(new Float(rs.getString(4)));
+		loc.setLatitude(new Double(rs.getString(3)));
+		loc.setLongitude(new Double(rs.getString(4)));
 		loc.setPopulation(rs.getString(5));
 		loc.setElevation(rs.getString(6));
 	}
@@ -124,24 +124,6 @@ public class GeonamesSQLQueries extends MainClass {
 		}
 	}
 
-//  public boolean NominatimAPI(String name, LocationModel loc, String country_code) {
-//
-//	    String address = name;
-//	    log.info("address is " + address);
-//
-//	   OpenStreetMapGeoCodeJacksonParser latlng = new OpenStreetMapGeoCodeJacksonParser();
-//	    //LatLng coord = latlng.parse(address);
-//
-//	    log.info("Nominatim RESULT: LAT "+coord.getLat()+ ", LONG "+ coord.getLng());
-//	    
-//	    if (coord != null) {
-//	        loc.setLatitude(new BigDecimal(coord.getLat()));
-//	        loc.setLongitude(new BigDecimal(coord.getLng()));
-//	        return true;
-//	    }
-//		return false;
-//	  }
-
 	static LatLng getGoogleCoordinates(boolean printMsg, LocationModel loc, String location, String googleMapsAPI,
 			int fil, int col) {
 
@@ -150,21 +132,12 @@ public class GeonamesSQLQueries extends MainClass {
 		sb.append(location.replace(" ", "+"));
 		sb.append("&key=");
 		sb.append(googleMapsAPI);
-		// sb.append("&sensor=false");
 
-		// log.info("Google URL:" + sb.toString());
 		if (printMsg) {
 			log.info("GMAP field[" + fil + "," + col + "]: " + sb.toString());
 			outputinfo.append("\nGMAP field[" + fil + "," + col + "]: " + sb.toString());
 		}
-//	    if (nfil % 5 == 0) {
-//	      try {
-//	        log.info(">>>>>> " + nfil + " requests sent, waiting for next " + nfil + " requests..");
-//	        Thread.sleep(100);
-//	      } catch (InterruptedException ex) {
-//	        Thread.currentThread().interrupt();
-//	      }
-//	    }
+
 		try {
 			URL url = new URL(sb.toString());
 			URLConnection urlConnection = url.openConnection();
@@ -303,15 +276,11 @@ public class GeonamesSQLQueries extends MainClass {
 		}
 
 		PreparedStatement ps = null;
-		Statement st = conn.createStatement();
-		st.setMaxRows(1);
 
 		if (geonamesdebugmode)
 			log.info("\nchecking > " + name);
 
 		name = name.toLowerCase().replaceAll("\"|(.)?[0-9](.)?|'|^\\s*$", "").trim();
-
-		// log.info("NUMBER OF WORDS: " + name.split(" ").length);
 
 		// we get the first part from / division
 		if (name.contains("/")) {
@@ -322,26 +291,11 @@ public class GeonamesSQLQueries extends MainClass {
 		name = name.replaceAll("\\(.*?\\) ?", "").replace("ü", "ue").replace("ö", "oe").replace("ä", "ae")
 				.replace("ß", "ss").replace("Ü", "ue").replace("Ö", "oe").replace("Ä", "ae").trim();
 
-//try {
-//    conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr, geonames_dbpwd);
-//  } catch (SQLException e) {
-//    log.info("Geonames Connection Failed! Please check again later ..., error:\n"+e);
-//    outputinfo.append("Geonames Connection Failed! Please check again later ..., error:\n"+e);
-//    e.printStackTrace();
-//
-//  }
-//
-//if (conn != null) {
-//    //log.info("Connected to DB !");
-//  } else {
-//    log.info("Failed to make DB connection!");
-//  }
-
 		StringBuilder input = null;
 		int indexOfWhere = 0;
 		if (name != null && !name.isEmpty() && !name.matches("\\d+")) {
 
-			// we only change the statement if we found a country code!!
+			// we only change the statement if we already found a country code!!
 			if (code_found != "" && !executed) {
 				input = new StringBuilder(st1city);
 				indexOfWhere = input.indexOf(" where "); // notice the spaces
@@ -367,19 +321,12 @@ public class GeonamesSQLQueries extends MainClass {
 				// if there is no resultset
 				if (!rs.next()) {
 
-					// we remove dots
+					// we remove any dots
 					if (name.contains(".")) {
 						name = name.replace(".", "");
 					}
 
-					// LatLng result = GoogleAPI(name,googleMapsAPI);
-
 					LatLng result = getGoogleCoordinates(printMsg, loc, name, googleMapsAPI, fil, col);
-//  	    if (result != null) {
-//  	        log.info("FOUND CITY: " + name + ": " + result.getLat() + "," + result.getLng());
-//  	    } else {
-//  	    	log.info("CITY NULL NOT FOUND "+name);
-//  	    }
 
 					// if we are checking for possible geographic types
 					if (loc == null) {
@@ -390,84 +337,16 @@ public class GeonamesSQLQueries extends MainClass {
 					}
 					// if we want to find and store the geocoding type found
 					if (loc != null & result != null) {
-						loc.setLatitude(Float.valueOf(result.getLat()));
-						loc.setLongitude(Float.valueOf(result.getLng()));
+						loc.setLatitude(Double.valueOf(result.getLat()));
+						loc.setLongitude(Double.valueOf(result.getLng()));
 						return true;
 					}
-
-					// boolean result = NominatimAPI(name, loc, country_code);
-//          String endpointUrl = "https://nominatim.openstreetmap.org/";
-//          Address address = new Address();
-//          address.setCity(name);
-//          MapPoint mapPoint = NominatimAPI.with(endpointUrl).getMapPointFromAddress(address, 5);
-
-//          // we will query with the last 80% of chars of the city
-//          int nchars = (name.length() * 80) / 100;
-//          ps = conn.prepareStatement(st2city);
-//          ps.setString(1, name.substring(0, 1) + "%" + name.substring(name.length() - nchars));
-//          ps.setString(2, name + "%");
-//          
-//          log.info("st2city: "+ps.toString());
-//          outputinfo.append("\nst2city: "+ps.toString());
-//          
-//          rs = ps.executeQuery();
-
-//          if (!rs.next()) {
-//
-//            // we get the first part from - division
-//            if (name.contains("-")) {
-//              name = name.replace("-", " ");
-//              name = name.replaceAll("\\s+", " ").trim(); // remove more than one empty space
-//            }
-//
-//            String firstTwoWord = "";
-//            String lastTwoWord = "";
-//            String[] values = name.split(" ");
-//
-//            // if it has more than 2 words
-//            if (values.length > 2) {
-//              firstTwoWord = values[0] + "%" + values[1];
-//              lastTwoWord = values[values.length - 2] + "%" + values[values.length - 1];
-//            } else if (name.length() > 6) {
-//              // we get the first and last characters (60%) of the word
-//              nchars = (name.length() * 60) / 100;
-//              firstTwoWord = name.substring(0, nchars);
-//              lastTwoWord = name.substring(name.length() - nchars);
-//            } else {
-//              return false;
-//            }
-//
-//            // log.info("first words/chars: " + firstTwoWord);
-//            // log.info("last words/chars: " + lastTwoWord);
-//
-//            ps = conn.prepareStatement(st3city);
-//            ps.setString(1, "%" + firstTwoWord + "%");
-//            ps.setString(2, "%" + lastTwoWord + "%");
-//            log.info("st3city: "+ps.toString());
-//            outputinfo.append("\nst3city: "+ps.toString());
-//
-//            rs = ps.executeQuery();
-//
-//            if (!rs.next()) {
-//              if (geonamesdebugmode)
-//                DebugError(ps, rs);
-//              return false;
-//            } else {
-//              if (geonamesdebugmode)
-//                DebugInfo(ps, rs);
-//              return true;
-//            }
-//          } else {
-//            if (geonamesdebugmode)
-//              DebugInfo(ps, rs);
-//            return true;
-//          }
 				} else {
 					if (geonamesdebugmode)
 						DebugInfo(ps, rs);
 					if (loc != null) {
-						loc.setLatitude(new Float(rs.getString(3)));
-						loc.setLongitude(new Float(rs.getString(4)));
+						loc.setLatitude(new Double(rs.getString(3)));
+						loc.setLongitude(new Double(rs.getString(4)));
 						loc.setPopulation(rs.getString(5));
 						loc.setElevation(rs.getString(6));
 						return true;

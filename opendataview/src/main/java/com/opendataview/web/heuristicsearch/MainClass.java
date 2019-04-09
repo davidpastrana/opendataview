@@ -189,7 +189,7 @@ public class MainClass extends SetPropertiesPage {
 				// obj.setLongitude(new BigDecimal(new Double(newFormat), new
 				// MathContext(newFormat.length() - 2)));
 
-				obj.setLongitude(new Float(newFormat));
+				obj.setLongitude(new Double(newFormat));
 				newFormat = "";
 				isLatitudeRead = true;
 			}
@@ -200,7 +200,7 @@ public class MainClass extends SetPropertiesPage {
 				// newFormat = newFormat.replace(")", "");
 				// obj.setLatitude(new BigDecimal(new Double(newFormat), new
 				// MathContext(newFormat.length() - 2)));
-				obj.setLatitude(new Float(newFormat));
+				obj.setLatitude(new Double(newFormat));
 				startCopying = !startCopying;
 			}
 		}
@@ -1300,14 +1300,14 @@ public class MainClass extends SetPropertiesPage {
 			break;
 		case "latitudes":
 //			if (NumberUtils.isNumber(value.replace(",", "."))) {
-			loc.setLatitude(new Float(value.replace(",", ".")));
+			loc.setLatitude(new Double(value.replace(",", ".")));
 //			} else {
 //				log.info("NOT NUMBERIC, latitude is " + value);
 //			}
 			break;
 		case "longitudes":
 //			if (NumberUtils..isNumber(value.replace(",", "."))) {
-			loc.setLongitude(new Float(value.replace(",", ".")));
+			loc.setLongitude(new Double(value.replace(",", ".")));
 //			} else {
 //				log.info("NOT NUMBERIC, longitude is " + value);
 //			}
@@ -1318,22 +1318,22 @@ public class MainClass extends SetPropertiesPage {
 		case "nuts1":
 			double[] latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new Float(latlng[0]));
-				loc.setLongitude(new Float(latlng[1]));
+				loc.setLatitude(new Double(latlng[0]));
+				loc.setLongitude(new Double(latlng[1]));
 			}
 			break;
 		case "nuts2":
 			latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new Float(latlng[0]));
-				loc.setLongitude(new Float(latlng[1]));
+				loc.setLatitude(new Double(latlng[0]));
+				loc.setLongitude(new Double(latlng[1]));
 			}
 			break;
 		case "nuts3":
 			latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new Float(latlng[0]));
-				loc.setLongitude(new Float(latlng[1]));
+				loc.setLatitude(new Double(latlng[0]));
+				loc.setLongitude(new Double(latlng[1]));
 			}
 			break;
 		case "titles": // "#"is used to not create conflict with the iconmarker in the JS as it

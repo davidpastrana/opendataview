@@ -1803,6 +1803,7 @@ input[type="checkbox"], input[type="radio"] {
 }*/
 .main-title {
 	width: 100%;
+	min-width: 315px;
     background: #CC4646;
     color: #fff;
     position: relative;
@@ -1822,7 +1823,7 @@ input[type="checkbox"], input[type="radio"] {
     display: block;
 }
 .main-title td, .moreInfo2 td {
-	padding: 5px 10px;
+	padding: 5px 15px;
 	float: left;
 }
 .moreInfo2 td:nth-child(1) {
