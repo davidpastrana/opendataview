@@ -35,9 +35,8 @@ public class GeonamesSQLQueries extends MainClass {
 	private final static org.slf4j.Logger log = LoggerFactory.getLogger(GeonamesSQLQueries.class);
 
 	public static void setGeonameResult(LocationModel loc, ResultSet rs) throws NumberFormatException, SQLException {
-
-		loc.setLatitude(new Double(rs.getString(3)));
-		loc.setLongitude(new Double(rs.getString(4)));
+		loc.setLatitude(rs.getString(3));
+		loc.setLongitude(rs.getString(4));
 		loc.setPopulation(rs.getString(5));
 		loc.setElevation(rs.getString(6));
 	}
@@ -337,16 +336,16 @@ public class GeonamesSQLQueries extends MainClass {
 					}
 					// if we want to find and store the geocoding type found
 					if (loc != null & result != null) {
-						loc.setLatitude(Double.valueOf(result.getLat()));
-						loc.setLongitude(Double.valueOf(result.getLng()));
+						loc.setLatitude(result.getLat());
+						loc.setLongitude(result.getLng());
 						return true;
 					}
 				} else {
 					if (geonamesdebugmode)
 						DebugInfo(ps, rs);
 					if (loc != null) {
-						loc.setLatitude(new Double(rs.getString(3)));
-						loc.setLongitude(new Double(rs.getString(4)));
+						loc.setLatitude(rs.getString(3));
+						loc.setLongitude(rs.getString(4));
 						loc.setPopulation(rs.getString(5));
 						loc.setElevation(rs.getString(6));
 						return true;

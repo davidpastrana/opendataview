@@ -1,7 +1,7 @@
 function callStreetView(lat,lng) {
     //var url = 'https://a.mapillary.com/v3/images?client_id=bjRlSHBOc1c0enFCWmZodWxReEx3QTpkZDE0MDMxZTdlM2I1ZmYw&closeto='+lng+','+lat+'&radius=300&per_page=1';	
 	if(mly === undefined)
-		mly = new Mapillary.Viewer('mly2','QjI1NnU0aG5FZFZISE56U3R5aWN4ZzplNDVjNDc0YmYwYjJmYjQ0',null,{ cover: false });
+		mly = new Mapillary.Viewer('mly2','bjRlSHBOc1c0enFCWmZodWxReEx3QTpkZDE0MDMxZTdlM2I1ZmYw',null,{ cover: false });
     mly.moveCloseTo(lat, lng);
 }
 function getSearchParams(k){
@@ -155,7 +155,9 @@ var mly;
   var editableLayers;
   var jsonObj;
   var point_markers;
+  
 $(function() {
+	
 	if($('#mapid').length === 1) {
 	  map2 = L.map('mapid', {
 	      center: [20.0, 5.0],
@@ -522,4 +524,5 @@ $(function() {
 		} // END only when loading leaflet maps
 	  // Helpful message when cursor is over - labeled in bootstrap
 	    $('[data-toggle="tooltip"]').tooltip();
+
 });

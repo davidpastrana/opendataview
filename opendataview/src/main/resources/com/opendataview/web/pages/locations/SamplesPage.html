@@ -10,55 +10,155 @@
 <body>
 	<wicket:extend>
 
+	<div class="breadcrumbsAbout"> <div class="container"> <div class="row"> <div class="col-lg-6 col-sm-6"> <h1> Samples and <strong>video</strong> tutorials</h1> </div> </div> </div> </div>
+	
+		<div class="container">
+		<div class="form-wrapper">
+
+
+		<div class="row"> <div class="col-lg-12 col-sm-12">
+
 		<section id="home">
-		<p>
-		API examples:<br />
+		
+		<h1>Uploading a CSV file</h1>(After being registered and logging in into your Configuration Panel, you can start dragging multiple files in CSV format - before, you can also change the marker colors and adapt the schema mapping to your own needs)
+		<br /><br />
+		In this example, we first upload a file (city_walk.csv) setting the marker to green color and then we re-upload that same file changing the markers to purple color:
+		<br /><br />
+		<div class='youtube-player' data-id='c93iQBMO0Pg'></div>
+		<br /><br /><br /><br />
+		
+		
+		<h1>Using your own Schema mapping to match any header field</h1>(You can use any desired header pattern adding wildcard symbol '%' and use multiple csv-header tags (seperated by comma) to map them to the desired dictionary words - Dictionary words are defined below)<br /><br />
+		<div class='youtube-player' data-id='lSePb3lYi2A'></div>
+		<br /><br />
+		<h4><strong>Dictionary words</strong></h4>
+		id, name, csvname, latitude, longitude, email, username, website, source, otherinfo, description, date_published, date_updated, address, archive, city, country, currency, date, document, elevation, iconmarker, number, percentage, phone, population, postcode, private_mode, schedule, street, type, urlimage, year
+		
+		<br /><br /><br /><br />
+		
+		
+		<h1>Creating SQL backup files - Keeping your data safe</h1>(SQL backups can be created after searching the desired information, delete any files without worries and restore the backup to its original state)<br /><br />
+		<div class='youtube-player' data-id='lSePb3lYi2A'></div>
+		<br /><br /><br /><br />
+		
+		
+		
+		<h1>API Exposure - All information gets exposed via location id or dataset name</h1> (responses format are in JSON)<br /><br />
+		<div class='youtube-player' data-id='Im1LLM7g7nc'></div>
+		<br /><br />
+		<code>
+		https://www.opendataview.com/api/datasets<br />
+		https://www.opendataview.com/api/datasets/{dataset_name}</code><br />
+		e.g. <a href="https://www.opendataview.com/api/datasets" target="_blank">https://www.opendataview.com/api/datasets</a><br />
+			<a href="https://www.opendataview.com/api/datasets/Police.csv" target="_blank">https://www.opendataview.com/api/datasets/Police.csv</a><br />
+			<a href="https://www.opendataview.com/api/datasets/parks.csv" target="_blank">https://www.opendataview.com/api/datasets/parks.csv</a><br />
+			<a href="https://www.opendataview.com/api/datasets/Transporte.csv" target="_blank">https://www.opendataview.com/api/datasets/Transporte.csv</a><br />
 		<code>
 		https://www.opendataview.com/api/locations<br />
-		https://www.opendataview.com/api/locations/{location_id}<br />
-		https://www.opendataview.com/api/datasets<br />
-		https://www.opendataview.com/api/datasets/{dataset_name}<br /><br />
+		https://www.opendataview.com/api/locations/{location_id}</code><br />
+		e.g. <a href="https://www.opendataview.com/api/locations/20" target="_blank">https://www.opendataview.com/api/locations/20</a><br />
+			<a href="https://www.opendataview.com/api/locations/126" target="_blank">https://www.opendataview.com/api/locations/126</a><br />
+		<br /><br /><br /><br />
 		
-		eg. https://www.opendataview.com/api/datasets/Police.csv<br />
-			https://www.opendataview.com/api/datasets/parks.csv<br />
-			https://www.opendataview.com/api/datasets/Transporte.csv<br /><br />
-			
-		</code>
-		Search via SQL Queries (must have in front 'q:' and be SQL based - must use any of the below dictionary words):<br />
-		<code>
-		q: latitude &gt; 28 and longitude &lt; -16<br />
-		q: username = 'admin'<br />
-		q: id &gt; 1 and id &lt;= 5<br /><br />
 		
-		q: csvname = 'Police.csv'<br />
-		q: date_published = 'March 18 2019'<br />
-		q: date_updated = 'March 18 2019'<br /><br />
+		<h1>Search via SQL Query language - Query data which was auto-detected or fields which you schema-mapped</h1> (in front of the sql-query requires to write <strong>'sql:'</strong>, must have sql format and appear after the sql-clause <strong>'where'</strong>) - Dictionary words you can provide are below:<br /><br />
+		<div class='youtube-player' data-id='YZzH8fgGdPA'></div>
+		<br /><br />
+		The following samples can be typed in into the search box (remember to always include 'sql:' name in front of the query, otherwise will make a standard search):<br />
+		e.g.<code>
+		sql: latitude &gt;= 48 and longitude &lt;= 17<br />
+		sql: latitude &gt; 28 and longitude &lt; -16<br />
+		sql: lower(otherinfo) like '%citybikeogd%'<br />
+		sql: lower(otherinfo) like '%fid:%spazierpunktogd%'<br />
+		sql: (lower(otherinfo) like '%fid:%parkanlageogd%' or lower(otherinfo) like '%trinkbrunnen%1%')<br />
+		sql: (lower(otherinfo) like '%fid:%parkanlageogd%' or lower(otherinfo) like '%hundezone%1%')<br />
+		sql: (lower(otherinfo) like '%bezirk: 1 %' or lower(otherinfo) like '%zip: 1010%')<br />
+		sql: csvname='city_walk.csv' and description &lt;&gt; ''<br />
+		sql: csvname='city_walk.csv' and description like ''<br />
+		sql: lower(name) like '%neue donau%'<br />
+		sql: lower(description) like '%oper%'<br />
+		sql: name like 'Polizei%'<br />
+		sql: username = 'admin'<br />
+		sql: id &gt; 1 and id &lt;= 5<br />
+		sql: csvname = 'Police.csv'<br />
+		sql: date_published = 'March 18 2019'<br />
+		sql: date_updated = 'March 18 2019'<br /><br />
 		</code>
-		Dictionary words:<br />
-		id,address,archive,city,country,csvname,currency,date,date_published,date_updated,description,document,elevation,email,iconmarker,latitude,longitude,name,number,otherinfo,percentage,phone,population,postcode,private_mode,schedule,source,street,type,urlimage,username,website,year
+		<h4><strong>Dictionary words</strong></h4>
+		id, name, csvname, latitude, longitude, email, username, website, source, otherinfo, description, date_published, date_updated, address, archive, city, country, currency, date, document, elevation, iconmarker, number, percentage, phone, population, postcode, private_mode, schedule, street, type, urlimage, year
+		<br /><br /><br /><br />
+		
+		
+		<h1>Search any attribute - Navigate through the most repeated fields</h1>
+		<br /><br />
+		<div class='youtube-player' data-id='mrsme5RVpmg'></div>
+		<br /><br /><br /><br />
+		
+		<h1>Search near your current location</h1>(distance in Kilometers top-left slider)
+		<br /><br />
+		<div class='youtube-player' data-id='34g31qrzYHU'></div>
+		<br />
+		After pressing the button (next to the magnifier-search icon), you can later adjust the distance from the top-left slider and drag the marker to any other desired location.<br /><br />
 		<br /><br />
 		
 		
-		Search via any attribute:<br />
+		
+		<h1>Search any closed area by drawing a Shape</h1> (draw a Polygon, square or plot a Marker to any place around the map)
+		<br /><br />
+		<div class='youtube-player' data-id='Pp_YXs9toes'></div>
+		<br /><br />For instance, polygon shape can be drawn or coordinates can be passed to the URL:<br />
+		<a href="https://www.opendataview.com/search?zoom=14&coords=(48.217531,16.370338),(48.213654,16.361641),(48.207142,16.359613),(48.203466,16.364093),(48.201554,16.373772),(48.208875,16.382006),(48.211464,16.382654),(48.212079,16.376284),(48.214022,16.373839)" target="_blank">https://www.opendataview.com/search?zoom=14&coords=(48.217531,16.370338),(48.213654,16.361641),(48.207142,16.359613),(48.203466,16.364093),(48.201554,16.373772),(48.208875,16.382006),(48.211464,16.382654),(48.212079,16.376284),(48.214022,16.373839)</a><br />
+		<br /><br /><br /><br />
 		
 		
-		Search depending on a same attribute:<br />
 		
+		<h1>Open layers - Tweak to your preferred layouts</h1>(Using Leaflet JS for the layers and WebGL Leaflet.glify to plot the markers)
+		<br /><br />
+		<div class='youtube-player' data-id='7mLXexTr9tQ'></div>
+		<br /><br />OpenStreetMap layer:<br />
+		<a href="https://www.opendataview.com/search?value=karlsplatz&map=openstreetmap" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=openstreetmap</a><br />
+		Dark layer:<br />
+		<a href="https://www.opendataview.com/search?value=karlsplatz&map=dark" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=dark</a><br />
+		Satellite layer:<br />
+		<a href="https://www.opendataview.com/search?value=karlsplatz&map=satellite" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=satellite</a><br />
+		Topography layer:<br />
+		<a href="https://www.opendataview.com/search?value=karlsplatz&map=topography" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=topography</a><br />
+		<br /><br /><br /><br />
+		
+		
+		
+		<h1>Charting - Where reporting matters</h1> (pie-chart to navigate around attributes or bar-chart to create reports - Using HighCharts JS library)
+		<br /><br />
+		<div class='youtube-player' data-id='DHVrPio6L6A'></div>
+		<br /><br />
+		<h4>Defining <code>graph=true</code> in the URL or checkbox being marked in the settings panel (top-right menu, gear icon):</h4>
+			<br />
+		Most repeated attributes in Vienna:<br />
+		<a href="https://www.opendataview.com/search?graph=true&map=dark&coords=(48.041241,16.091403),(48.325406,16.091403),(48.325406,16.747429),(48.041241,16.747429)" target="_blank">https://www.opendataview.com/search?graph=true&map=dark&coords=(48.041241,16.091403),(48.325406,16.091403),(48.325406,16.747429),(48.041241,16.747429)</a><br />
+		<br />		
+		Most repeated attributes for the public transport in Barcelona:<br />
+		<a href="https://www.opendataview.com/search?&value=estacions_bus&zoom=12&graph=true&map=dark&fullscreen=true" target="_blank">https://www.opendataview.com/search?value=estacions_bus&zoom=12&graph=true&map=dark&fullscreen=true</a><br />
+		<br /><br />
+		<h4>Defining <code>group={attribute_name}</code> or <code>total={attribute_name}</code> in the URL - where attribute key <code>{attribute_name}</code> must define a number as <code>key:{number}</code></h4>
+		<br />
+		Districts which have more city-bike places in Vienna:<br />
+		<a href="https://www.opendataview.com/search?value=city_bike.csv&group=bezirk&zoom=12&map=light&fullscreen=true" target="_blank">https://www.opendataview.com/search?value=city_bike.csv&group=bezirk&zoom=12&map=light&fullscreen=true</a><br />
+		<br />
+		Parks in Vienna having a drink fountain:<br />
+		<a href="https://www.opendataview.com/search?value=Filename:+parks.csv&zoom=11&fullscreen=true&group=trinkbrunnen" target="_blank">https://www.opendataview.com/search?value=Filename:+parks.csv&zoom=11&fullscreen=true&group=trinkbrunnen</a><br />
+		<br />
+		Parks in Vienna with dog areas:<br />
+		<a href="https://www.opendataview.com/search?value=Filename:+parks.csv&zoom=11&fullscreen=true&group=hundezone" target="_blank">https://www.opendataview.com/search?value=Filename:+parks.csv&zoom=11&fullscreen=true&group=hundezone</a><br />
+		<br />
+		Swimming places in Vienna (where the 22nd district has the highest amount):<br />
+		<a href="https://www.opendataview.com/search?value=swimming_places&zoom=13&fullscreen=true&map=dark&group=bezirk" target="_blank">https://www.opendataview.com/search?value=swimming_places&zoom=13&fullscreen=true&map=dark&group=bezirk</a><br />
 
-		
-		Search around your current location (distance in Km):<br />
-		By pressing button <i id="icon-mylocation" class="glyphicon glyphicon-map-marker" title="Show My Location" /> from Locations page.<br />
-		You can later adjust the distance from the slider and drag the marker to another position.<br />
-		
-		Search by drawing a Shape (Polygon, Square or by plotting a Marker):<br />
-		From the bottom-right corner is the panel to draw or edit your shape.<br />
-		
-		URL Charting - via two possible tag names on the URL:<br />
-		Group:<br />
-		Total:<br />
-		
-		</p>
 		</section>
+		</div>
+		</div>
+		</div>
+		</div>
+		
 		<!-- /.Presentation -->
 		<!-- Intro -->
 		<section id="introText">
@@ -71,74 +171,6 @@
 			</div>
 		</section>
 		<!-- /.Intro -->
-		<!-- About -->
-		<section
-			id="aboutUs"
-			class="secPad"
-		>
-			<div class="container">
-				<!-- 				<div class="heading text-center"> -->
-				<!-- 					Heading -->
-				<!-- 					<h2>YOU CAN CONTRIBUTE IN THIS PROJECT</h2> -->
-				<!-- 					<h3>Anybody is welcome to participate so we can grow up with -->
-				<!-- 						your help!</h3> -->
-				<!-- 					<p> -->
-				<!-- 					<form action="https://www.paypal.com/cgi-bin/webscr" method="post" -->
-				<!-- 						target="_top"> -->
-				<!-- 						<input type="hidden" name="cmd" value="_s-xclick"><input -->
-				<!-- 							type="hidden" name="hosted_button_id" value="6E3QGK4KF77SQ"><input -->
-				<!-- 							type="image" -->
-				<!-- 							src="https://www.paypalobjects.com/en_US/AT/i/btn/btn_donateCC_LG.gif" -->
-				<!-- 							border="0" name="submit" -->
-				<!-- 							alt="PayPal - The safer, easier way to pay online!"><img -->
-				<!-- 							alt="" border="0" -->
-				<!-- 							src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" -->
-				<!-- 							width="1" height="1"> -->
-				<!-- 					</form> -->
-				<!-- 					</p> -->
-				<!-- 				</div> -->
-				<div class="heading text-center">
-					<!-- Heading -->
-					<h2>ABOUT ME</h2>
-					<p></p>
-				</div>
-				<div class="row">
-					<div class="col-md-4 text-center tileBox"></div>
-					<!-- David -->
-					<div class="col-md-4 text-center tileBox">
-						<div class="txtHead">
-							<img
-								itemprop="image"
-								class="team-photo"
-								src="/images/team/david.png"
-							/>
-							<h3>
-								David Rodriguez-Pastrana Parareda, BSc. <span class="id-color"></span>
-							</h3>
-							Student at the Technische Universität Wien
-						</div>
-						<div class="team-icon">
-							<div class="social text-center">
-					<a
-						href="https://twitter.com/opendataview"
-						target="_blank"
-					><i class="fa fa-twitter" /></a>
-					<a
-						href="https://www.facebook.com/opendataview"
-						target="_blank"
-					><i class="fa fa-facebook" /></a>
-				    <a
-						href="https://github.com/davidpastrana/opendataview"
-						target="_blank"
-					><i class="fa fa-github" /></a>
-							</div>
-						</div>
-					</div>
-					<div class="col-md-4 text-center tileBox"></div>
-				</div>
-			</div>
-		</section>
-		<!-- /.About -->
 		<!-- Quote -->
 		<section
 			id="quote"
@@ -160,6 +192,38 @@
 		<!-- Footer -->
 		<wicket:panel wicket:id="footer" />
 		<!-- /.Footer -->
+			<script>
+	/* Light YouTube Embeds by @labnol */
+	/* Web: http://labnol.org/?p=27941 */
+	document.addEventListener("DOMContentLoaded",
+	        function() {
+	            var div, n,
+	                v = document.getElementsByClassName("youtube-player");
+	            for (n = 0; n < v.length; n++) {
+	                div = document.createElement("div");
+	                div.setAttribute("data-id", v[n].dataset.id);
+	                div.innerHTML = labnolThumb(v[n].dataset.id);
+	                div.onclick = labnolIframe;
+	                v[n].appendChild(div);
+	            }
+	        });
+
+	function labnolThumb(id) {
+	        var thumb = '<img src="https://i.ytimg.com/vi/ID/hqdefault.jpg">',
+	            play = '<div class="play"></div>';
+	        return thumb.replace("ID", id) + play;
+	    }
+
+	function labnolIframe() {
+	        var iframe = document.createElement("iframe");
+	        var embed = "https://www.youtube.com/embed/ID?autoplay=1";
+	        iframe.setAttribute("src", embed.replace("ID", this.dataset.id));
+	        iframe.setAttribute("frameborder", "0");
+	        iframe.setAttribute("allowfullscreen", "1");
+	        this.parentNode.replaceChild(iframe, this);
+	}
+	</script>
 	</wicket:extend>
+
 </body>
 </html>

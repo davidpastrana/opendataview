@@ -11,6 +11,8 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -79,9 +81,10 @@ public class GenerateFile extends MainClass {
 			wr.append(DELIMITER);
 			wr.append(loc.getCity());
 			wr.append(DELIMITER);
-			wr.append(String.valueOf(loc.getLatitude()));
+			// RoundingMode.DOWN very important to keep decimals constant
+			wr.append(String.valueOf(loc.getLatitude().setScale(6, RoundingMode.FLOOR)));
 			wr.append(DELIMITER);
-			wr.append(String.valueOf(loc.getLongitude()));
+			wr.append(String.valueOf(loc.getLongitude().setScale(6, RoundingMode.FLOOR)));
 			wr.append(DELIMITER);
 			wr.append(loc.getWebsite());
 			wr.append(DELIMITER);
@@ -119,37 +122,37 @@ public class GenerateFile extends MainClass {
 
 	// CREATE NEW CSV FILE IN ENRICHED DIRECTORY (dest)
 
-	public static void CreateEnrichedCSV(File source, File dest, ArrayList<LocationModel> new_format)
-			throws IOException {
-
-		PrintWriter wr = new PrintWriter(
-				dest.toString().replace("new_format", "enriched").replace(".csv", "-enriched.csv"), "utf-8");
-
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "iso-8859-1"));
-
-		int i = 0;
-
-		String line;
-		while ((line = br.readLine()) != null) {
-			wr.append(line);
-			if (i == 0) {
-				wr.append(DELIMITER);
-				wr.append("Latitude");
-				wr.append(DELIMITER);
-				wr.append("Longitude");
-			} else if (i < new_format.size()) {
-				wr.append(DELIMITER);
-				wr.append(String.valueOf(new_format.get(i - 1).getLatitude()));
-				wr.append(DELIMITER);
-				wr.append(String.valueOf(new_format.get(i - 1).getLongitude()));
-			}
-			wr.append(NEW_LINE);
-			i++;
-		}
-		wr.close();
-		br.close();
-
-	}
+//	public static void CreateEnrichedCSV(File source, File dest, ArrayList<LocationModel> new_format)
+//			throws IOException {
+//
+//		PrintWriter wr = new PrintWriter(
+//				dest.toString().replace("new_format", "enriched").replace(".csv", "-enriched.csv"), "utf-8");
+//
+//		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "iso-8859-1"));
+//
+//		int i = 0;
+//
+//		String line;
+//		while ((line = br.readLine()) != null) {
+//			wr.append(line);
+//			if (i == 0) {
+//				wr.append(DELIMITER);
+//				wr.append("Latitude");
+//				wr.append(DELIMITER);
+//				wr.append("Longitude");
+//			} else if (i < new_format.size()) {
+//				wr.append(DELIMITER);
+//				wr.append(String.valueOf(new_format.get(i - 1).getLatitude()));
+//				wr.append(DELIMITER);
+//				wr.append(String.valueOf(new_format.get(i - 1).getLongitude()));
+//			}
+//			wr.append(NEW_LINE);
+//			i++;
+//		}
+//		wr.close();
+//		br.close();
+//
+//	}
 
 	public GenerateFile(PageParameters parameters) throws IOException {
 		super(parameters);
@@ -200,7 +203,7 @@ public class GenerateFile extends MainClass {
 
 						// we add lat and long without quotes
 					} else if (j == pos_latitude || j == pos_longitude) {
-						buffer.append(value[j]);
+						buffer.append(String.valueOf(new BigDecimal(value[j]).setScale(6, RoundingMode.UNNECESSARY)));
 
 						// its a null value
 					} else {

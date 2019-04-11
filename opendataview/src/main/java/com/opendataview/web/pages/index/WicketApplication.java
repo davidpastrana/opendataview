@@ -94,6 +94,16 @@ public class WicketApplication extends AuthenticatedWebApplication {
 
 			getMarkupSettings().setMarkupFactory(new HtmlCompressingMarkupFactory(compressor));
 		}
+//		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("PERSISTENCE");
+//
+//		EntityManager em = entityManagerFactory.createEntityManager();
+//		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(em);
+//		try {
+//			fullTextEntityManager.createIndexer().startAndWait();
+//		} catch (InterruptedException e1) {
+//			// TODO Auto-generated catch block
+//			e1.printStackTrace();
+//		}
 
 		Bootstrap.install(this);
 

@@ -36,17 +36,9 @@ public class BasePage extends WebPage {
 		super.renderHead(response);
 
 		response.render(CssHeaderItem.forReference(BootstrapCssReference.instance()));
-//		response.render(
-//				CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "opendataview.main.css")));
 		response.render(
 				CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "opendataview.main.css")));
 		response.render(CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "styles.css")));
-//		response.render(JavaScriptHeaderItem
-//				.forReference(new JavaScriptResourceReference(BasePage.class, "opendataview.ui.js")));
-
-//		response.render(
-//				OnDomReadyHeaderItem.forScript("$('#backgroundLoading').fadeOut(0);$('#showLoading').fadeOut(0);"));
-
 	}
 
 	public void MemoryConsumed() {

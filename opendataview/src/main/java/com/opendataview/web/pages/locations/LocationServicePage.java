@@ -8,6 +8,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -266,7 +267,7 @@ public class LocationServicePage extends BasePage {
 		showMarkerInfo.add(showMarkerInfoBttn);
 
 		if (!parameters.get("value").isNull()) {
-			list2 = locationServiceDAO.searchLocationModel(parameters.get("value").toString().toLowerCase());
+			list2 = locationServiceDAO.searchLocationModel(parameters.get("value").toString());
 			list.addAll(list2);
 		}
 
@@ -348,6 +349,14 @@ public class LocationServicePage extends BasePage {
 
 				item.add(new Label("id_location2", obj.getId()));
 				item.add(new Label("icon_marker2", obj.getIconmarker()));
+
+				// allow the user logged in (which made the upload) to edit the information
+				if (session.getAttribute("user_name") != null
+						&& session.getAttribute("user_name").equals(obj.getUsername())) {
+					item.add(new Label("iconEditInfo").setVisible(true));
+				} else {
+					item.add(new Label("iconEditInfo").setVisible(false));
+				}
 
 				if (obj.getName() != null && !obj.getName().isEmpty()) {
 					item.add(new Label("name2", obj.getName()));
@@ -496,6 +505,7 @@ public class LocationServicePage extends BasePage {
 		File saveVisibleLoc = new File(Files.createTempDir(), "view-" + sdf.format(now) + ".csv");
 		locationsForm.add(new DownloadLink("saveVisibleLoc", saveVisibleLoc));
 
+		DecimalFormat df = new DecimalFormat(".######");
 		final AjaxButton saveVisibleLocFile = new AjaxButton("saveVisibleLocFile") {
 
 			private static final long serialVersionUID = 1L;
@@ -503,7 +513,7 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target) {
 
-				String DELIMITER = ";";
+				String DELIMITER = "','";
 				String NEW_LINE = "\n";
 
 				try {
@@ -536,9 +546,9 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(loc.getCity());
 							wr.append(DELIMITER);
-							wr.append(String.valueOf(loc.getLatitude()));
+							wr.append(df.format(loc.getLatitude()));
 							wr.append(DELIMITER);
-							wr.append(String.valueOf(loc.getLongitude()));
+							wr.append(df.format(loc.getLongitude()));
 							wr.append(DELIMITER);
 							wr.append(loc.getWebsite());
 							wr.append(DELIMITER);
@@ -568,7 +578,7 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(String.valueOf(loc.getPrivate_mode()));
 							wr.append(DELIMITER);
-							wr.append(loc.getOtherInfo().replaceAll(";", ","));
+							wr.append(loc.getOtherInfo().replaceAll(DELIMITER, "-"));
 							wr.append(NEW_LINE);
 						}
 					} else {
@@ -600,7 +610,7 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected void onSubmit(AjaxRequestTarget target) {
 
-				String DELIMITER = ";";
+				String DELIMITER = "','";
 				String DELIMITER2 = ",";
 				String NEW_LINE = "\n";
 				boolean to_backup = false;
@@ -622,9 +632,9 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(loc.getCity());
 							wr.append(DELIMITER);
-							wr.append(String.valueOf(loc.getLatitude()));
+							wr.append(df.format(loc.getLatitude()));
 							wr.append(DELIMITER);
-							wr.append(String.valueOf(loc.getLongitude()));
+							wr.append(df.format(loc.getLongitude()));
 							wr.append(DELIMITER);
 							wr.append(loc.getWebsite());
 							wr.append(DELIMITER);
@@ -654,7 +664,7 @@ public class LocationServicePage extends BasePage {
 							wr.append(DELIMITER);
 							wr.append(String.valueOf(loc.getPrivate_mode()));
 							wr.append(DELIMITER);
-							wr.append(loc.getOtherInfo().replaceAll(";", ","));
+							wr.append(loc.getOtherInfo().replaceAll(DELIMITER, "-"));
 							wr.append(NEW_LINE);
 							to_backup = true;
 						}
@@ -673,12 +683,10 @@ public class LocationServicePage extends BasePage {
 					br = new BufferedReader(new InputStreamReader(new FileInputStream(saveVisibleLoc), "utf-8"));
 
 					if (to_backup == true) {
-
 						String line;
 						int fil_lat = 6;
 						int fil_lng = 7;
 						while ((line = br.readLine()) != null) {
-
 							String[] value = line.split(DELIMITER);
 							int j = 0;
 							// we create the insert just if we have latitude and longitude
@@ -687,24 +695,12 @@ public class LocationServicePage extends BasePage {
 										"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,otherinfo) VALUES(");
 								j = 0;
 								while (j < value.length) {
-									value[j] = value[j].replaceAll(",", ";").replaceAll("\'", "").replaceAll("\"", "")
-											.replaceAll("null", "");
-									// we add just strings with single quotes except for lat and lng
-//									if (!value[j].contentEquals("") && j != fil_lat && j != fil_lng) {
-//										buffer.append("'");
-//										buffer.append(value[j]);
-//										buffer.append("'");
-//
-//										// we add lat and long without quotes
-//									} else if (j == fil_lat || j == fil_lng) {
-//										buffer.append(value[j]);
+									value[j] = value[j].replaceAll("null", "");
 									if (!value[j].isEmpty()) {
 										buffer.append("'" + value[j] + "'");
 									} else {
 										buffer.append("''");
 									}
-
-									// we insert separator ","
 									if (j != value.length - 1) {
 										buffer.append(DELIMITER2);
 									}
@@ -730,7 +726,6 @@ public class LocationServicePage extends BasePage {
 				target.prependJavaScript("$('#linkSqlLocBackup').trigger('click');");
 			}
 		};
-		// saveSqlLocBackup.setOutputMarkupPlaceholderTag(true);
 		saveSqlLocBackup.setVisible(false);
 		locationsForm.add(saveSqlLocBackup);
 
@@ -836,9 +831,10 @@ public class LocationServicePage extends BasePage {
 				String showPrivateMapInput = showPrivateMap.getModelObject();
 
 				if (name != null) {
-					list.clear();
-					list2.clear();
-					boolean found2 = false;
+//					list.clear();
+//					list2.clear();
+//					boolean found2 = false;
+
 					/*
 					 * boolean found = false; int total = 0; for (LocationModel loc : origList) {
 					 * 
@@ -854,12 +850,14 @@ public class LocationServicePage extends BasePage {
 					 * locationServiceDAO.searchLocationModel(name); if (!list2.isEmpty()) {
 					 * list.addAll(list2); found2 = true; } } }
 					 */
-					list2 = locationServiceDAO.searchLocationModel(name);
-					if (!list2.isEmpty()) {
-						list.addAll(list2);
-						found2 = true;
-					}
-					PageParameters pageParameters = new PageParameters();
+
+//					list2 = locationServiceDAO.searchLocationModel(name);
+//					if (!list2.isEmpty()) {
+//						list.addAll(list2);
+//						found2 = true;
+//					}
+//					PageParameters pageParameters = new PageParameters();
+
 					// used for a single search depending on the chosen location
 					/*
 					 * if (found) { pageParameters.set("name", list.get(0).getName());
@@ -870,24 +868,27 @@ public class LocationServicePage extends BasePage {
 					 * pageParameters.set("map", mapTypeInputValue); }
 					 */
 					// user for multiple results by querying with a like %otherinfo% statement
-					if (found2) {
-						String searched_value = inputField.getModelObject();
-						pageParameters.set("value", searched_value);
-						pageParameters.set("zoom", zoomLevelInputValue);
 
-						if (viewPanelsInputValue != null)
-							pageParameters.set("fullscreen", viewPanelsInputValue);
-						if (!mapTypeInputValue.equals("null"))
-							pageParameters.set("map", mapTypeInputValue);
-						if (showGraphInput != null)
-							pageParameters.set("graph", showGraphInput);
-						if (!chart_total.equals("null"))
-							pageParameters.set("total", chart_total);
-						if (!chart_group.equals("null"))
-							pageParameters.set("group", chart_group);
-						if (!showPrivateMapInput.equals("null"))
-							pageParameters.set("user", showPrivateMapInput);
-					}
+//					if (found2) {
+					String searched_value = inputField.getModelObject();
+					pageParameters.set("value", searched_value);
+					if (zoomLevelInputValue != null)
+						pageParameters.set("zoom", zoomLevelInputValue);
+					else
+						pageParameters.set("zoom", 15);
+					if (viewPanelsInputValue != null)
+						pageParameters.set("fullscreen", viewPanelsInputValue);
+					if (!mapTypeInputValue.equals("null"))
+						pageParameters.set("map", mapTypeInputValue);
+					if (showGraphInput != null)
+						pageParameters.set("graph", showGraphInput);
+					if (!chart_total.equals("null"))
+						pageParameters.set("total", chart_total);
+					if (!chart_group.equals("null"))
+						pageParameters.set("group", chart_group);
+					if (!showPrivateMapInput.equals("null"))
+						pageParameters.set("user", showPrivateMapInput);
+//					}
 					setResponsePage(LocationServicePage.class, pageParameters);
 				}
 				target.add(wmc2);
@@ -1086,13 +1087,16 @@ public class LocationServicePage extends BasePage {
 			@SuppressWarnings("unchecked")
 			public void populateItem(final ListItem<LocationModel> item) {
 				obj = item.getModelObject();
+
+				// if the marker is not in private mode (do not display it to the public) unless
+				// we are logged is as the marker owner
 				if (obj.getPrivate_mode() == false || obj.getUsername().equals(user)) {
 					o = new JSONObject();
 					o.put("id", obj.getId());
 					o.put("name", obj.getName());
-					o.put("icon", obj.getIconmarker().split("#")[0]);
-					o.put("lat", String.format("%.5f", obj.getLatitude()));
-					o.put("lng", String.format("%.5f", obj.getLongitude()));
+					o.put("icon", obj.getIconmarker());
+					o.put("lat", obj.getLatitude());
+					o.put("lng", obj.getLongitude());
 					json.add(o);
 				}
 				if (count == list.size() - 1) {

@@ -37,8 +37,8 @@ public class TestedAPIs {
 				.parse(address);
 
 		if (coord != null) {
-			loc.setLatitude(new Double(coord.getLat()));
-			loc.setLongitude(new Double(coord.getLng()));
+			loc.setLatitude(coord.getLat());
+			loc.setLongitude(coord.getLng());
 		}
 	}
 
@@ -54,8 +54,8 @@ public class TestedAPIs {
 		try {
 			ToponymSearchResult searchResult = WebService.search(searchCriteria);
 			if (searchResult != null) {
-				loc.setLatitude(new Double(searchResult.getToponyms().get(0).getLatitude()));
-				loc.setLongitude(new Double(searchResult.getToponyms().get(0).getLongitude()));
+				loc.setLatitude(searchResult.getToponyms().get(0).getLatitude());
+				loc.setLongitude(searchResult.getToponyms().get(0).getLongitude());
 				// loc.setPostcode(searchResult.getToponyms().get(0).getPos);
 			}
 			if (searchResult.toString().contentEquals(

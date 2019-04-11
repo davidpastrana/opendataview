@@ -113,7 +113,6 @@ public class MainClass extends SetPropertiesPage {
 	protected static String st2postcode = "select name,admin3name,code,latitude,longitude from postalcodes where code = ? order by code asc";
 	protected static String st1city = "select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname = ? order by population desc";
 	protected static String st2city = "select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname like ? or asciiname like ? order by population desc";
-	protected static String st3city = "select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname like ? or asciiname like ? order by population desc";
 
 	protected static String imageRegex = ".*.(jpg|gif|png|bmp|ico)$";
 	protected static String phoneRegex = "^\\+?[0-9. ()-]{10,25}$";
@@ -151,17 +150,8 @@ public class MainClass extends SetPropertiesPage {
 	protected static String code_found = "";
 	protected static boolean executed = false;
 
-//  public static void main(String[] args) {
-//	  
-//	  String log4jConfPath = "/src/main/resources/log4j.properties";
-//	  PropertyConfigurator.configure(log4jConfPath);
-//	  
-//	  log.info("Hello World");
-//  }
-
 	public static void initialize(String user, PropertiesServiceDAO propertiesServiceDAO) throws IOException {
 
-		log.info("WHEN INITIALIZE USER SESSION IS " + user);
 		origList = new ArrayList<PropertiesModel>();
 		origList = propertiesServiceDAO.readPropertiesModel(user);
 
@@ -186,10 +176,7 @@ public class MainClass extends SetPropertiesPage {
 				newFormat += x;
 			}
 			if (startCopying && x == ' ') {
-				// obj.setLongitude(new BigDecimal(new Double(newFormat), new
-				// MathContext(newFormat.length() - 2)));
-
-				obj.setLongitude(new Double(newFormat));
+				obj.setLongitude(newFormat);
 				newFormat = "";
 				isLatitudeRead = true;
 			}
@@ -197,10 +184,7 @@ public class MainClass extends SetPropertiesPage {
 				newFormat += x;
 			}
 			if (x == ')') {
-				// newFormat = newFormat.replace(")", "");
-				// obj.setLatitude(new BigDecimal(new Double(newFormat), new
-				// MathContext(newFormat.length() - 2)));
-				obj.setLatitude(new Double(newFormat));
+				obj.setLatitude(newFormat);
 				startCopying = !startCopying;
 			}
 		}
@@ -224,8 +208,6 @@ public class MainClass extends SetPropertiesPage {
 	public static void findFieldTypes(String dir, String name, Model<String> textResult) throws NumberFormatException,
 			CQLException, IOException, NumberParseException, SQLException, URISyntaxException {
 
-		// br = new BufferedReader(new InputStreamReader(new FileInputStream(dir +
-		// name), "iso-8859-1"));
 		br = new BufferedReader(new InputStreamReader(new FileInputStream(dir + name), "ISO-8859-1"));
 
 		BufferedReader reader = new BufferedReader(new FileReader(dir + name));
@@ -276,7 +258,7 @@ public class MainClass extends SetPropertiesPage {
 
 					// split by delimiter with unlimited tokens having empty space
 					ncolchecks = line.split("\\" + DELIMITER, -1).length;
-					// if (testmode || fieldtypesdebugmode || geonamesdebugmode) {
+					// if (fieldtypesdebugmode || geonamesdebugmode) {
 
 					log.info(">> File: " + name);
 					outputinfo.append(">> File: " + name);
@@ -303,16 +285,6 @@ public class MainClass extends SetPropertiesPage {
 					String[] value = new String[ncolchecks];
 
 					value = line.split(DELIMITER);
-
-					// Capitalize first letter of each header value
-//          for (int j = 0; j < value.length; j++) {
-//        	  if(value[j].length()>0) {
-//        		  header[j] = value[j].substring(0, 1).toUpperCase() + value[j].substring(1).toLowerCase();
-//        	  } else {
-//        		  header[j] = value[j];
-//        	  }
-//              
-//          }
 
 					// exception for some files with a NONE defined header in the first raw
 					if (ncolchecks < 10)
@@ -359,23 +331,11 @@ public class MainClass extends SetPropertiesPage {
 
 										// for static values surrounded by double quotes
 										if (first.contains("\"")) {
-											// log.info("value first0 is "+second);
-
 											String static_value = first.replaceAll("\"", "");
-											// log.info("STATIC VALUE1 added: "+static_value);
-//                				  String static_value = first.split("\"")[0].split("\"")[1];
-////                				  log.info("ALL VALUE "+tmpsecond);
-//                				  log.info("STATIC VALUE2 added: "+static_value);
-//                				  first = tmp;
-											// if(header_value.contentEquals(first)) {
 
 											// In case of a hardcoded value, left side is the static value and right
 											// side is the dictionary word
 											dict_static[hconfig] = static_value + "_forcolumn_" + second;
-
-											// log.info("STATIC VALUE SAVED FOR COL '"+hconfig+"':
-											// "+dict_static[hconfig]);
-											// }
 
 											// for all the rest, could it be one or multiple relations as *:1 where *
 											// fields have to be divided by comma
@@ -383,27 +343,12 @@ public class MainClass extends SetPropertiesPage {
 											String[] val_first = first.split(",");
 											for (int item = 0; item < val_first.length; item++) { // each value of the
 																									// key schema config
-												// header_config_field = ;
-
-//	            				  log.info(">> Match for? val file: "+header_file_field);
-//	            				  log.info("val schema: "+header_config_field);
-
-												// for(int it=0; it<nlocfields; it++) {
 
 												String newformat = val_first[item].replaceAll("%", ".*");
 
 												if (value[hfile].toLowerCase().trim()
 														.matches(newformat.toLowerCase().trim())) {
 
-//	                    			  log.info("schema=> "+schema_config[hconfig].trim());
-//	                    			  
-//	                    			  log.info("first "+first);
-//	                    			  log.info("second "+second);
-
-													// log.info("WE HAVE A MATCH!!\nheader file field:
-													// "+header_file_field);
-
-													// dict_match[j] = header_config_field;
 													switch (second) {
 													case "emails":
 														dict_match[hfile] = "emails";
@@ -499,8 +444,6 @@ public class MainClass extends SetPropertiesPage {
 
 			} else if (i < nrowchecks && autodetectSchema) {
 
-				log.info("WE ARE IN NOT IN HEADER WITH I:=" + i);
-
 				// ###########################################################################################################################
 				// CANDIDATE VALUES (X/Y) ARE GOING TO BE CHECKED FOR A SAME FILE - UNTIL [i]
 				// ROWS TO CHECK [nrowchecks]
@@ -510,9 +453,6 @@ public class MainClass extends SetPropertiesPage {
 				// 100)) / 100;
 				// ###########################################################################################################################
 
-				// log.info("line: " + i + "
-				// -------------------------------------------------");
-				// log.info("before.." + line);
 				if (DELIMITER.contentEquals(",")) {
 					boolean inQuotes = false;
 
@@ -534,7 +474,6 @@ public class MainClass extends SetPropertiesPage {
 				}
 
 				String[] linex = line.split(DELIMITER);
-				log.info("WE ARE IN NOT IN HEADER WITH LINEX:=" + line);
 
 				// ParameterizedSparqlString qs =
 				// new ParameterizedSparqlString(""
@@ -546,32 +485,15 @@ public class MainClass extends SetPropertiesPage {
 
 				while (j < linex.length) {
 
-					// Literal val = ResourceFactory.createLangLiteral(value[j], "en");
-					// qs.setParam("val1", val);
-
-					// System.out.println(qs);
-					// String val = value[j].replaceAll("", "").toLowerCase();
-
 					String val = linex[j].toLowerCase().replaceAll("\"", "").trim();
 					file_values[i][j] = val;
-					// inh means i with no header, otherwise would have started from i=1
-					// if (fieldtypesdebugmode || geonamesdebugmode)
-					// log.info("check: " + val);
 
 					if (val.matches(phoneRegex)) {
 						PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
-						// try {
 						PhoneNumber phone = phoneUtil.parse(val, country_code);
-
 						if (phoneUtil.isValidNumber(phone)) {
-							log.info("Phone found for val " + val + " with code " + country_code);
 							column_types[inh][j] = "phones";
-							log.info("we are in column type with i:" + i + " and j:" + j + " and we added="
-									+ column_types[i][j]);
 						}
-						// } catch (NumberParseException e) {
-						// // System.err.println("NumberParseException was thrown: " + e.toString());
-						// }
 					} else if (EmailValidator.getInstance().isValid(val)) {
 						// log.info("we have an email ! in fil " + i + " and col " + j);
 						column_types[inh][j] = "emails";
@@ -598,24 +520,14 @@ public class MainClass extends SetPropertiesPage {
 					} else if (val.replaceAll(" ", "").matches(percentageRegex)) {
 						column_types[inh][j] = "percentages";
 					} else if (val.matches(postcodeRegex)) {
-						// conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr,
-						// geonames_dbpwd);
 						rs = GeonamesSQLQueries.getPostcodeLatLng(Integer.valueOf(val), conn);
 						if (rs != null) {
-							// log.info("WE HAVE A POSTCODE!!! with name " + rs.getString(2) + " for[" + val
-							// + "] , latitude is " + rs.getString(3) + " and longitude is " +
-							// rs.getString(4)
-							// + " in line " + i);
 							column_types[inh][j] = "postal_codes";
 						}
-						// rs.close();
-						// conn.close();
 					} else if (val.matches(nutsRegex)) {
-						// log.info("value is " + val);
 
 						double[] latlng = new ReadGISShapes(parameters).getNutsLatLng(val.toUpperCase());
 						if (latlng != null) {
-							// log.info("result is " + latlng[0]);
 							switch (val.length()) {
 							case 3:
 								column_types[inh][j] = "nuts1";
@@ -627,9 +539,6 @@ public class MainClass extends SetPropertiesPage {
 								column_types[inh][j] = "nuts3";
 								break;
 							}
-							// log.info("WE HAVE NUTS!!! with latitude is " + latlng[0] + " and longitude is
-							// "
-							// + latlng[1] + " in line " + i);
 						}
 
 					} else if (val.matches(shapeRegex)) {
@@ -642,41 +551,25 @@ public class MainClass extends SetPropertiesPage {
 						latitude_visited = false;
 					} else if (val.matches(latlngRegex)) {
 						column_types[inh][j] = "latlong";
-						// } else if (val.matches(cityRegex) &&
-						// !val.matches("^(other|city|district|state)$")) {
 					} else if (val.matches(descriptionRegex)) {
 						column_types[inh][j] = "descriptions";
 					} else if (val.matches(cityRegex)) {
 						outputinfo.append("\n");
 						log.info("\n");
-						// conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr,
-						// geonames_dbpwd);
-
-						// log.info("We are in line " + linex + " col " + j);
-
-						result = GeonamesSQLQueries.getCityLatLng(true, null, rs, val, conn, column_types, file_values,
-								country_code, i, j);
+						result = GeonamesSQLQueries.getCityLatLng(geonamesdebugmode, null, rs, val, conn, column_types,
+								file_values, country_code, i, j);
 						if (result != false) {
 							if (tmp_cities[j] == null) {
 								log.info("??????????????? we have city in column: " + j);
 								column_types[inh][j] = "cities";
 								tmp_cities[j] = val;
-//                 log.info("WE HAVE A CITY!!! with name " + rs.getString(2) + " for[" + val
-//                 + "] , latitude is " + rs.getString(3) + " and longitude is " + rs.getString(4)
-//                 + " in line " + i + " and column "+j);
+
 							} else if (!tmp_cities[j].contentEquals(val)) {
 								log.info("??? we have city in column: " + j);
-								// log.info("for line " + j + " tmp_cities[j] is " + tmp_cities[j] + " with val
-								// "
-								// + val);
+
 								column_types[inh][j] = "cities";
 								tmp_cities[j] = val;
-//                log.info("WE HAVE A CITY!!! with name " + rs.getString(2) + " for[" + val
-//                + "] , latitude is " + rs.getString(3) + " and longitude is " + rs.getString(4)
-//                + " in line " + i + " and column "+j);
 							}
-							// rs.close();
-							// conn.close();
 
 						}
 
@@ -711,8 +604,7 @@ public class MainClass extends SetPropertiesPage {
 							column_types[inh][j] = "titles";
 							tmp_possiblenames[j] = val;
 						} else if (!tmp_possiblenames[j].contentEquals(val)) {
-							// log.info("for line " + j + " tmp_possiblenames[j] is " + tmp_possiblenames[j]
-							// + " with val " + val);
+
 							column_types[inh][j] = "titles";
 							tmp_possiblenames[j] = val;
 						}
@@ -726,11 +618,6 @@ public class MainClass extends SetPropertiesPage {
 				// i.e. WE COULD HAVE 5 emails AND 5 telephone IN COLUMN 0
 				// ################################################################################################################
 
-//        for (int k = 1; k < nrowchecks; k++) {
-//          for (int l = 0; l < ncolchecks; l++) {
-//            // log.info("[" + k + "][" + l + "]:" + columnTypes[k][l] + "; ");
-//          }
-//        }
 				for (int m = 0; m < nchecks; m++) {
 					for (int n = 0; n < ncolchecks; n++) {
 						sum[m][n] = 0;
@@ -738,7 +625,6 @@ public class MainClass extends SetPropertiesPage {
 					}
 				}
 				for (int w = 0; w < inh + 1; w++) {
-					log.info("our condition to debug is w == i - 1, wher w=" + w + " and i =" + i);
 					int nmails = 0;
 					int nurls = 0;
 					int nphones = 0;
@@ -764,10 +650,6 @@ public class MainClass extends SetPropertiesPage {
 
 					for (int z = 0; z < ncolchecks; z++) {
 
-						// log.info("for fila " + w + " and columna " + z + " tenemos tipo " +
-						// column_types[w][z]);
-//						log.info("after are in column type with i:" + w + " and j:" + z + " and we added="
-//								+ column_types[w][z]);
 						if (column_types[w][z] != null) {
 							switch (column_types[w][z]) {
 							case "emails":
@@ -781,8 +663,6 @@ public class MainClass extends SetPropertiesPage {
 							case "phones":
 								nphones++;
 								sum[2][z] += 1;
-
-								log.info("WE ADDED A PHONE WITH SUM: " + sum[2][z]);
 								break;
 							case "cities":
 								ncities += 1;
@@ -882,12 +762,9 @@ public class MainClass extends SetPropertiesPage {
 					// ################################################################################################################
 
 					if (fieldtypesdebugmode && w == inh) {
-						// if (fieldtypesdebugmode && w==i-1) {
 						log.info("\nLine[" + i + "]: " + line);
 						outputinfo.append("\nLine[" + i + "]: " + line);
 
-						// textResult..setObject("epa..............");
-						// if (googleMapsAPI || geonamesdebugmode) {
 						log.info("In a same row: " + nmails + " emails, " + ndescriptions + " descriptions, " + nurls
 								+ " urls, " + nphones + " phones, " + ncities + " cities, " + npostal_codes
 								+ " postal_codes, " + nophours + " working_hours, " + ndates + " dates, " + nyears
@@ -904,7 +781,6 @@ public class MainClass extends SetPropertiesPage {
 								+ nshapes + " shapes, " + nlatitudes + " latitudes, " + nlongitudes + " longitudes, "
 								+ nlatlong + " latlong, " + nnuts1 + " nuts1, " + nnuts2 + " nuts2, " + nnuts3
 								+ " nuts3, " + ntitles + " titles\nTotal sum:\n");
-						// }
 
 						// #############################################################################################################################
 						// SAME ROW - PRINTS EACH MATCH [nchecks] DONE FOR EACH COLUMN [ncolchecks] IN
@@ -995,11 +871,7 @@ public class MainClass extends SetPropertiesPage {
 				inh++;// VERY IMPORTANT TO NOT move it from HERE and NOT ignore first row
 
 			} // if (i < nrowchecks)
-//      if (i == nrowchecks) {
-//    	    break;
-//      }
 			i++;
-
 		}
 
 		// ################################################################################################################
@@ -1174,18 +1046,7 @@ public class MainClass extends SetPropertiesPage {
 				log.info("\nFields detected from the Schema (by using the header tags):\n");
 				for (int n = 0; n < ncolchecks; n++) {
 
-					// log.info("FIELD MATCH!! WITH :"+dict_match[n]);
-
 					if (dict_match[n] != null) {
-						// if ((resul[n] == null && dict_match[n] != null) || dict_match[n] ==
-						// "latitudes" || dict_match[n] == "longitudes" || dict_match[n] == "latlong" ||
-						// dict_match[n] == "shapes") {
-						// we replace value giving more importance to the header
-
-						// (dict_match[n] == "titles" && resul[n] != "city") ||
-//      	  if (dict_match[n] == "titles" && ArrayUtils.contains(resul,"titles")) {
-//    		  resul[ArrayUtils.indexOf(resul,"titles")] = null;
-//    	  }
 
 						for (int k = 0; k < resul.length; k++) {
 							if (resul[k] == dict_match[n]) {
@@ -1198,7 +1059,6 @@ public class MainClass extends SetPropertiesPage {
 							outputinfo.append("\"" + dict_match[n] + "\" in col \"" + n + "\"\n");
 							log.info("\"" + dict_match[n] + "\" in col \"" + n + "\"\n");
 						}
-
 					}
 				}
 				if (dict_static[0] != null) {
@@ -1223,7 +1083,6 @@ public class MainClass extends SetPropertiesPage {
 
 		log.info("\nFile \"" + file_name + "\" successfully processed.\n");
 		outputinfo.append("\nFile \"" + file_name + "\" successfully processed.\n");
-
 	}
 
 	public static void setFieldTypes(LocationModel loc, String type, String value, int x, int y)
@@ -1248,13 +1107,11 @@ public class MainClass extends SetPropertiesPage {
 			break;
 		case "cities":
 			loc.setCity(value);
-
-			// TODO
 			if (!ArrayUtils.contains(resul, "latitudes") && !ArrayUtils.contains(resul, "longitudes")
 					&& !ArrayUtils.contains(resul, "latlong") && !ArrayUtils.contains(resul, "shapes")) {
 				// no need to print all the messages of the geocoding: reason of false
-				GeonamesSQLQueries.getCityLatLng(false, loc, rs, value, conn, column_types, file_values, country_code,
-						x, y);
+				GeonamesSQLQueries.getCityLatLng(geonamesdebugmode, loc, rs, value, conn, column_types, file_values,
+						country_code, x, y);
 			}
 			break;
 		case "postal_codes":
@@ -1264,7 +1121,8 @@ public class MainClass extends SetPropertiesPage {
 			// (hard processing time)
 			if (value.matches(postcodeRegex) && !ArrayUtils.contains(resul, "latitudes")
 					&& !ArrayUtils.contains(resul, "latlong") && !ArrayUtils.contains(resul, "shapes")) {
-				log.info("Querying postcode value..." + value);
+				if (fieldtypesdebugmode)
+					log.info("Querying postcode value..." + value);
 				rs = GeonamesSQLQueries.getPostcodeLatLng(Integer.valueOf(value), conn);
 				if (rs != null) {
 					GeonamesSQLQueries.setGeonameResult(loc, rs);
@@ -1299,18 +1157,10 @@ public class MainClass extends SetPropertiesPage {
 			setFormatLatLng(loc, value);
 			break;
 		case "latitudes":
-//			if (NumberUtils.isNumber(value.replace(",", "."))) {
-			loc.setLatitude(new Double(value.replace(",", ".")));
-//			} else {
-//				log.info("NOT NUMBERIC, latitude is " + value);
-//			}
+			loc.setLatitude(value.replace(",", "."));
 			break;
 		case "longitudes":
-//			if (NumberUtils..isNumber(value.replace(",", "."))) {
-			loc.setLongitude(new Double(value.replace(",", ".")));
-//			} else {
-//				log.info("NOT NUMBERIC, longitude is " + value);
-//			}
+			loc.setLongitude(value.replace(",", "."));
 			break;
 		case "latlong":
 			setFormatLatLng(loc, value);
@@ -1318,22 +1168,22 @@ public class MainClass extends SetPropertiesPage {
 		case "nuts1":
 			double[] latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new Double(latlng[0]));
-				loc.setLongitude(new Double(latlng[1]));
+				loc.setLatitude(latlng[0]);
+				loc.setLongitude(latlng[1]);
 			}
 			break;
 		case "nuts2":
 			latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new Double(latlng[0]));
-				loc.setLongitude(new Double(latlng[1]));
+				loc.setLatitude(latlng[0]);
+				loc.setLongitude(latlng[1]);
 			}
 			break;
 		case "nuts3":
 			latlng = new ReadGISShapes(parameters).getNutsLatLng(value);
 			if (latlng != null) {
-				loc.setLatitude(new Double(latlng[0]));
-				loc.setLongitude(new Double(latlng[1]));
+				loc.setLatitude(latlng[0]);
+				loc.setLongitude(latlng[1]);
 			}
 			break;
 		case "titles": // "#"is used to not create conflict with the iconmarker in the JS as it
@@ -1341,7 +1191,6 @@ public class MainClass extends SetPropertiesPage {
 			loc.setName(value.replaceAll("#", ""));
 			break;
 		case "descriptions":
-			log.info("WE FOUND A DESCRIPTION with value " + value + "!!! in fil " + x + " and col " + y);
 			loc.setDescription(value);
 			break;
 
@@ -1351,9 +1200,6 @@ public class MainClass extends SetPropertiesPage {
 	public static void generateLocationAndFile(File source, File dest, String user) throws IOException, ParseException,
 			CQLException, InterruptedException, InvalidParameterException, SQLException, URISyntaxException {
 
-		// BufferedReader br = new BufferedReader(new InputStreamReader(new
-		// FileInputStream(source), "iso-8859-1"));
-
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "ISO-8859-1"));
 
 		ArrayList<LocationModel> new_format = new ArrayList<LocationModel>();
@@ -1362,7 +1208,6 @@ public class MainClass extends SetPropertiesPage {
 		Matcher matcher = patternCsvName.matcher(file_name);
 		String csvname_match = null;
 		if (matcher.find()) {
-			// log.info("CSV Type: " + matcher.group());
 			csvname_match = matcher.group().split(".csv")[0];
 		}
 
@@ -1388,8 +1233,6 @@ public class MainClass extends SetPropertiesPage {
 				}
 
 				line = copy;
-				// System.out.println(line);
-
 			} else {
 				line = line.replaceAll(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", ",");
 			}
@@ -1409,7 +1252,6 @@ public class MainClass extends SetPropertiesPage {
 			loc.setUsername(user);
 			loc.setIconmarker(icon_marker.toString());
 			loc.setPrivate_mode(private_mode);
-			// log.info("after icon to add:" + loc.getIconmarker());
 
 			// j is the column position
 			int j = 0;
@@ -1443,25 +1285,19 @@ public class MainClass extends SetPropertiesPage {
 				// attributes search and graphs for any unrecognized field)
 				if (header[j] != null && !value[j].isEmpty()) {
 					if (loc.getOtherInfo() == null) {
-						loc.setOtherInfo("Filename: " + file_name + " ## Published by: " + loc.getUsername()
-								+ " ## Last update: " + loc.getDate_updated() + " ## " + header[j] + ": " + value[j]);
+						loc.setOtherInfo("Filename: " + file_name + " ## Published by: " + loc.getUsername() + " ## "
+								+ header[j] + ": " + value[j]);
 					} else {
 						loc.setOtherInfo(loc.getOtherInfo() + " ## " + header[j] + ": " + value[j]);
 					}
 				}
 
-//				log.info("VALUE BEFORE WAS: " + value[j]);
-
 				// We clean the value from any possible unwanted character
 				value[j] = value[j].replaceAll("\"", "").trim();
 
-//				log.info("VALUE AFTER IS: " + value[j]);
-
-				// log.info("index is "+j+ " with size "+resul.length);
 				if (resul[j] != null && !value[j].isEmpty() && i > 0) {
 					// log.info("going to check harcoded? "+resul[j]);
 					setFieldTypes(loc, resul[j], value[j], i, j);
-
 				}
 
 				j++;
@@ -1479,9 +1315,9 @@ public class MainClass extends SetPropertiesPage {
 		}
 		br.close();
 
-		if (dest.getAbsolutePath().contains(tmp_dir)) {
-			GenerateFile.CreateEnrichedCSV(source, dest, new_format);
-		}
+//		if (dest.getAbsolutePath().contains(tmp_dir)) {
+//			GenerateFile.CreateEnrichedCSV(source, dest, new_format);
+//		}
 
 		GenerateFile.CreateFormattedCSV(dest, new_format);
 
@@ -1516,87 +1352,6 @@ public class MainClass extends SetPropertiesPage {
 		if (clear)
 			outputinfo.setLength(0);
 
-		// ApplicationContext context = new
-		// ClassPathXmlApplicationContext("classpath*:**/applicationContext.xml");
-
-		// ApplicationContext context = new
-		// ClassPathXmlApplicationContext("applicationContext.xml");
-
-//    PropertiesModel p = new PropertiesModel();
-// 	p.setTestmode("false");
-// 	p.setTestfile("httpckan.data.ktn.gv.atstoragef20140630T133A123A02.832Zsteuergem12.csv");
-// 	
-// 	p.setRemoveExistingBData("true");
-// 	p.setExecuteSQLqueries("false");
-// 	
-// 	p.setGeonamesdebugmode("false");
-// 	p.setFieldtypesdebugmode("false");
-// 	
-// 	p.setCsvfiles_dir("/Users/david/Desktop/at_dump_v1/wwdagvat/");
-// 	p.setTmp_dir("/Users/david/Desktop/at_dump_v1/wwdagvat/tmp/");
-// 	p.setProcessed_dir("/Users/david/Desktop/at_dump_v1/wwdagvat/tmp/processed/");
-// 	p.setNewformat_dir("/Users/david/Desktop/at_dump_v1/wwdagvat/tmp/processed/new_format/");
-// 	p.setEnriched_dir("/Users/david/Desktop/at_dump_v1/wwdagvat/tmp/processed/enriched/");
-// 	p.setMissinggeoreference_dir("/Users/david/Desktop/at_dump_v1/wwdagvat/tmp/processed/discarded_files/");
-// 	p.setSqlinserts_file("/Users/david/Desktop/at_dump_v1/wwdagvat/tmp/processed/sql_inserts.sql");
-// 	
-// 	     	p.setNrowchecks("20");
-// 	     	p.setPvalue_nrowchecks("0.3");
-// 	     	p.setImageRegex(".*.(jpg|gif|png|bmp|ico)$");
-// 	     	p.setPhoneRegex("^\\\\+?[0-9. ()-]{10,25}$");
-// 	     	p.setCityRegex(".*[a-z]{3,30}.*");
-// 	     	p.setArchiveRegex(".*.(zip|7z|bzip(2)?|gzip|jar|t(ar|gz)|dmg)$");
-// 	     	p.setDocumentRegex(".*.(doc(x|m)?|pp(t|s|tx)|o(dp|tp)|pub|pdf|csv|xls(x|m)?|r(tf|pt)|info|txt|tex|x(ml|html|ps)|rdf(a|s)?|owl)$");
-// 	     	p.setOpeninghoursRegex("([a-z ]+ )?(mo(n(day)?)?|tu(e(s(day)?)?)?|we(d(nesday)?)?|th(u(r(s(day)\\u200C\\u200B?)?)?)?|fr(i(day)?)?\\u200C\\u200B|sa(t(urday)?)?|su(n\\u200C\\u200B(day)?)?)(-|:| ).*|([a-z ]+ )?(mo(n(tag)?)?|di(e(n(stag)?)?)?|mi(t(woch)?)?|do(n(er(s(tag)\\u200C\\u200B?)?)?)?|fr(i(tag)?)?\\u200C\\u200B|sa(m(stag)?)?|do(n(erstag)?)?)(-|:| ).*");
-// 	     	p.setDateRegex("([0-9]{2})?[0-9]{2}( |-|\\\\/|.)[0-3]?[0-9]( |-|\\\\/|.)([0-9]{2})?[0-9]{2}");
-// 	     	p.setYearRegex("^(?:18|20)\\\\d{2}$");
-// 	     	p.setCurrencyRegex("^(\\\\d+|\\\\d+[.,']\\\\d+)\\\\p{Sc}|\\\\p{Sc}(\\\\d+|\\\\d+[.,']\\\\d+)$");
-// 	     	p.setPercentageRegex("^(\\\\d+|\\\\d+[.,']\\\\d+)%|%(\\\\d+|\\\\d+[.,']\\\\d+)$");
-// 	     	p.setPostcodeRegex("^[0-9]{2}$|^[0-9]{4}$");
-// 	     	p.setNutsRegex("\\\\w{3,5}");
-// 	     	
-// 	     	p.setShapeRegex("point\\\\s*\\\\(([+-]?\\\\d+\\\\.?\\\\d+)\\\\s*,?\\\\s*([+-]?\\\\d+\\\\.?\\\\d+)\\\\)");
-// 	     	p.setLatitudeRegex("^-?([1-8]?[1-9]|[1-9]0)\\\\.{1}\\\\d{4,9}$");
-// 	     	p.setLongitudeRegex("^-?([1]?[1-7][1-9]|[1]?[1-8][0]|[1-9]?[0-9])\\\\.{1}\\\\d{4,9}$");
-// 	     	p.setLatlngRegex("([+-]?\\\\d+\\\\.?\\\\d+)\\\\s*,\\\\s*([+-]?\\\\d+\\\\.?\\\\d+)");
-// 	     	p.setPossiblenameRegex(".*[0-9]+.*");
-//
-// 	p.setCountrycode("AT");
-// 	p.setShapes_file("/NUTS_2013_SHP/data/NUTS_RG_01M_2013.shp");
-//
-// 	p.setGeonames_dbdriver("org.postgresql.Driver");
-// 	p.setGeonames_dburl("jdbc:postgresql://127.0.0.1:5432/geonames");
-// 	p.setGeonames_dbusr("postgres");
-// 	p.setGeonames_dbpwd("postgres");
-// 	
-// 	p.setWeb_dbdriver("web_dbdriver=org.postgresql.Driver");
-// 	p.setWeb_dburl("jdbc:postgresql://127.0.0.1:5432/spatialdatasearch");
-// 	p.setWeb_dbusr("postgres");
-// 	p.setWeb_dbpwd("postgres");
-//
-//p.setSt1postcode("select p.name,admin3name,code,p.latitude,p.longitude,g.population,g.elevation from postalcodes p inner join geoname g on p.admin3 = g.admin3 where code like ? order by code asc;");
-//p.setSt2postcode("select p.name,admin3name,code,p.latitude,p.longitude,g.population,g.elevation from postalcodes p inner join geoname g on p.admin3 = g.admin3 where code = ? order by code asc;");
-//p.setSt1city("select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname = ? order by population desc;");
-//p.setSt2city("select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname like ? or asciiname like ? order by population desc;");
-//p.setSt3city("select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname like ? or asciiname like ? order by population desc;");
-//
-//    
-//
-//
-//try {
-//    entityManagerFactory = Persistence.createEntityManagerFactory("spatialdatasearch");
-//    EntityManager entityManager = entityManagerFactory.createEntityManager();
-//    entityManager.getTransaction().begin();
-//    entityManager.persist(p);
-//    entityManager.getTransaction().commit();
-//    System.out.println("successfull");
-//    entityManager.close();
-//} catch (Exception e) {
-//    e.printStackTrace();
-//}
-
-//entityManager.createQuery("delete from routes").executeUpdate();
-
 		try {
 			Class.forName(geonames_dbdriver);
 		} catch (ClassNotFoundException e) {
@@ -1620,44 +1375,10 @@ public class MainClass extends SetPropertiesPage {
 			conn.close();
 		}
 
-		// if (!executeSQLqueries) {
-
-		log.info("Creating directories...");
-
-//    createDir(tmp_dir);
-//    createDir(processed_dir);
-//    createDir(newformat_dir);
-//    createDir(enriched_dir);
-//    createDir(missinggeoreference_dir);
-
-//		File folderToSearch = new File(csvfiles_dir);
-
-		log.info("----------------------" + "Test mode is........ " + googleMapsAPI);
-
-		log.info("geonames_dbdriver is........ " + geonames_dbdriver);
-
-		// log.info(" DIRECTORIO " + upload_folder);
-
-		// log.info("directory is........ "+upload_folder);
-
-		// ServletContext servletContext = WebApplication.get().getServletContext();
-
-		// log.info(">>FILE IS "+sqlFile.getAbsolutePath());
-
-		// PrintWriter out_sql_bestfiles_buffer = new PrintWriter(sql_bestfiles_buffer);
-		// PrintWriter out_sql_nutsfiles_buffer = new PrintWriter(sql_nutsfiles_buffer);
-		// PrintWriter out_sql_geofiles_buffer = new PrintWriter(sql_geofiles_buffer);
-
 		log.info("Processing files...");
 
 		nrowchecks += 1; // skip header
-
-//    log.info(">> TEST MODE: " + testmode);
-//    outputinfo.append(">> TEST MODE: " + testmode);
-
 		BufferedWriter bw_sql_inserts = null;
-
-		// if (googleMapsAPI) {
 
 		if (uploadedFile != null) {
 
@@ -1731,6 +1452,7 @@ public class MainClass extends SetPropertiesPage {
 							"\n\nYou are in Test mode, enable \"Upload results into database (production mode)\" to upload data.");
 				}
 				// End create sql file and we execute in case is required
+
 			}
 
 		} else {
@@ -1739,6 +1461,7 @@ public class MainClass extends SetPropertiesPage {
 			feedbackPanel.setVisible(true);
 		}
 		textResult.setObject(outputinfo.toString());
+
 		// we reload the outputinfo result
 		textResult.isPresent();
 

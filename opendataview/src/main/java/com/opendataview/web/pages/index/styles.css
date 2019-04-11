@@ -123,6 +123,7 @@ a:hover {
     padding: 0.9rem 1.2rem !important;
     color: #444444cf !important;
 	font-size: 13px;
+    -webkit-text-fill-color: #0c0000;
 }
 .btn-dark {
 	background: #444;
@@ -489,7 +490,11 @@ a:hover {
 	padding: 50px 0;
 	background: #fff;
 }
-
+    
+#aboutUs .txtHead {
+	background: #fff;
+	padding: 20px 10px;
+}
 #aboutUs .txtHead {
 	background: #fff;
 	padding: 20px 10px;

@@ -53,11 +53,6 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-test</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
 		<!-- Elastic Search via Lucene & Spring 
 		<dependency>
 		    <groupId>org.springframework.data</groupId>
@@ -196,9 +191,19 @@
 		</dependency>
 		<dependency>
 		    <groupId>org.hibernate</groupId>
+		    <artifactId>hibernate-search-elasticsearch</artifactId>
+		    <version>5.11.1.Final</version>
+		</dependency>
+		<dependency>
+		    <groupId>org.hibernate</groupId>
 		    <artifactId>hibernate-search-orm</artifactId>
 		    <version>5.11.1.Final</version>
 		</dependency>
+		<!--<dependency>
+      <groupId>org.hibernate.search</groupId>
+    <artifactId>hibernate-search-backend-elasticsearch</artifactId>
+    <version>6.0.0.Alpha4</version>
+</dependency>-->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-entitymanager</artifactId>

@@ -1,18 +1,21 @@
 package com.opendataview.web.model;
 
 import java.io.Serializable;
-import java.util.List;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
+import org.hibernate.annotations.Type;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Latitude;
@@ -20,14 +23,15 @@ import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Spatial;
 import org.hibernate.search.annotations.SpatialMode;
 import org.hibernate.search.annotations.Store;
-import org.hibernate.search.spatial.Coordinates;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Indexed;
 
 @Spatial(spatialMode = SpatialMode.HASH)
 @Indexed
 @Entity(name = "locations")
-@Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-@NamedQuery(name = "findAllLocations", query = "SELECT l FROM locations l")
+@Cacheable
+@Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "name", "latitude", "longitude" }))
 public class LocationModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -50,13 +54,39 @@ public class LocationModel implements Serializable {
 			String postcode, String private_mode, String schedule, String source, String street, String type,
 			String urlimage, String username, String website, String year) {
 		this.id = Long.valueOf(id);
-		this.address = address;
-		this.archive = archive;
 		this.name = name;
-		this.description = description;
-		this.private_mode = Boolean.valueOf(private_mode);
-		this.website = website;
 		this.csvName = csvname;
+		this.website = website;
+		this.phone = phone;
+		this.email = email;
+		this.description = description;
+		this.latitude = BigDecimal.valueOf(Double.parseDouble(latitude)).setScale(6, RoundingMode.DOWN);
+		this.longitude = BigDecimal.valueOf(Double.parseDouble(longitude)).setScale(6, RoundingMode.DOWN);
+		this.iconmarker = iconmarker;
+		this.date = date;
+		this.date_published = date_published;
+		this.date_updated = date_updated;
+		this.private_mode = Boolean.valueOf(private_mode);
+		this.username = username;
+		this.source = source;
+		this.schedule = schedule;
+		this.otherInfo = otherinfo;
+		this.address = address;
+		this.street = street;
+		this.number = number;
+		this.postcode = postcode;
+		this.city = city;
+		this.country = country;
+		this.population = population;
+		this.elevation = elevation;
+		this.year = year;
+		this.archive = archive;
+		this.currency = currency;
+		this.percentage = percentage;
+		this.document = document;
+		this.archive = archive;
+		this.urlImage = urlimage;
+		this.type = type;
 	}
 
 	@Field(store = Store.YES, index = Index.YES)
@@ -77,19 +107,17 @@ public class LocationModel implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	protected String population;
 
-//	@Field(store = Store.YES, index = Index.YES)
-//	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
-//	private Point point;
-
 	@Field(store = Store.YES, index = Index.YES)
-	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+	@Column(precision = 10, scale = 6)
+	@Type(type = "big_decimal")
 	@Latitude
-	protected Double latitude;
+	protected BigDecimal latitude;
 
 	@Field(store = Store.YES, index = Index.YES)
-	@Column(columnDefinition = "FLOAT", precision = 10, scale = 6)
+	@Column(precision = 10, scale = 6)
+	@Type(type = "big_decimal")
 	@Longitude
-	protected Double longitude;
+	protected BigDecimal longitude;
 	@Column(name = "website", columnDefinition = "TEXT")
 	private String website;
 	@Column(name = "description", columnDefinition = "TEXT")
@@ -109,6 +137,8 @@ public class LocationModel implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	protected String urlImage;
 	@Column(columnDefinition = "TEXT")
+
+	@Field(store = Store.YES, index = Index.YES)
 	protected String csvName;
 	@Column(columnDefinition = "TEXT")
 	protected String source;
@@ -144,20 +174,20 @@ public class LocationModel implements Serializable {
 		return id;
 	}
 
-	@Spatial(spatialMode = SpatialMode.HASH)
-	public Coordinates getLocation() {
-		return new Coordinates() {
-			@Override
-			public Double getLatitude() {
-				return latitude;
-			}
-
-			@Override
-			public Double getLongitude() {
-				return longitude;
-			}
-		};
-	}
+//	@Spatial(spatialMode = SpatialMode.HASH)
+//	public Coordinates getLocation() {
+//		return new Coordinates() {
+//			@Override
+//			public Double getLatitude() {
+//				return latitude;
+//			}
+//
+//			@Override
+//			public Double getLongitude() {
+//				return longitude;
+//			}
+//		};
+//	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -227,20 +257,36 @@ public class LocationModel implements Serializable {
 		this.population = population;
 	}
 
-	public Double getLatitude() {
-		return latitude;
+	public BigDecimal getLatitude() {
+		return latitude.setScale(6, RoundingMode.UNNECESSARY);
 	}
 
-	public void setLatitude(Double latitude) {
-		this.latitude = latitude;
+	public BigDecimal getLongitude() {
+		return longitude.setScale(6, RoundingMode.UNNECESSARY);
 	}
 
-	public Double getLongitude() {
-		return longitude;
+	public void setLatitude(BigDecimal latitude) {
+		this.latitude = latitude.setScale(6, RoundingMode.UNNECESSARY);
 	}
 
-	public void setLongitude(Double longitude) {
-		this.longitude = longitude;
+	public void setLongitude(BigDecimal longitude) {
+		this.longitude = longitude.setScale(6, RoundingMode.UNNECESSARY);
+	}
+
+	public void setLatitude(String latitude) {
+		this.latitude = BigDecimal.valueOf(Double.parseDouble(latitude)).setScale(6, RoundingMode.DOWN);
+	}
+
+	public void setLongitude(String longitude) {
+		this.longitude = BigDecimal.valueOf(Double.parseDouble(longitude)).setScale(6, RoundingMode.DOWN);
+	}
+
+	public void setLatitude(double latitude) {
+		this.latitude = BigDecimal.valueOf(latitude).setScale(6, RoundingMode.DOWN);
+	}
+
+	public void setLongitude(double longitude) {
+		this.longitude = BigDecimal.valueOf(longitude).setScale(6, RoundingMode.DOWN);
 	}
 
 	public String getWebsite() {
@@ -422,18 +468,4 @@ public class LocationModel implements Serializable {
 	public void setPrivate_mode(boolean private_mode) {
 		this.private_mode = private_mode;
 	}
-
-	public List<LocationModel> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-//	public Point getPoint() {
-//		return point;
-//	}
-//
-//	public void setPoint(Point point) {
-//		this.point = point;
-//	}
-
 }

@@ -8,8 +8,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -36,7 +34,6 @@ import org.apache.wicket.markup.html.form.upload.FileUpload;
 import org.apache.wicket.markup.html.link.DownloadLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
-import org.apache.wicket.markup.html.list.PropertyListView;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -120,54 +117,6 @@ public class SetPropertiesPage extends BasePage {
 
 	private Integer col = 0;
 
-	// final TextField<String> testmode = new TextField<String>("testmode",
-	// Model.of(""));
-//  final TextField<String> testfile = new TextField<String>("username", Model.of(""));
-//  final TextField<String> executeSQLqueries = new TextField<String>("username", Model.of(""));
-//  final TextField<String> removeExistingBData = new TextField<String>("username", Model.of(""));
-//  final TextField<String> geonamesdebugmode = new TextField<String>("username", Model.of(""));
-//  final TextField<String> fieldtypesdebugmode = new TextField<String>("username", Model.of(""));
-//  final TextField<String> csvfiles_dir = new TextField<String>("username", Model.of(""));
-//  final TextField<String> tmp_dir = new TextField<String>("username", Model.of(""));
-//  final TextField<String> processed_dir = new TextField<String>("username", Model.of(""));
-//  final TextField<String> missinggeoreference_dir = new TextField<String>("username", Model.of(""));
-//  final TextField<String> sqlinserts_file = new TextField<String>("username", Model.of(""));
-//  final TextField<String> newformat_dir = new TextField<String>("username", Model.of(""));
-//  final TextField<String> enriched_dir = new TextField<String>("username", Model.of(""));
-//  final TextField<String> nrowchecks = new TextField<String>("username", Model.of(""));
-//  final TextField<String> pvalue_nrowchecks = new TextField<String>("username", Model.of(""));
-//  final TextField<String> imageRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> phoneRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> cityRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> archiveRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> documentRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> openinghoursRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> dateRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> yearRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> currencyRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> percentageRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> nutsRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> shapeRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> latitudeRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> longitudeRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> latlngRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> possiblenameRegex = new TextField<String>("username", Model.of(""));
-//  final TextField<String> countrycode = new TextField<String>("username", Model.of(""));
-//  final TextField<String> shapes_file = new TextField<String>("username", Model.of(""));
-//  final TextField<String> geonames_dbdriver = new TextField<String>("username", Model.of(""));
-//  final TextField<String> geonames_dburl = new TextField<String>("username", Model.of(""));
-//  final TextField<String> geonames_dbusr = new TextField<String>("username", Model.of(""));
-//  final TextField<String> geonames_dbpwd = new TextField<String>("username", Model.of(""));
-//  final TextField<String> web_dbdriver = new TextField<String>("username", Model.of(""));
-//  final TextField<String> web_dburl = new TextField<String>("username", Model.of(""));
-//  final TextField<String> web_dbusr = new TextField<String>("username", Model.of(""));
-//  final TextField<String> web_dbpwd = new TextField<String>("username", Model.of(""));
-//  final TextField<String> st1postcode = new TextField<String>("username", Model.of(""));
-//  final TextField<String> st2postcode = new TextField<String>("username", Model.of(""));
-//  final TextField<String> st1city = new TextField<String>("username", Model.of(""));
-//  final TextField<String> st2city = new TextField<String>("username", Model.of(""));
-//  final TextField<String> st3city = new TextField<String>("username", Model.of(""));
-
 	public void prepareComboBoxes() {
 		sep.add(",");
 		sep.add(";");
@@ -207,8 +156,6 @@ public class SetPropertiesPage extends BasePage {
 			throw new PageExpiredException("No user available. Page seems to be expired.");
 		} else {
 			user = session.getAttribute("user_name").toString();
-
-			log.info("USER SESSION IS " + user);
 		}
 
 		if (session.getAttribute("user_name") != null) {
@@ -225,8 +172,6 @@ public class SetPropertiesPage extends BasePage {
 					names.add(origList.get(i).getCsvName());
 				}
 			}
-
-			// new MainClass(null);
 
 			ServletContext servletContext = WebApplication.get().getServletContext();
 
@@ -265,72 +210,10 @@ public class SetPropertiesPage extends BasePage {
 				}
 			};
 			formTypes.add(saveType);
-			// saveType.setVisible(false);
-
-			/*
-			 * 
-			 * final Button saveCSV = new Button("saveCSV") { private static final long
-			 * serialVersionUID = 1L;
-			 * 
-			 * @Override public void onSubmit() { if (uploadedFile1 != null) {
-			 * 
-			 * String field = ""; String line = null; String datasetFile = upload_folder +
-			 * uploadedFile1.getClientFileName(); BufferedReader csvFile = null; try {
-			 * csvFile = new BufferedReader(new InputStreamReader(new
-			 * FileInputStream(datasetFile), StandardCharsets.ISO_8859_1));
-			 * csvFile.readLine();
-			 * 
-			 * while ((line = csvFile.readLine()) != null) { log.info("old format " + line);
-			 * 
-			 * } csvFile.close();
-			 * 
-			 * } catch (FileNotFoundException e) {
-			 * 
-			 * e.printStackTrace();
-			 * 
-			 * } catch (IOException e) {
-			 * 
-			 * e.printStackTrace(); } }
-			 * 
-			 * if (!list.isEmpty()) {
-			 * 
-			 * locationServiceDAO.storeLocationModel(list); list.clear(); list =
-			 * locationServiceDAO.readLocationModel(); info("Thanks! Your CSV file \"" +
-			 * uploadedFile1.getClientFileName() + "\" was correctly uploaded.");
-			 * 
-			 * formTypes.setVisible(false); } } }; saveCSV.setVisible(false);
-			 * formTypes.add(saveCSV);
-			 */
-
-			List<?> sampleRows = Arrays.asList();
-			@SuppressWarnings("rawtypes")
-			final PropertyListView rowsCsv = new PropertyListView("listview", sampleRows) {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				protected void populateItem(ListItem item) {
-					item.add(new Label("rowNum", item.getIndex()));
-					item.add(new Label("data", item.getModel()));
-				}
-			};
-			rowsCsv.setVisible(false);
-			wmc.add(rowsCsv);
-
-//    final Label exampleRowsLabel =
-//        new Label("exampleRowsLabel", "First 3 rows of the CSV file: ");
-//    exampleRowsLabel.setVisible(false);
-//    wmc.add(exampleRowsLabel);
 
 			ArrayList<String> namesRemoveSelect = new ArrayList<String>();
 			final Form<?> form = new Form<Void>("propertiesForm");
 			wmc.add(form);
-
-//    form.setMultiPart(true); // need for uploads
-//    form.setMaxSize(Bytes.megabytes(10)); // max upload size 10mb
-//    form.add(fileUpload1 = new FileUploadField("fileUpload1"));
-//    form.add(fileUpload2 = new FileUploadField("fileUpload2"));
-//    form.add(fileUpload3 = new FileUploadField("fileUpload3"));
 
 			Label admin_user_visibility = new Label("admin_user_visibility");
 
@@ -343,8 +226,6 @@ public class SetPropertiesPage extends BasePage {
 
 					item.add(new TextField<String>("mapsAPI",
 							new PropertyModel<String>(item.getModelObject(), "mapsAPI")));
-//            item.add(new TextField<String>("testfile",new PropertyModel<String>(item.getModelObject(),
-//                    "testfile")));
 					item.add(new DropDownChoice<Boolean>("private_mode",
 							new PropertyModel<Boolean>(item.getModelObject(), "private_mode"),
 							Arrays.asList(true, false)));
@@ -425,16 +306,6 @@ public class SetPropertiesPage extends BasePage {
 							new PropertyModel<String>(item.getModelObject(), "descriptionRegex")));
 					item.add(new TextField<String>("iconmarker",
 							new PropertyModel<String>(item.getModelObject(), "iconmarker")));
-//					item.add(new DropDownChoice<String>("iconmarker",
-//							new PropertyModel<String>(item.getModelObject(), "iconmarker"),
-//							Arrays.asList("01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13",
-//									"14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27",
-//									"28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41",
-//									"42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55",
-//									"56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69",
-//									"70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "80", "81", "82", "83",
-//									"84", "85", "86", "87", "88", "89", "90", "91", "92", "93", "94", "95", "96", "97",
-//									"98", "99", "100")));
 					item.add(new DropDownChoice<String>("countrycode",
 							new PropertyModel<String>(item.getModelObject(), "countrycode"),
 							Arrays.asList("AF", "AX", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW",
@@ -455,10 +326,6 @@ public class SetPropertiesPage extends BasePage {
 									"LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG",
 									"TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UM",
 									"UY", "UZ", "VU", "VE", "VN", "VG", "VI", "WF", "EH", "YE", "ZM", "ZW")));
-
-//    item.add(new TextField<String>("shapes_file",new PropertyModel<String>(item.getModelObject(),
-//                    "shapes_file")));
-
 					item.add(new TextField<String>("geonames_dbdriver",
 							new PropertyModel<String>(item.getModelObject(), "geonames_dbdriver")));
 					item.add(new TextField<String>("geonames_dburl",
@@ -478,15 +345,8 @@ public class SetPropertiesPage extends BasePage {
 							new PropertyModel<String>(item.getModelObject(), "web_dbpwd")));
 					item.add(new TextField<String>("st1postcode",
 							new PropertyModel<String>(item.getModelObject(), "st1postcode")));
-//    item.add(new TextField<String>("st2postcode",new PropertyModel<String>(item.getModelObject(),
-//                    "st2postcode")));
 					item.add(new TextField<String>("st1city",
 							new PropertyModel<String>(item.getModelObject(), "st1city")));
-//    item.add(new TextField<String>("st2city",new PropertyModel<String>(item.getModelObject(),
-//                    "st2city")));
-//    item.add(new TextField<String>("st3city",new PropertyModel<String>(item.getModelObject(),
-//            "st3city")));
-
 				}
 			};
 			form.add(editPropList);
@@ -495,7 +355,6 @@ public class SetPropertiesPage extends BasePage {
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy'_'HH:mm");
 			File downloadLog = new File(Files.createTempDir(), "log_opendataview_"
 					+ file_name.toLowerCase().replaceAll(".csv", "") + "_" + sdf.format(now) + ".log");
-			// File pdfFile = new File(Files.createTempDir(), "logFile.txt");
 
 			form.add(new DownloadLink("outputDownload", downloadLog));
 
@@ -581,7 +440,6 @@ public class SetPropertiesPage extends BasePage {
 					PageParameters params = new PageParameters();
 					params.add("uploads", true);
 					setResponsePage(getPage().getClass(), params);
-					// setResponsePage(getPage().getClass(), getPage().getPageParameters());
 				}
 			};
 			form.add(removeSelectedFiles);
@@ -607,345 +465,37 @@ public class SetPropertiesPage extends BasePage {
 				deleteAllUploads.setVisible(true);
 			}
 
-			final Button retrieveCKAN = new Button("retrieveCKAN") {
-
-				private static final long serialVersionUID = 1L;
-
-				@Override
-				public void onSubmit() {
-					super.onSubmit();
-					ClassLoader classLoader = getClass().getClassLoader();
-					// File file = new File(classLoader.getResource("api_exec.sh").getFile());
-					String[] cmd = new String[] { "/bin/sh", classLoader.getResource("api_exec.sh").getFile() };
-					try {
-						Process pr = Runtime.getRuntime().exec(cmd);
-					} catch (IOException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-				}
-			};
-			form.add(retrieveCKAN);
+//			final Button retrieveCKAN = new Button("retrieveCKAN") {
+//
+//				private static final long serialVersionUID = 1L;
+//
+//				@Override
+//				public void onSubmit() {
+//					super.onSubmit();
+//					ClassLoader classLoader = getClass().getClassLoader();
+//					String[] cmd = new String[] { "/bin/sh", classLoader.getResource("api_exec.sh").getFile() };
+//					try {
+//						Process pr = Runtime.getRuntime().exec(cmd);
+//					} catch (IOException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			};
+//			form.add(retrieveCKAN);
 			resultsBox = new TextArea<String>("resultsBox", textResult);
 			resultsBox.setOutputMarkupPlaceholderTag(true);
 			form.add(resultsBox);
-//       final Button runCKAN = new Button("runCKAN") {
-//    	   
-//
-//           private static final long serialVersionUID = 1L;
-//
-//           @Override
-//           public void onSubmit() {
-//             try {
-//          	   
-//          	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
-//          		
-//          			MainClass.initialize();
-//          			MainClass.start(upload_folder, newFile, feedbackPanel, textResult, lastfile);
-//  			} else {
-//  				info("Error. No properties defined in database table.");
-//  				feedbackPanel.setVisible(true);
-//  			}
-//  		} catch (CQLException | ClassNotFoundException | IOException | ParseException | InterruptedException
-//  				| InvalidParameterException | SQLException | ExecutionException | NumberParseException e) {
-//  			// TODO Auto-generated catch block
-//  			e.printStackTrace();
-//  		} catch (Exception e) {
-//  			// TODO Auto-generated catch block
-//  			e.printStackTrace();
-//  		}
-//           }
-// 
-//       };
-//       form.add(runCKAN);
 
 			if (session.getAttribute("user_name").toString().contentEquals("admin")) {
-				retrieveCKAN.setVisible(true);
-				// runCKAN.setVisible(true);
+				// retrieveCKAN.setVisible(true);
 				admin_user_visibility.setVisible(true);
 			} else {
-				retrieveCKAN.setVisible(false);
-				// runCKAN.setVisible(false);
+				// retrieveCKAN.setVisible(false);
 				admin_user_visibility.setVisible(false);
 			}
 
 			sqlFile = new File(upload_folder + "/processed/sql/" + file_name);
-
 			sqlFile.getParentFile().mkdirs();
-			// sqlFile.createNewFile();
-
-//     final Button executeSearch = new Button("executeSearch") {
-//
-//         private static final long serialVersionUID = 1L;
-//
-//         @Override
-//         public void onSubmit() {
-//           try {
-//        	   
-//        	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
-//        			 
-//        			  MainClass.initialize();
-//        			  MainClass.start(upload_folder, newFile, feedbackPanel, textResult);
-//			} else {
-//				info("Error. No properties defined in database table.");
-//				feedbackPanel.setVisible(true);
-//			}
-//		} catch (CQLException | ClassNotFoundException | IOException | ParseException | InterruptedException
-//				| InvalidParameterException | SQLException | ExecutionException | NumberParseException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (Exception e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//         }
-//       };
-//       form.add(executeSearch);
-//      // executeSearch.setVisible(true);
-//    
-//
-//    final Label selFile1 = new Label("selFile1", "Select Zip file (with all csv files inside): ");
-//    form.add(selFile1);
-//
-//
-//
-//    
-//    
-//
-//    
-//    Button uploadFile1 = new Button("uploadFile1") {
-//
-//      private static final long serialVersionUID = 1L;
-//
-//      @Override
-//      public void onSubmit() {
-//        
-//        log.info("DIRECTORIO1 " + upload_folder);
-//        
-//
-//
-//        uploadedFile1 = fileUpload1.getFileUpload();
-//        
-//        
-//        if (uploadedFile1 != null) {
-//
-//
-//        	File folder = new File(upload_folder + "/compressed_files/");
-//        	if(!folder.exists()){
-//        		folder.mkdir();
-//        	}
-//        	
-//			newFile1 = new File(folder + uploadedFile1.getClientFileName());
-//
-//			
-//			
-//			//newFileTmp = new File(upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName());
-//
-//          //newFile1.getParentFile().mkdirs();
-//          //destiantion..getParentFile().mkdirs();
-//
-//
-//          log.info(">> File is (test mode): " + uploadedFile1.getClientFileName());
-//          
-//
-////          if (newFile1.exists()) {
-////            newFile1.delete();
-////          }
-//
-//          try {
-////            newFile1.createNewFile();
-//            
-//            log.info("were here ");
-//           // String zipFile = upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName();
-//            
-//            //ZipFile zipFile = null;
-//
-//           // String outputFolder = upload_folder + "/compressed_files/" + uploadedFile1.getClientFileName().substring(0, uploadedFile1.getClientFileName().length() - 4);
-//            //zipFile = fileUpload1.getFileUpload();
-//			//newFile1.extractAll(destination);
-//
-//            
-//            
-//            uploadedFile1.writeTo(new File(folder + "/" + uploadedFile1.getClientFileName()));
-//            
-//            
-//            byte[] buffer = new byte[1024];
-//            
-//            
-//          //get the zip file content
-//        	ZipInputStream zis = 
-//        		new ZipInputStream(new FileInputStream(new File(folder + "/" + uploadedFile1.getClientFileName())));
-//        	//get the zipped file list entry
-//        	ZipEntry ze = zis.getNextEntry();
-//        		
-//        	while(ze!=null){
-//        			
-//        	   String fileName = ze.getName();
-//               File newFile = new File(folder + File.separator + fileName);
-//                    
-//               System.out.println("file unzip : "+ newFile.getAbsoluteFile());
-//                    
-//                //create all non exists folders
-//                //else you will hit FileNotFoundException for compressed folder
-//                new File(newFile.getParent()).mkdirs();
-//                  
-//                FileOutputStream fos = new FileOutputStream(newFile);             
-//
-//                int len;
-//                while ((len = zis.read(buffer)) > 0) {
-//           		fos.write(buffer, 0, len);
-//                }
-//            		
-//                fos.close();   
-//                ze = zis.getNextEntry();
-//        	}
-//        	
-//            zis.closeEntry();
-//        	zis.close();
-//            log.info("files have been extracted ");
-//            
-//            
-//            
-//            
-//            
-//            
-//            
-//            //uploadedFile1.writeTo(newFile1);
-//            info("Saved file: \"" + folder + "/" + uploadedFile1.getClientFileName() + "\"");
-//            //feedbackPanel.add(AttributeModifier.replace("error", ""));
-//            feedbackPanel.add(AttributeModifier.append("class", "success"));
-//            feedbackPanel.setVisible(true);
-//            
-//     	   if(propertiesServiceDAO.readPropertiesModel(session).size() != 0) {
-//     		   
-//    			
-//    			  MainClass.initialize();
-//
-//     		    File list[] = folder.listFiles();
-//     		   long fileSize = folder.length();
-//     		  System.out.println("Directory size in MB is :" + (double)fileSize/(1024*1024));
-//     		    for(int i=0; i<list.length; i++){
-//     		        //String substring = list[i].getName().substring(0, list[i].getName().indexOf("."));
-//     		    	log.info("file type:"+list[i].getName().substring(list[i].getName().length() - 4));
-//     		        if(list[i].isFile() && list[i].getName().substring(list[i].getName().length() - 4).contentEquals(".csv")){
-//     		                
-//     		        	 
-//     		             log.info("file to execute is: " + list[i].getName());
-//     		            log.info("file directory: " + list[i].getAbsolutePath());
-//
-//    
-//     		           MainClass.start(upload_folder + "/compressed_files/",list[i].getAbsoluteFile(), feedbackPanel, textResult);
-//     		                
-//
-//     		         }
-//     		    }
-//     		   
-//     		   
-//
-//		
-//		
-//		} else {
-//			info("Error. No properties defined in database table.");
-//			feedbackPanel.setVisible(true);
-//		}
-//     	   
-//     	   
-//     	   
-//          } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//          }
-//
-//
-////          List<String> sampleRows = showSampleCSV(uploadedFile1);
-////          if (sampleRows != null) {
-////            exampleRowsLabel.setVisible(true);
-////            rowsCsv.setList(sampleRows);
-////            rowsCsv.setVisible(true);
-////            fileUpload1.setVisible(true);
-////            selFile1.setVisible(true);
-////            //Component setVisible = this.setVisible(false);
-////          }
-//
-//
-//        } else {
-//        	info("You must upload a file with ZIP format.");
-//        	feedbackPanel.setVisible(true);
-//        }
-//      }
-//    };
-//
-//    form.add(uploadFile1);
-//    
-//    final Label selFile2 = new Label("selFile2", "Select CSV file to test: ");
-//    form.add(selFile2);
-//
-//    Button uploadFile2 = new Button("uploadFile2") {
-//
-//      private static final long serialVersionUID = 1L;
-//
-//      @Override
-//      public void onSubmit() {
-//
-//          log.info("DIRECTORIO2 " + upload_folder);
-////          new BufferedReader(new InputStreamReader(new FileInputStream(datasetFile),
-////                  StandardCharsets.ISO_8859_1));
-//
-//        uploadedFile2 = fileUpload2.getFileUpload();
-//       
-//
-//        if (uploadedFile2 != null) {
-//        	
-//        	File folder = new File(upload_folder);
-//        	if(!folder.exists()){
-//        		folder.mkdir();
-//        	}
-//        	
-//        	
-//          // write to a new file
-//          newFile = new File(folder +"/"+ uploadedFile2.getClientFileName());
-//          //newFile2.getParentFile().mkdirs();
-//          
-//          log.info(">> File nam222 (test mode): " +  uploadedFile2.getClientFileName());
-//
-//          
-//          if (newFile.exists()) {
-//            newFile.delete();
-//          }
-//          try {
-//            newFile.createNewFile();
-//            uploadedFile2.writeTo(newFile);
-//            log.info("Saved file: \"" + uploadedFile2.getClientFileName() + "\"");
-//            log.info("Saved newFile2: \"" + newFile.getAbsolutePath() + "\"");
-//          } catch (IOException e) {
-//            e.printStackTrace();
-//          } catch (Exception e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//          }
-//          
-//          List<String> sampleRows = showSampleCSV(uploadedFile2);
-//          if (sampleRows != null) {
-//            exampleRowsLabel.setVisible(true);
-//            feedbackPanel.setVisible(false);
-//            rowsCsv.setList(sampleRows);
-//            rowsCsv.setVisible(true);
-//            fileUpload2.setVisible(true);
-//            selFile2.setVisible(true);
-//            //Component setVisible = this.setVisible(false);
-//          }
-//
-//        } else {
-//        	info("You must upload a file with CSV format.");
-//        	feedbackPanel.setVisible(true);
-//        }
-//      }
-//    };
-//    form.add(uploadFile2);
-
-//			textResult.setObject("");
-//			//we reload the outputinfo result
-//			textResult.isPresent();
 
 			final IModel<List<FileUpload>> model = new ListModel<FileUpload>();
 
@@ -956,16 +506,6 @@ public class SetPropertiesPage extends BasePage {
 				@Override
 				protected void onSubmit(AjaxRequestTarget target) {
 					super.onSubmit(target);
-
-					// log.info("Uploaded0: " );
-					// info("Uploaded1: " );
-//           success("Files successfully processed: " );
-//           feedbackPanel.add(AttributeModifier.append("class", "success"));
-//            feedbackPanel.setVisible(true);
-//            
-//            target.add(feedbackPanel);
-
-					// target.prependJavaScript("$('#logDetails').val('');");
 
 					boolean clear = false;
 					List<FileUpload> fileUploads = model.getObject();
@@ -982,11 +522,11 @@ public class SetPropertiesPage extends BasePage {
 							} catch (IOException e) {
 								e.printStackTrace();
 							}
-							log.info("file type:" + upload.getContentType());
-							log.info("file size:" + upload.getSize());
-
-							log.info("file to execute is: " + upload.getClientFileName());
-							log.info("file directory: " + upload.toString());
+//							log.info("file type:" + upload.getContentType());
+//							log.info("file size:" + upload.getSize());
+//
+//							log.info("file to execute is: " + upload.getClientFileName());
+//							log.info("file directory: " + upload.toString());
 
 							if (upload.getContentType().contentEquals("text/csv")) {
 
@@ -1002,8 +542,6 @@ public class SetPropertiesPage extends BasePage {
 								try {
 									upload.writeTo(newFile);
 
-									// log.info(">>>> FILE UPLOADS "+fileUploads.size()+ "count file "+countfile);
-
 									// clear only if its first file
 									if (countfile == 1) {
 										clear = true;
@@ -1018,6 +556,7 @@ public class SetPropertiesPage extends BasePage {
 											"Some error occurred, please send us an email with the error message and test file to: david@dpastrana.com.\n\n Thanks for your understanding!\n\nTimeStamp: "
 													+ DateTime.now() + "\nErrorDetails:\n");
 									ex.printStackTrace(new PrintWriter(errors));
+
 									// Opens the email desktop with the email already prepared
 //									try {
 //										String uriStr = String.format("mailto:%s?subject=%s&body=%s",
@@ -1034,10 +573,8 @@ public class SetPropertiesPage extends BasePage {
 									error(errors.toString());
 									log.error("\n\nError: " + errors.toString());
 									break;
-									// ex.printStackTrace();
 								}
 								if (countfile == 1) {
-									// success("Processed files:");
 									message.append("Processed files:");
 								}
 								message.append("\nFile " + countfile + ": " + upload.getClientFileName());
@@ -1075,9 +612,7 @@ public class SetPropertiesPage extends BasePage {
 
 						downloadLogDetails.setVisible(true);
 						feedbackPanel.setVisible(true);
-//						feedbackPanel.add(new AttributeModifier("class",
-//								String.valueOf(this.getMarkupAttributes().get("class")).replaceFirst("error", "")));
-//						feedbackPanel.add(AttributeModifier.append("class", "success"));
+
 						wmc.modelChanged();
 						resultsBox.modelChanged();
 						listRemoveLocations.modelChanged();
@@ -1093,8 +628,6 @@ public class SetPropertiesPage extends BasePage {
 						params.add("logs", true);
 						setResponsePage(getPage().getClass(), params);
 
-						// setResponsePage(getPage().getClass(), getPage().getPageParameters());
-
 					} else {
 						info("You must upload a file with CSV format.");
 						feedbackPanel.setVisible(true);
@@ -1104,133 +637,23 @@ public class SetPropertiesPage extends BasePage {
 			};
 			bootstrapFileInput.getConfig().allowedFileExtensions(Arrays.asList("csv", "sql")).showUpload(true)
 					.showRemove(true).showRemove(true);
-			// .maxFileCount(100);
-
-//  .showUpload(true)
-
 			bootstrapFileInput.setRenderBodyOnly(true);
 			bootstrapFileInput.setOutputMarkupId(true);
-
-//			bootstrapFileInput.add(new AttributeModifier("span", String.valueOf(this.getMarkupAttributes().get("span"))
-//					.replaceFirst("Upload", "Run Heuristic Analysis")));
-
 			form.add(bootstrapFileInput);
 
-//  final Label label = new Label("dropzonelabel","This is a label changed by dropzone");
-//  label.setOutputMarkupId(true);
-//  wmc.add(label);
-//
-//  DropZoneFileUpload dropZoneFileUpload = new DropZoneFileUpload("dropzone") {
-//      private static final long serialVersionUID = 1L;
-//
-//	@Override
-//	protected void onUpload(AjaxRequestTarget target, Map<String, List<FileItem>> fileMap) {
-//        // Handle files
-//        System.out.println("Successfully Uploaded: " + fileMap);
-//        label.setDefaultModelObject("This is a label changed by dropzone - file uploaded");
-//        target.add(label);
-//
-//	}
-//  };
-//  dropZoneFileUpload.getConfig()
-//      .withMaxFileSize(1)
-//      .withAcceptedFiles(".csv,.zip")
-//      .withThumbnailHeight(80)
-//      .withThumbnailWidth(80)
-//      .withPreviewsContainer(".dropzone-previews")
-//      .withParallelUploads(2);
-//  wmc.add(dropZoneFileUpload);
-//  
-
-//    final Label selFile3 = new Label("selFile3", "Select SQL file: ");
-//    form.add(selFile3);
-//
-//    Button uploadFile3 = new Button("uploadFile3") {
-//
-//      private static final long serialVersionUID = 1L;
-//
-//      @Override
-//      public void onSubmit() {
-//
-//        log.info("DIRECTORIO3 " + upload_folder);
-//
-//			  try {
-//				MainClass.initialize();
-//			} catch (IOException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
-//
-//		  
-//		  
-//
-//        uploadedFile3 = fileUpload3.getFileUpload();
-//        if (uploadedFile3 != null) {
-//        	
-//        	
-//        	//File folder = new File(upload_folder + "/"+ sqlinserts_file +"/");
-//        	File folder = new File(upload_folder + "/sql/");
-//        	if(!folder.exists()){
-//        		folder.mkdir();
-//        	}
-//        	
-//
-//          // write to a new file
-//          newFile = new File(folder + uploadedFile3.getClientFileName());
-//          
-//          log.info(">> File name333 (test mode): " +  uploadedFile3.getClientFileName());
-//          try {
-//			uploadedFile3.writeTo(newFile);
-//		} catch (Exception e2) {
-//			e2.printStackTrace();
-//		}
-//
-//          if (newFile.exists()) {
-//              newFile.delete();
-//            }
-//
-//
-//          List<String> sampleRows = showSampleCSV(uploadedFile3);
-//          if (sampleRows != null) {
-//            exampleRowsLabel.setVisible(true);
-//            feedbackPanel.setVisible(false);
-//            rowsCsv.setList(sampleRows);
-//            rowsCsv.setVisible(true);
-//            fileUpload3.setVisible(true);
-//            selFile3.setVisible(true);
-//            //Component setVisible = this.setVisible(false);
-//          }
-//
-//
-//        } else {
-//        	info("You must upload a file with CSV format.");
-//        	feedbackPanel.setVisible(true);
-//        }
-//      }
-//    };
-//
-//    form.add(uploadFile3);
 		} else {
 			info("Session Timeout. Please login again.");
 			feedbackPanel.setVisible(true);
 		}
 	}
 
-//	public static void mailto(List<String> recipients, String subject, String body)
-//			throws IOException, URISyntaxException {
-//		String uriStr = String.format("mailto:%s?subject=%s&body=%s", join(",", recipients), // use semicolon ";" for
-//																								// Outlook!
-//				urlEncode(subject), urlEncode(body));
-//		Desktop.getDesktop().browse(new URI(uriStr));
+//	private static final String urlEncode(String str) {
+//		try {
+//			return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
+//		} catch (UnsupportedEncodingException e) {
+//			throw new RuntimeException(e);
+//		}
 //	}
-
-	private static final String urlEncode(String str) {
-		try {
-			return URLEncoder.encode(str, "UTF-8").replace("+", "%20");
-		} catch (UnsupportedEncodingException e) {
-			throw new RuntimeException(e);
-		}
-	}
 
 	public static final String join(String sep, Iterable<?> objs) {
 		StringBuilder sb = new StringBuilder();

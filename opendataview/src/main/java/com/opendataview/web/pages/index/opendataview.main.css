@@ -40,6 +40,9 @@ a {
     font-weight: 500;
     color: #443E53;
 }*/
+h4 {
+	font-size: 17px;
+}
 h5 {
 	display: block;
 	font-size: 17px;
@@ -355,6 +358,60 @@ position: fixed;
 /*.fa,.glyphicon {
 	cursor: pointer;
 }*/
+#deleteAllUploads{
+float: right;
+}
+.youtube-player {
+  position: relative;
+  padding-bottom: 27.3%;
+  height: 0;
+  overflow: hidden;
+  max-width: 560px;
+  background: #000;
+  margin: 5px;
+}
+.youtube-player iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 100;
+  background: transparent;
+}
+.youtube-player img {
+  bottom: 0;
+  display: block;
+  left: 0;
+  margin: auto;
+  max-width: 100%;
+  width: 100%;
+  position: absolute;
+  right: 0;
+  top: 0;
+  border: none;
+  height: auto;
+  cursor: pointer;
+  -webkit-transition: .4s all;
+  -o-transition: .4s all;
+  -moz-transition: .4s all;
+  transition: .4s all;
+}
+.youtube-player img:hover {
+  -webkit-filter: brightness(75%);
+}
+.youtube-player .play {
+  height: 72px;
+  width: 72px;
+  left: 50%;
+  top: 50%;
+  margin-left: -36px;
+  margin-top: -36px;
+  position: absolute;
+  background: url("//i.imgur.com/TxzC70f.png") no-repeat;
+  cursor: pointer;
+}
+
 .displayOptions input[type="text"], .displayOptions input[type="submit"]
 	{
 	outline: none;
@@ -423,7 +480,7 @@ position: fixed;
     text-align: center;
     background: #CC4646;
     position: absolute;
-    top: 200px;
+    top: 273px;
     right: 0px;
     z-index: 10000;
     cursor: pointer;
@@ -1569,8 +1626,8 @@ input.selectCSV {
 }
 
 .loading-text {
-	top: 25%;
-	left: 18%;
+	top: 45%;
+	left: 40%;
 	position: relative;
 	color: #999;
 	font-size: 15px;
@@ -4545,7 +4602,6 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 }
 /* Starting from Tablet landscape */
 @media only screen and (max-width: 1024px) {
-	
 
 /*.table td, .table th {
     display: contents;

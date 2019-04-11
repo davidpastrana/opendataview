@@ -72,9 +72,9 @@ http://www.springframework.org/schema/tx
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource" />
 		<property name="packagesToScan" value="com.springapp.model"/>
-		<property name="hibernateProperties">
+		<!-- <property name="hibernateProperties">
 		<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+				<prop key="hibernate.dialect">org.hibernate.spatial.dialect.postgis.PostgisDialect</prop>
 				
 				
 				<prop key="hibernate.show_sql">true</prop> 
@@ -85,7 +85,7 @@ http://www.springframework.org/schema/tx
 				
 				<prop key="hibernate.jdbc.batch_size">20</prop>
 				
-				<!-- hibernate cache 
+				hibernate cache 
 				<prop key="hibernate.cache.use_query_cache">true</prop>
 				<prop key="hibernate.cache.use_second_level_cache">true</prop>
 				  <prop key="hibernate.cache.provider_class">org.hibernate.cache.EhCacheProvider</prop>
@@ -108,9 +108,9 @@ http://www.springframework.org/schema/tx
 				
 				hibernate search Index Optimization 
 				<prop key="hibernate.search.default.optimizer.operation_limit.max">1000</prop>
-				<prop key="hibernate.search.default.optimizer.transaction_limit.max">100</prop>-->
+				<prop key="hibernate.search.default.optimizer.transaction_limit.max">100</prop>
 		</props>
-		</property>
+		</property>-->
 	</bean>
 	
 
