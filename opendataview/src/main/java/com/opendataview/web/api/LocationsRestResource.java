@@ -41,23 +41,22 @@ public class LocationsRestResource extends GsonRestResource {
 		String password = "postgres";
 
 		try (Connection con = DriverManager.getConnection(url, user, password);
-				// id,address,archive,city,country,csvname,currency,date,date_published,date_updated,description,document,elevation,email,iconmarker,latitude,longitude,name,number,otherinfo,percentage,phone,population,postcode,private_mode,schedule,source,street,type,urlimage,username,website,year
+				// id,address,archive,city,country,filename,currency,date,date_published,date_updated,description,document,elevation,email,iconmarker,latitude,longitude,name,number,data,percentage,phone,population,postcode,private_mode,schedule,source,street,type,image,username,website,year
 				Statement st = con.createStatement();
 				ResultSet rs = st.executeQuery(
-						"SELECT id,address,archive,city,country,csvname,currency,date,date_published,date_updated,description,document,elevation,email,iconmarker,latitude,longitude,name,number,otherinfo,percentage,phone,population,postcode,private_mode,schedule,source,street,type,urlimage,username,website,year FROM locations")) {
+						"SELECT id,address,archive,city,country,filename,currency,date,date_published,date_updated,description,document,elevation,email,iconmarker,latitude,longitude,name,number,data,percentage,phone,population,postcode,private_mode,schedule,source,street,type,image,username,website,year FROM locations")) {
 			LocationModel l = null;
 			while (rs.next()) {
-				l = new LocationModel(rs.getString("id"), rs.getString("address"), rs.getString("archive"),
-						rs.getString("city"), rs.getString("country"), rs.getString("csvname"),
+				l = new LocationModel(rs.getLong("id"), rs.getString("address"), rs.getString("archive"),
+						rs.getString("city"), rs.getString("country"), rs.getString("filename"),
 						rs.getString("currency"), rs.getString("date"), rs.getString("date_published"),
 						rs.getString("date_updated"), rs.getString("description"), rs.getString("document"),
 						rs.getString("elevation"), rs.getString("email"), rs.getString("iconmarker"),
-						rs.getString("latitude"), rs.getString("longitude"), rs.getString("name"),
-						rs.getString("number"), rs.getString("otherinfo"), rs.getString("percentage"),
-						rs.getString("phone"), rs.getString("population"), rs.getString("postcode"),
-						rs.getString("private_mode"), rs.getString("schedule"), rs.getString("source"),
-						rs.getString("street"), rs.getString("type"), rs.getString("urlimage"),
-						rs.getString("username"), rs.getString("website"), rs.getString("year"));
+						rs.getBigDecimal("latitude"), rs.getBigDecimal("longitude"), rs.getString("name"),
+						rs.getString("number"), rs.getString("data"), rs.getString("percentage"), rs.getString("phone"),
+						rs.getString("population"), rs.getString("postcode"), rs.getBoolean("private_mode"),
+						rs.getString("schedule"), rs.getString("source"), rs.getString("street"), rs.getString("type"),
+						rs.getString("image"), rs.getString("username"), rs.getString("website"), rs.getString("year"));
 				locations.add(l);
 			}
 			rs.close();
@@ -89,8 +88,8 @@ public class LocationsRestResource extends GsonRestResource {
 	public List<String> getAllDatasets() {
 		datasets.clear();
 		for (int i = 0; i < locations.size(); i++) {
-			String ds = locations.get(i).getCsvName();
-			if (!datasets.contains(locations.get(i).getCsvName())) {
+			String ds = locations.get(i).getFileName();
+			if (!datasets.contains(locations.get(i).getFileName())) {
 				datasets.add(ds);
 			}
 		}
@@ -101,7 +100,7 @@ public class LocationsRestResource extends GsonRestResource {
 	public List<LocationModel> getDatasetLocations(String datasetName) {
 		datasetLocations.clear();
 		for (int i = 0; i < locations.size(); i++) {
-			if (locations.get(i).getCsvName().equals(datasetName)) {
+			if (locations.get(i).getFileName().equals(datasetName)) {
 				datasetLocations.add(locations.get(i));
 			}
 		}

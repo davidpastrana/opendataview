@@ -20,13 +20,13 @@ public interface LocationServiceDAO {
 
 	void removeAllLocations(String username);
 
-	void removeLocationByName(String csvName);
+	void removeLocationByName(String filename);
 
-	List<LocationModel> showLocationByName(String csvName);
+	List<LocationModel> showLocationByName(String filename);
 
-	boolean checkLocationExistanceByID(String queryidvalue);
+	boolean checkLocationExistanceById(String queryidvalue);
 
-	boolean checkLocationExistanceByOtherName(LocationModel locationModel);
+	boolean checkLocationExistanceByNameLatLng(LocationModel locationModel);
 
 	void updateQuery(List<String> listValues, boolean hasid);
 

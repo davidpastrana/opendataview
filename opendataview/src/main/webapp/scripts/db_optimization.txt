@@ -1,6 +1,3 @@
-CREATE INDEX locations_id ON locations (id,address,city,country,csvname,date,description,district,elevation,email,latitude,longitude,name,nrating,number,other);
-CREATE INDEX locations_name ON locations (id,address,city,country,csvname,date,description,district,elevation,email,latitude,longitude,name,nrating,number,other);
-CREATE INDEX locations_other ON locations (id,address,city,country,csvname,date,description,district,elevation,email,latitude,longitude,name,nrating,number,other);
-CREATE INDEX ratings_id ON ratings(id,rating,location_id);
-CREATE INDEX ratings_rating ON ratings(id,rating,location_id);
-CREATE INDEX ratings_location_id ON ratings(id,rating,location_id);
+CREATE INDEX locations_id ON locations (id,address,city,country,filename,date,description,district,elevation,email,latitude,longitude,name,number,data);
+CREATE INDEX locations_name ON locations (id,address,city,country,filename,date,description,district,elevation,email,latitude,longitude,name,number,data);
+CREATE INDEX locations_other ON locations (id,address,city,country,filename,date,description,district,elevation,email,latitude,longitude,name,number,data);

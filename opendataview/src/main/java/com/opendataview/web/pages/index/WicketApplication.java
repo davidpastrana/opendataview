@@ -17,6 +17,7 @@ import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
@@ -37,6 +38,7 @@ import com.opendataview.web.pages.properties.SetPropertiesPage;
 import com.opendataview.web.pages.user.LoginUserPage;
 import com.opendataview.web.pages.user.LogoutUserPage;
 import com.opendataview.web.pages.user.RegisterUserPage;
+import com.opendataview.web.persistence.LocationServiceDAOLuceneIdx;
 
 import de.agilecoders.wicket.core.Bootstrap;
 
@@ -63,6 +65,9 @@ public class WicketApplication extends AuthenticatedWebApplication {
 	protected Class<? extends WebPage> getSignInPageClass() {
 		return LoginUserPage.class;
 	}
+
+	@SpringBean
+	private LocationServiceDAOLuceneIdx locationServiceDAOLuceneIdx;
 
 	@Override
 	public void init() {
@@ -117,6 +122,9 @@ public class WicketApplication extends AuthenticatedWebApplication {
 				return locationsAPI;
 			}
 		});
+
+		// Make massive indexing for Lucene and ElasticSearch
+		// locationServiceDAOLuceneIdx.initialize();
 
 		mountPage("/search", getHomePage());
 		mountPage("/samples", SamplesPage.class);

@@ -40,21 +40,19 @@ public class UserServiceDAOImpl implements UserServiceDAO {
 	@Override
 	@Transactional
 	public List<UserModel> readUserModel(String username, String password) throws DataAccessException {
-		log.info("coming user.." + username);
-		log.info("coming password..." + password);
-		Query query = getEntityManager().createQuery("select u from users u", UserModel.class);
-		List<UserModel> resultList = query.getResultList();
+
+		List<UserModel> resultList = getEntityManager().createQuery("select u from users u", UserModel.class)
+				.getResultList();
 		return resultList;
 	}
 
 	@Override
 	@Transactional
 	public UserModel getUser(String username, String password) throws DataAccessException {
-		Query query = getEntityManager().createQuery(
+		List<UserModel> resultList = getEntityManager().createQuery(
 				"select u from users u where u.username='" + username + "' and u.password='" + password + "'",
-				UserModel.class);
-		List<UserModel> resultList = query.getResultList();
-		if (!query.getResultList().isEmpty()) {
+				UserModel.class).getResultList();
+		if (!resultList.isEmpty()) {
 			return resultList.get(0);
 		} else {
 			return null;

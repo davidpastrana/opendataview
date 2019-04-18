@@ -17,7 +17,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.TimeZone;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +75,6 @@ public class MainClass extends SetPropertiesPage {
 	protected static String resul[] = null;
 	protected static String dict_match[] = null;
 	protected static String dict_static[] = null;
-
 	protected static String sqlfile = null;
 
 	// Delimiters used in CSV files
@@ -84,54 +83,49 @@ public class MainClass extends SetPropertiesPage {
 	protected static final String NEW_LINE = "\n";
 
 	protected static StringBuilder outputinfo = new StringBuilder("");
-	protected static boolean private_mode = false;
-	protected static String icon_marker = "01";
-	protected static String country_code = "AT";
+	protected static boolean private_mode;
+	protected static String icon_marker;
+	protected static String country_code;
 
-	// Directories where files are processed
-	protected static String csvfiles_dir = "file: config.properties";
-
-	protected static String tmp_dir = "file: config.properties";
-
-	protected static String newformat_dir = "file: config.properties";
-	protected static String dictionary_matches = "file: config.properties";
-	protected static String missinggeoreference_dir = "file: config.properties";
+	protected static String csvfiles_dir;
+	protected static String tmp_dir;
+	protected static String newformat_dir;
+	protected static String dictionary_matches;
+	protected static String missinggeoreference_dir;
 	protected static boolean active_dictionary = false;
-//  protected static String sqlinserts_file = "file: config.properties";
+	protected static boolean random_color = false;
 
-	protected static String geonames_dbdriver = "org.postgresql.Driver";
-	protected static String geonames_dburl = "jdbc:postgresql://127.0.0.1:5432/geonames";
-	protected static String geonames_dbusr = "postgres";
-	protected static String geonames_dbpwd = "postgres";
+	protected static String geonames_dbdriver;
+	protected static String geonames_dburl;
+	protected static String geonames_dbusr;
+	protected static String geonames_dbpwd;
 
-	protected static String web_dbdriver = "org.postgresql.Driver";
-	protected static String web_dburl = "jdbc:postgresql://127.0.0.1:5432/cvienna";
-	protected static String web_dbusr = "postgres";
-	protected static String web_dbpwd = "postgres";
+	protected static String web_dbdriver;
+	protected static String web_dburl;
+	protected static String web_dbusr;
+	protected static String web_dbpwd;
 
-	protected static String st1postcode = "select name,admin3name,code,latitude,longitude from postalcodes where code like ? order by code asc";
-	protected static String st2postcode = "select name,admin3name,code,latitude,longitude from postalcodes where code = ? order by code asc";
-	protected static String st1city = "select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname = ? order by population desc";
-	protected static String st2city = "select geonameid,name,latitude,longitude,population,elevation from geoname where asciiname like ? or asciiname like ? order by population desc";
+	protected static String st1postcode;
+	protected static String st1city;
 
-	protected static String imageRegex = ".*.(jpg|gif|png|bmp|ico)$";
-	protected static String phoneRegex = "^\\+?[0-9. ()-]{10,25}$";
-	protected static String archiveRegex = ".*.(zip|7z|bzip(2)?|gzip|jar|t(ar|gz)|dmg)$";
-	protected static String documentRegex = ".*.(doc(x|m)?|pp(t|s|tx)|o(dp|tp)|pub|pdf|csv|xls(x|m)?|r(tf|pt)|info|txt|tex|x(ml|html|ps)|rdf(a|s)?|owl)$";
-	protected static String openinghoursRegex = "([a-z ]+ )?(mo(n(day)?)?|tu(e(s(day)?)?)?|we(d(nesday)?)?|th(u(r(s(day)‌​?)?)?)?|fr(i(day)?)?‌​|sa(t(urday)?)?|su(n‌​(day)?)?)(-|:| ).*|([a-z ]+ )?(mo(n(tag)?)?|di(e(n(stag)?)?)?|mi(t(woch)?)?|do(n(er(s(tag)‌​?)?)?)?|fr(i(tag)?)?‌​|sa(m(stag)?)?|do(n(erstag)?)?)(-|:| ).*";
-	protected static String dateRegex = "([0-9]{2})?[0-9]{2}( |-|\\/|.)[0-3]?[0-9]( |-|\\/|.)([0-9]{2})?[0-9]{2}";
-	protected static String yearRegex = "^(?:18|20)\\d{2}$";
-	protected static String currencyRegex = "^(\\d+|\\d+[.,']\\d+)\\p{Sc}|\\p{Sc}(\\d+|\\d+[.,']\\d+)$";
-	protected static String percentageRegex = "^(\\d+|\\d+[.,']\\d+)%|%(\\d+|\\d+[.,']\\d+)$";
-	protected static String postcodeRegex = "^[0-9]{2}$|^[0-9]{4}$";
-	protected static String nutsRegex = "\\w{3,5}";
-	protected static String shapeRegex = "point\\s*\\(([+-]?\\d+\\.?\\d+)\\s*,?\\s*([+-]?\\d+\\.?\\d+)\\)";
-	protected static String latitudeRegex = "/^-?([1-8]?[1-9]|[1-9]0)\\.{1}\\d{4,9}$/";
-	protected static String longitudeRegex = "^-?([1]?[1-7][1-9]|[1]?[1-8][0]|[1-9]?[0-9])\\.{1}\\d{4,9}$";
-	protected static String latlngRegex = "([+-]?\\d+\\.?\\d+)\\s*,\\s*([+-]?\\d+\\.?\\d+)";
-	protected static String possiblenameRegex = ".*[0-9]+.*";
-	protected static String descriptionRegex = ".*[0-20]+.*";
-	protected static String cityRegex = ".*[a-z]{3,30}.*";
+	protected static String imageRegex;
+	protected static String phoneRegex;
+	protected static String archiveRegex;
+	protected static String documentRegex;
+	protected static String openinghoursRegex;
+	protected static String dateRegex;
+	protected static String yearRegex;
+	protected static String currencyRegex;
+	protected static String percentageRegex;
+	protected static String postcodeRegex;
+	protected static String nutsRegex;
+	protected static String shapeRegex;
+	protected static String latitudeRegex;
+	protected static String longitudeRegex;
+	protected static String latlngRegex;
+	protected static String possiblenameRegex;
+	protected static String descriptionRegex;
+	protected static String cityRegex;
 
 	private static String header[] = null;
 
@@ -198,9 +192,9 @@ public class MainClass extends SetPropertiesPage {
 			log.info(sum[m][n] + " \"" + vartype + "\" in col \"" + n + "\" already accepted! " + sum[m][n] + " >= "
 					+ confidence_limit + "\n");
 		} else {
-			outputinfo.append(sum[m][n] + " \"" + vartype + "\" in col \"" + n + "\" NOT accepted: " + sum[m][n]
+			outputinfo.append(sum[m][n] + " \"" + vartype + "\" in col \"" + n + "\" (not yet accepted): " + sum[m][n]
 					+ " <= " + confidence_limit + "\n");
-			log.info(sum[m][n] + " \"" + vartype + "\" in col \"" + n + "\" NOT accepted: " + sum[m][n] + " <= "
+			log.info(sum[m][n] + " \"" + vartype + "\" in col \"" + n + "\" (not yet accepted): " + sum[m][n] + " <= "
 					+ confidence_limit + "\n");
 		}
 	}
@@ -237,9 +231,6 @@ public class MainClass extends SetPropertiesPage {
 			// log.info("\n\nLine read: "+line.toString());
 
 			if (i == 0) {
-
-				log.info("WE ARE IN HEADER WITH I:=" + i);
-
 				// File separator detection (between comma or dot-comma)
 				for (int j = 0; j < line.length(); j++) {
 					if (line.charAt(j) == ',')
@@ -278,10 +269,12 @@ public class MainClass extends SetPropertiesPage {
 					outputinfo.append("\n>> Temp directory: " + dir);
 					log.info(">> Schema enabled: " + active_dictionary);
 					outputinfo.append("\n>> Schema enabled: " + active_dictionary);
+					log.info(">> Random color (markers): " + random_color);
+					outputinfo.append("\n>> Random color (markers): " + random_color);
 					log.info(">> Schema mappings:\n[" + dictionary_matches + "]");
 					outputinfo.append("\n>> Schema mappings:\n[" + dictionary_matches + "]");
 
-					header = new String[ncolchecks];
+					header = new String[ncolchecks * 2];
 					String[] value = new String[ncolchecks];
 
 					value = line.split(DELIMITER);
@@ -290,14 +283,14 @@ public class MainClass extends SetPropertiesPage {
 					if (ncolchecks < 10)
 						ncolchecks = 10;
 
-					column_types = new String[nrowchecks][ncolchecks];
-					file_values = new String[nrowchecks][ncolchecks];
+					column_types = new String[nrowchecks * 2][ncolchecks * 2];
+					file_values = new String[nrowchecks * 2][ncolchecks * 2];
 
 					sum = new int[nchecks][ncolchecks];
 
-					tmp_cities = new String[ncolchecks];
-					tmp_possiblenames = new String[ncolchecks];
-					tmp_postcol = new boolean[ncolchecks];
+					tmp_cities = new String[ncolchecks * 2];
+					tmp_possiblenames = new String[ncolchecks * 2];
+					tmp_postcol = new boolean[ncolchecks * 2];
 					resul = new String[ncolchecks * 2]; // we duplicate the number of columns just to be sure we don't
 														// end up with a indexoutofbound fault
 					dict_match = new String[ncolchecks * 2];
@@ -324,8 +317,11 @@ public class MainClass extends SetPropertiesPage {
 
 								for (int hconfig = 0; hconfig < schema_config.length; hconfig++) { // each value of the
 																									// config schema
-									first = schema_config[hconfig].trim().split(":")[0].trim();
-									second = schema_config[hconfig].trim().split(":")[1].trim();
+									// split out from double quotes
+									first = schema_config[hconfig].trim().split(":(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")[0]
+											.trim();
+									second = schema_config[hconfig].trim().split(":(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)")[1]
+											.trim();
 									// in case is a commented line with hashtag, do not make any change
 									if (!first.contains("#")) {
 
@@ -335,7 +331,7 @@ public class MainClass extends SetPropertiesPage {
 
 											// In case of a hardcoded value, left side is the static value and right
 											// side is the dictionary word
-											dict_static[hconfig] = static_value + "_forcolumn_" + second;
+											dict_static[hconfig] = "'" + static_value + "'_forcolumn_" + second;
 
 											// for all the rest, could it be one or multiple relations as *:1 where *
 											// fields have to be divided by comma
@@ -361,7 +357,6 @@ public class MainClass extends SetPropertiesPage {
 														break;
 													case "cities":
 														dict_match[hfile] = "cities";
-														log.info("WE PLACE citie IN POSITION:" + hfile);
 														break;
 													case "postal_codes":
 														dict_match[hfile] = "postal_codes";
@@ -395,11 +390,9 @@ public class MainClass extends SetPropertiesPage {
 														break;
 													case "latitudes":
 														dict_match[hfile] = "latitudes";
-														log.info("WE PLACE LATITUDE IN POSITION:" + hfile);
 														break;
 													case "longitudes":
 														dict_match[hfile] = "longitudes";
-														log.info("WE PLACE LONG IN POSITION:" + hfile);
 														break;
 													case "latlong":
 														dict_match[hfile] = "latlong";
@@ -419,10 +412,9 @@ public class MainClass extends SetPropertiesPage {
 													case "descriptions":
 														dict_match[hfile] = "descriptions";
 														break;
-													case "data_publishers":
-														dict_match[hfile] = "data_publishers";
+													case "source":
+														dict_match[hfile] = "source";
 														break;
-
 													}
 
 												}
@@ -475,11 +467,6 @@ public class MainClass extends SetPropertiesPage {
 
 				String[] linex = line.split(DELIMITER);
 
-				// ParameterizedSparqlString qs =
-				// new ParameterizedSparqlString(""
-				// + "prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\n" + "\n"
-				// + "select ?resource where {\n" + " ?resource rdfs:label ?label\n" + "}");
-
 				int j = 0;
 				boolean latitude_visited = false;
 
@@ -497,8 +484,7 @@ public class MainClass extends SetPropertiesPage {
 					} else if (EmailValidator.getInstance().isValid(val)) {
 						// log.info("we have an email ! in fil " + i + " and col " + j);
 						column_types[inh][j] = "emails";
-					} else if (UrlValidator.getInstance().isValid(val)
-							|| UrlValidator.getInstance().isValid("http://" + val)) {
+					} else if (UrlValidator.getInstance().isValid(val)) {
 						if (val.matches(imageRegex)) {
 							column_types[inh][j] = "images";
 						} else if (val.matches(archiveRegex)) {
@@ -541,7 +527,7 @@ public class MainClass extends SetPropertiesPage {
 							}
 						}
 
-					} else if (val.matches(shapeRegex)) {
+					} else if (val.matches(shapeRegex.toLowerCase())) {
 						column_types[inh][j] = "shapes";
 					} else if (val.matches(latitudeRegex) && latitude_visited == false) {
 						column_types[inh][j] = "latitudes";
@@ -772,7 +758,7 @@ public class MainClass extends SetPropertiesPage {
 								+ " documents, " + ncurrencies + " currencies, " + npercentages + " percentages, "
 								+ nshapes + " shapes, " + nlatitudes + " latitudes, " + nlongitudes + " longitudes, "
 								+ nlatlong + " latlong, " + nnuts1 + " nuts1, " + nnuts2 + " nuts2, " + nnuts3
-								+ " nuts3, " + ntitles + " titles\nTotal sum:");
+								+ " nuts3, " + ntitles + " titles\nTotal sum until this row");
 						outputinfo.append("\nIn a same row: " + nmails + " emails, " + ndescriptions + " descriptions, "
 								+ nurls + " urls, " + nphones + " phones, " + ncities + " cities, " + npostal_codes
 								+ " postal_codes, " + nophours + " working_hours, " + ndates + " dates, " + nyears
@@ -780,7 +766,7 @@ public class MainClass extends SetPropertiesPage {
 								+ " documents, " + ncurrencies + " currencies, " + npercentages + " percentages, "
 								+ nshapes + " shapes, " + nlatitudes + " latitudes, " + nlongitudes + " longitudes, "
 								+ nlatlong + " latlong, " + nnuts1 + " nuts1, " + nnuts2 + " nuts2, " + nnuts3
-								+ " nuts3, " + ntitles + " titles\nTotal sum:\n");
+								+ " nuts3, " + ntitles + " titles\nTotal sum until this row\n");
 
 						// #############################################################################################################################
 						// SAME ROW - PRINTS EACH MATCH [nchecks] DONE FOR EACH COLUMN [ncolchecks] IN
@@ -1089,7 +1075,7 @@ public class MainClass extends SetPropertiesPage {
 			throws NumberFormatException, SQLException, URISyntaxException, CQLException, IOException {
 
 		switch (type) {
-		case "data_publishers":
+		case "source":
 			loc.setSource(value);
 			break;
 		case "emails":
@@ -1110,8 +1096,11 @@ public class MainClass extends SetPropertiesPage {
 			if (!ArrayUtils.contains(resul, "latitudes") && !ArrayUtils.contains(resul, "longitudes")
 					&& !ArrayUtils.contains(resul, "latlong") && !ArrayUtils.contains(resul, "shapes")) {
 				// no need to print all the messages of the geocoding: reason of false
-				GeonamesSQLQueries.getCityLatLng(geonamesdebugmode, loc, rs, value, conn, column_types, file_values,
-						country_code, x, y);
+
+				log.info("we search for a lat and long because of city!!");
+				// IN CASE THERE IS NO LATITUDE AND LONGITUDE, WE GEOCODE ALL FILE CITIES
+//				GeonamesSQLQueries.getCityLatLng(geonamesdebugmode, loc, rs, value, conn, column_types, file_values,
+//						country_code, x, y);
 			}
 			break;
 		case "postal_codes":
@@ -1119,15 +1108,13 @@ public class MainClass extends SetPropertiesPage {
 
 			// we only search for coordinates over the whole file if no option was available
 			// (hard processing time)
-			if (value.matches(postcodeRegex) && !ArrayUtils.contains(resul, "latitudes")
-					&& !ArrayUtils.contains(resul, "latlong") && !ArrayUtils.contains(resul, "shapes")) {
-				if (fieldtypesdebugmode)
-					log.info("Querying postcode value..." + value);
-				rs = GeonamesSQLQueries.getPostcodeLatLng(Integer.valueOf(value), conn);
-				if (rs != null) {
-					GeonamesSQLQueries.setGeonameResult(loc, rs);
-				}
-			}
+			/*
+			 * if (value.matches(postcodeRegex) && !ArrayUtils.contains(resul, "latitudes")
+			 * && !ArrayUtils.contains(resul, "latlong") && !ArrayUtils.contains(resul,
+			 * "shapes")) { if (fieldtypesdebugmode) log.info("Querying postcode value..." +
+			 * value); rs = GeonamesSQLQueries.getPostcodeLatLng(Integer.valueOf(value),
+			 * conn); if (rs != null) { GeonamesSQLQueries.setGeonameResult(loc, rs); } }
+			 */
 			break;
 		case "working_hours":
 			loc.setSchedule(value);
@@ -1139,7 +1126,7 @@ public class MainClass extends SetPropertiesPage {
 			loc.setYear(value);
 			break;
 		case "images":
-			loc.setUrlImage(value);
+			loc.setImage(value);
 			break;
 		case "archives":
 			loc.setArchive(value);
@@ -1154,13 +1141,41 @@ public class MainClass extends SetPropertiesPage {
 			loc.setPercentage(value);
 			break;
 		case "shapes":
-			setFormatLatLng(loc, value);
+			value = value.toLowerCase().trim();
+//			if (value.matches(".*(multipoint|linestring|multilinestring|polygon|multipolygon|geometrycollection).*")) {
+//
+//				log.info("value to add is " + value);
+//				if (value.matches("^polygon.*")) {
+//					try {
+//						loc.setGeometry(new GeometryFactory()
+//								.createPolygon(new WKTReader().read(value.toString()).getCoordinates()));
+//					} catch (com.vividsolutions.jts.io.ParseException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+			if (value.toLowerCase().matches("point\\s*\\(([+-]?\\d+\\.?\\d+)\\s*,?\\s*([+-]?\\d+\\.?\\d+)\\)")) {
+				setFormatLatLng(loc, value);
+			}
 			break;
 		case "latitudes":
-			loc.setLatitude(value.replace(",", "."));
+			try {
+				if (Double.valueOf(value.replace(",", ".")) != null)
+					loc.setLatitude(value.replace(",", "."));
+			} catch (NumberFormatException e) {
+				log.info("Input not a latitude: " + e.getMessage());
+				outputinfo.append("\nInput not a latitude: " + e.getMessage());
+			}
 			break;
 		case "longitudes":
-			loc.setLongitude(value.replace(",", "."));
+			try {
+				if (Double.valueOf(value.replace(",", ".")) != null)
+					loc.setLongitude(value.replace(",", "."));
+			} catch (NumberFormatException e) {
+				log.info("Input not a longitude: " + e.getMessage());
+				outputinfo.append("\nInput not a longitude: " + e.getMessage());
+			}
 			break;
 		case "latlong":
 			setFormatLatLng(loc, value);
@@ -1193,22 +1208,22 @@ public class MainClass extends SetPropertiesPage {
 		case "descriptions":
 			loc.setDescription(value);
 			break;
-
 		}
 	}
 
-	public static void generateLocationAndFile(File source, File dest, String user) throws IOException, ParseException,
-			CQLException, InterruptedException, InvalidParameterException, SQLException, URISyntaxException {
+	public static void generateLocationAndFile(File source, File dest, int nfiles, String user)
+			throws IOException, ParseException, CQLException, InterruptedException, InvalidParameterException,
+			SQLException, URISyntaxException {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "ISO-8859-1"));
 
-		ArrayList<LocationModel> new_format = new ArrayList<LocationModel>();
+		ArrayList<LocationModel> locations_list = new ArrayList<LocationModel>();
 
-		Pattern patternCsvName = Pattern.compile("([A-Z].*|[a-zA-Z0-9]{2,20}).csv");
-		Matcher matcher = patternCsvName.matcher(file_name);
-		String csvname_match = null;
+		Pattern patternFileName = Pattern.compile("([A-Z].*|[a-zA-Z0-9]{2,20}).csv");
+		Matcher matcher = patternFileName.matcher(file_name);
+		String filename_match = null;
 		if (matcher.find()) {
-			csvname_match = matcher.group().split(".csv")[0];
+			filename_match = matcher.group().split(".csv")[0];
 		}
 
 		String line;
@@ -1216,41 +1231,34 @@ public class MainClass extends SetPropertiesPage {
 		// i is the row position
 		int i = 0;
 
+		// random colour when we have multiple markers
+		Random random = new Random();
+		StringBuilder sb = new StringBuilder();
+		sb.append(Integer.toHexString(random.nextInt()));
+
 		while ((line = br.readLine()) != null) {
 
-			if (DELIMITER.contentEquals(",")) {
-				boolean inQuotes = false;
-
-				String str = line;
-				String copy = new String();
-				for (int k = 0; k < str.length(); ++k) {
-					if (str.charAt(k) == '"')
-						inQuotes = !inQuotes;
-					if (str.charAt(k) == ',' && inQuotes)
-						copy += ' ';
-					else
-						copy += str.charAt(k);
-				}
-
-				line = copy;
-			} else {
-				line = line.replaceAll(",(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)", ",");
-			}
-
-			// we split the row by ";" separator
-			String[] value = line.split(DELIMITER);
+			// we split the delimiter comma or semicolon, and we ignore the delimiters
+			// between/inside quotes
+			String[] value = line.split(DELIMITER + "(?=(?:[^\"]*\"[^\"]*\")*[^\"]*$)");
 
 			// for each row we create an instance of the Model
 			LocationModel loc = new LocationModel();
 
 			Date now = new Date();
-			SimpleDateFormat sdf = new SimpleDateFormat("MMMM dd yyyy");
-			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-
+			SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy' - 'HH:mm");
 			loc.setDate_published(sdf.format(now).toString());
 			loc.setDate_updated(sdf.format(now).toString());
 			loc.setUsername(user);
-			loc.setIconmarker(icon_marker.toString());
+
+			// if clear==true we only have one file, if clear==false we have multiple file
+			// and we set random colors to markers
+			if (!random_color) {
+				loc.setIconmarker(icon_marker.split("#")[0].toString());
+			} else {
+				loc.setIconmarker(sb.substring(0, 6));
+			}
+
 			loc.setPrivate_mode(private_mode);
 
 			// j is the column position
@@ -1273,22 +1281,21 @@ public class MainClass extends SetPropertiesPage {
 			while (j < value.length) {
 
 				// We set the type from the CSV file name or any other detected field
-				if (csvname_match != null) {
-					loc.setType(csvname_match);
-
+				if (filename_match != null) {
+					loc.setType(filename_match);
 				}
 
 				// We set the CSV file name
-				loc.setCsvName(file_name);
+				loc.setFileName(file_name);
 
-				// We always place all attributes inside OtherInfo column (Important to allow
-				// attributes search and graphs for any unrecognized field)
+				// We always place all attributes inside a same data column (Important to allow
+				// attributes search and graphs on any unrecognized field)
 				if (header[j] != null && !value[j].isEmpty()) {
-					if (loc.getOtherInfo() == null) {
-						loc.setOtherInfo("Filename: " + file_name + " ## Published by: " + loc.getUsername() + " ## "
+					if (loc.getData() == null) {
+						loc.setData("Filename: " + file_name + " ## Published by: " + loc.getUsername() + " ## "
 								+ header[j] + ": " + value[j]);
 					} else {
-						loc.setOtherInfo(loc.getOtherInfo() + " ## " + header[j] + ": " + value[j]);
+						loc.setData(loc.getData() + " ## " + header[j] + ": " + value[j].replaceAll("\"", ""));
 					}
 				}
 
@@ -1297,6 +1304,7 @@ public class MainClass extends SetPropertiesPage {
 
 				if (resul[j] != null && !value[j].isEmpty() && i > 0) {
 					// log.info("going to check harcoded? "+resul[j]);
+
 					setFieldTypes(loc, resul[j], value[j], i, j);
 				}
 
@@ -1305,22 +1313,22 @@ public class MainClass extends SetPropertiesPage {
 
 			if (i != 0) {
 				if (loc.getName() == null) {
-					loc.setName(csvname_match);
+					loc.setName(filename_match);
 				}
-
-				new_format.add(loc);
+				try {
+					if ((loc.getLatitude() != null && loc.getLongitude() != null)) {
+						locations_list.add(loc);
+					}
+				} catch (NullPointerException e) {
+					log.info("We do not insert!!!! latlng are failing: " + e.getMessage());
+				}
 			}
 
 			i++;
 		}
 		br.close();
 
-//		if (dest.getAbsolutePath().contains(tmp_dir)) {
-//			GenerateFile.CreateEnrichedCSV(source, dest, new_format);
-//		}
-
-		GenerateFile.CreateFormattedCSV(dest, new_format);
-
+		GenerateFile.CreateFormattedCSV(dest, locations_list);
 	}
 
 	static int no_insert_bestfiles = 0;
@@ -1341,15 +1349,12 @@ public class MainClass extends SetPropertiesPage {
 		}
 	}
 
-//  public static void main(String[] args) throws IOException, ParseException, CQLException,
-//  InterruptedException, InvalidParameterException, SQLException, ExecutionException,
-//  NumberParseException, ClassNotFoundException {
-	public static void start(String upload_folder, File uploadedFile, FeedbackPanel feedbackPanel, boolean clear,
+	public static void start(String upload_folder, File uploadedFile, FeedbackPanel feedbackPanel, int nfiles,
 			String user) throws Exception {
 
 		// we clear the output log messages only if it is one file - to display multiple
 		// file logged messages
-		if (clear)
+		if (nfiles == 1)
 			outputinfo.setLength(0);
 
 		try {
@@ -1358,7 +1363,6 @@ public class MainClass extends SetPropertiesPage {
 			e.printStackTrace();
 			return;
 		}
-
 		try {
 			conn = DriverManager.getConnection(geonames_dburl, geonames_dbusr, geonames_dbpwd);
 		} catch (SQLException e) {
@@ -1367,7 +1371,6 @@ public class MainClass extends SetPropertiesPage {
 			e.printStackTrace();
 			return;
 		}
-
 		if (conn != null) {
 			log.info("Connected to DB !");
 		} else {
@@ -1375,7 +1378,7 @@ public class MainClass extends SetPropertiesPage {
 			conn.close();
 		}
 
-		log.info("Processing files...");
+		log.info("Processing files ...");
 
 		nrowchecks += 1; // skip header
 		BufferedWriter bw_sql_inserts = null;
@@ -1417,7 +1420,7 @@ public class MainClass extends SetPropertiesPage {
 				if (newFile.exists() && executeSQLqueries) {
 
 					// we create a structured CSV file format
-					generateLocationAndFile(newFile, processedFile, user);
+					generateLocationAndFile(newFile, processedFile, nfiles, user);
 				}
 				// End create location objects and new structured file format
 
@@ -1452,7 +1455,6 @@ public class MainClass extends SetPropertiesPage {
 							"\n\nYou are in Test mode, enable \"Upload results into database (production mode)\" to upload data.");
 				}
 				// End create sql file and we execute in case is required
-
 			}
 
 		} else {

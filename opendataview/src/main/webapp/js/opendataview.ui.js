@@ -1,7 +1,7 @@
 function callStreetView(lat,lng) {
     //var url = 'https://a.mapillary.com/v3/images?client_id=bjRlSHBOc1c0enFCWmZodWxReEx3QTpkZDE0MDMxZTdlM2I1ZmYw&closeto='+lng+','+lat+'&radius=300&per_page=1';	
 	if(mly === undefined)
-		mly = new Mapillary.Viewer('mly2','bjRlSHBOc1c0enFCWmZodWxReEx3QTpkZDE0MDMxZTdlM2I1ZmYw',null,{ cover: false });
+		mly = new Mapillary.Viewer('mly2','LUxmM1dLdzhHNVRXTDhyVkJyOUZyZzpkMGJhNGY4NWMzMjQ0MjJi',null,{ cover: false });
     mly.moveCloseTo(lat, lng);
 }
 function getSearchParams(k){
@@ -254,7 +254,7 @@ $(function() {
 				  "Wind Rose": windrose,
 				  "Snowing": snow,
 				};
-		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true}).addTo(map2);
+		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true, position: 'bottomleft'}).addTo(map2);
 		  //layerControl.setPosition('topright');
 			$('#icon-mylocation').on('click', function(){
 				  map2.locate();
@@ -439,6 +439,8 @@ $(function() {
 
 		    editableLayers.addLayer(layer);
 		  });
+		  
+		  //L.control.attribution({position: 'bottomright'}).addTo(map2);
 		    // Attribution panel
 		    $('.leaflet-control-attribution').hide();
 			$("#attribution-button").on("mouseover",function(){
@@ -448,16 +450,22 @@ $(function() {
 				$('.leaflet-control-attribution').hide();
 			});
 			//List file uploads panel
-			$('#hideLocation').hide();
-			$("#displayLocations").on("mouseover",function(){
+			
+			if($(window).width() <= 1024){
+				$('#hideLocation').hide();
+				$("#displayLocations").on("mouseover",function(){
+					$('#hideLocation').show();
+				});
+				$("#locationView").on("mouseleave",function(){
+					$('#hideLocation').hide();
+				});
+				$('html').click(function() {
+					$('#hideLocation').hide();
+				});
+			} else {
 				$('#hideLocation').show();
-			});
-			$("#locationView").on("mouseleave",function(){
-				$('#hideLocation').hide();
-			});
-			$('html').click(function() {
-				$('#hideLocation').hide();
-			});
+			}
+
 			//Sidebar Mobile left menu with black layout
 			  $('#dismiss, .overlay').on('click', function () {
 			      $('#sidebar').removeClass('active');

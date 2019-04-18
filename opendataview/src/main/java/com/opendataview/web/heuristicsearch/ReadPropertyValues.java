@@ -70,6 +70,7 @@ public class ReadPropertyValues extends MainClass {
 //        csvfiles_dir = origList.get(0).getCsvfiles_dir();
 //        tmp_dir = origList.get(0).getTmp_dir();
 				active_dictionary = origList.get(0).getActiveDictionary();
+				random_color = origList.get(0).getRandom_color();
 //        newformat_dir = origList.get(0).getNewformat_dir();
 				dictionary_matches = origList.get(0).getDictionaryMatches();
 //        missinggeoreference_dir = origList.get(0).getMissinggeoreference_dir();
@@ -85,7 +86,7 @@ public class ReadPropertyValues extends MainClass {
 				st1city = origList.get(0).getSt1city();
 //        st2city = origList.get(0).getSt2city();
 //        st3city = origList.get(0).getSt3city();
-
+				shapeRegex = origList.get(0).getShapeRegex();
 				imageRegex = origList.get(0).getImageRegex();
 				phoneRegex = origList.get(0).getPhoneRegex();
 				cityRegex = origList.get(0).getCityRegex();

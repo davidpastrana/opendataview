@@ -159,8 +159,7 @@ section.contact-infos {
     background-size: 27px;
 }
 .leaflet-control-layers {
-    top: 80px;
-    margin-right:4px!important;
+
 }
 .leaflet-touch .leaflet-control-layers-toggle {
     width: 32px;
@@ -240,8 +239,22 @@ position: fixed;
 #attribution-button {
     position: fixed;
     bottom: 5px;
-    left: 5px;
+    right: 86px;
     padding: 2px 5px !important;
+    display: none;
+}
+.top-padding {
+	padding-top:14px;
+}
+.leaflet-bottom .leaflet-control, .leaflet-left .leaflet-control {
+	margin-left: 3px!important;
+	margin-bottom: 3px!important;
+}
+.leaflet-draw-section {
+	bottom: 7px;
+}
+.leaflet-control-attribution leaflet-control {
+	left: 70px;
 }
 /*#switch .toggle, #switch2 .toggle, #switch3 .toggle, #switch4 .toggle {
     height: 34px !important;
@@ -998,9 +1011,6 @@ table {
 		padding-left: 7px;
 		letter-spacing: 0.2px;
 	}*/
-	#arrowHideMainMenu, #arrowShowMainMenu {
-		display: none !important;
-	}
 	#mainMenu {
 		margin-right: 8px !important;
 		font-size: 0px;
@@ -1016,14 +1026,6 @@ table {
 }
 /* parent class for tablets and laptops */
 @media only screen and (min-width: 120px) and (max-width: 1025px) {
-	/*#mapZoomLevel {
-    bottom: 4px;
-    right: 105px;
-	}
-	#switch {
-    bottom: 2px;
-    left: 5px;
-	}*/
 	#showLoading {
 		left: 20%;
 	}
@@ -1707,7 +1709,7 @@ input.selectCSV {
 	width: 100% !important;
 }
 */
-#locations_counter {
+#locations_counter2 {
     position: fixed;
     right: 84px;
     bottom: 5px;
@@ -1764,8 +1766,8 @@ label {
 }
 #hideLocation {
 	right:0px;
-	width: 221px;
-	max-height: calc(100vh - 150px);
+	width: 223px;
+	max-height: 400px;
     position:absolute;
     overflow-y: scroll;
     overflow-x: hidden;
@@ -1776,7 +1778,6 @@ label {
 	border: 2px solid rgba(0,0,0,.2);
 	border-radius: 5px;
     background-clip: padding-box;
-	display: none;
 }
 #hideLocation a {
 	line-height: 1.5em;
@@ -1865,6 +1866,14 @@ input[type="checkbox"], input[type="radio"] {
     color: #fff;
     position: relative;
     z-index: 100;
+}
+.main-title a {
+   color: #fddcdc;
+   text-decoration: underline dashed;
+}
+.main-title a:hover {
+   color: #fff;
+   text-decoration: underline;
 }
 .title {
     margin-top: 4px;

@@ -23,15 +23,16 @@ import org.hibernate.search.annotations.Longitude;
 import org.hibernate.search.annotations.Spatial;
 import org.hibernate.search.annotations.SpatialMode;
 import org.hibernate.search.annotations.Store;
+import org.hibernate.search.spatial.Coordinates;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Indexed;
 
-@Spatial(spatialMode = SpatialMode.HASH)
 @Indexed
-@Entity(name = "locations")
 @Cacheable
 @Cache(usage = CacheConcurrencyStrategy.NONSTRICT_READ_WRITE)
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "name", "latitude", "longitude" }))
+@Entity(name = "locations")
+@Spatial(spatialMode = SpatialMode.HASH)
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = { "name", "latitude", "longitude", "filename" }))
 public class LocationModel implements Serializable {
 
 	private static final long serialVersionUID = 1L;
@@ -42,35 +43,30 @@ public class LocationModel implements Serializable {
 	@Column(name = "id", updatable = false, nullable = false)
 	protected Long id;
 
-	public LocationModel(String id, String address) {
-		this.id = Long.valueOf(id);
-		this.address = address;
-	}
-
-	public LocationModel(String id, String address, String archive, String city, String country, String csvname,
+	public LocationModel(Long id, String address, String archive, String city, String country, String filename,
 			String currency, String date, String date_published, String date_updated, String description,
-			String document, String elevation, String email, String iconmarker, String latitude, String longitude,
-			String name, String number, String otherinfo, String percentage, String phone, String population,
-			String postcode, String private_mode, String schedule, String source, String street, String type,
-			String urlimage, String username, String website, String year) {
-		this.id = Long.valueOf(id);
+			String document, String elevation, String email, String iconmarker, BigDecimal bigDecimal,
+			BigDecimal bigDecimal2, String name, String number, String data, String percentage, String phone,
+			String population, String postcode, boolean b, String schedule, String source, String street, String type,
+			String image, String username, String website, String year) {
+		this.id = id;
 		this.name = name;
-		this.csvName = csvname;
+		this.filename = filename;
 		this.website = website;
 		this.phone = phone;
 		this.email = email;
 		this.description = description;
-		this.latitude = BigDecimal.valueOf(Double.parseDouble(latitude)).setScale(6, RoundingMode.DOWN);
-		this.longitude = BigDecimal.valueOf(Double.parseDouble(longitude)).setScale(6, RoundingMode.DOWN);
+		this.latitude = bigDecimal;
+		this.longitude = bigDecimal2;
 		this.iconmarker = iconmarker;
 		this.date = date;
 		this.date_published = date_published;
 		this.date_updated = date_updated;
-		this.private_mode = Boolean.valueOf(private_mode);
+		this.private_mode = b;
 		this.username = username;
 		this.source = source;
 		this.schedule = schedule;
-		this.otherInfo = otherinfo;
+		this.data = data;
 		this.address = address;
 		this.street = street;
 		this.number = number;
@@ -85,7 +81,7 @@ public class LocationModel implements Serializable {
 		this.percentage = percentage;
 		this.document = document;
 		this.archive = archive;
-		this.urlImage = urlimage;
+		this.image = image;
 		this.type = type;
 	}
 
@@ -118,6 +114,7 @@ public class LocationModel implements Serializable {
 	@Type(type = "big_decimal")
 	@Longitude
 	protected BigDecimal longitude;
+
 	@Column(name = "website", columnDefinition = "TEXT")
 	private String website;
 	@Column(name = "description", columnDefinition = "TEXT")
@@ -135,11 +132,11 @@ public class LocationModel implements Serializable {
 	@Column(columnDefinition = "TEXT")
 	protected String schedule;
 	@Column(columnDefinition = "TEXT")
-	protected String urlImage;
-	@Column(columnDefinition = "TEXT")
+	protected String image;
 
+	@Column(columnDefinition = "TEXT", unique = true)
 	@Field(store = Store.YES, index = Index.YES)
-	protected String csvName;
+	protected String filename;
 	@Column(columnDefinition = "TEXT")
 	protected String source;
 	@Column(columnDefinition = "TEXT")
@@ -147,7 +144,7 @@ public class LocationModel implements Serializable {
 
 	@Field(store = Store.YES, index = Index.YES)
 	@Column(columnDefinition = "TEXT")
-	protected String otherInfo;
+	protected String data;
 	@Column(columnDefinition = "TEXT")
 	protected String year;
 	@Column(columnDefinition = "TEXT")
@@ -174,20 +171,20 @@ public class LocationModel implements Serializable {
 		return id;
 	}
 
-//	@Spatial(spatialMode = SpatialMode.HASH)
-//	public Coordinates getLocation() {
-//		return new Coordinates() {
-//			@Override
-//			public Double getLatitude() {
-//				return latitude;
-//			}
-//
-//			@Override
-//			public Double getLongitude() {
-//				return longitude;
-//			}
-//		};
-//	}
+	@Spatial(spatialMode = SpatialMode.HASH)
+	public Coordinates getLocation() {
+		return new Coordinates() {
+			@Override
+			public Double getLatitude() {
+				return Double.valueOf(latitude.toString());
+			}
+
+			@Override
+			public Double getLongitude() {
+				return Double.valueOf(longitude.toString());
+			}
+		};
+	}
 
 	public void setId(Long id) {
 		this.id = id;
@@ -258,19 +255,19 @@ public class LocationModel implements Serializable {
 	}
 
 	public BigDecimal getLatitude() {
-		return latitude.setScale(6, RoundingMode.UNNECESSARY);
+		return latitude;
 	}
 
 	public BigDecimal getLongitude() {
-		return longitude.setScale(6, RoundingMode.UNNECESSARY);
+		return longitude;
 	}
 
 	public void setLatitude(BigDecimal latitude) {
-		this.latitude = latitude.setScale(6, RoundingMode.UNNECESSARY);
+		this.latitude = latitude.setScale(6, RoundingMode.DOWN);
 	}
 
 	public void setLongitude(BigDecimal longitude) {
-		this.longitude = longitude.setScale(6, RoundingMode.UNNECESSARY);
+		this.longitude = longitude.setScale(6, RoundingMode.DOWN);
 	}
 
 	public void setLatitude(String latitude) {
@@ -353,20 +350,20 @@ public class LocationModel implements Serializable {
 		this.schedule = schedule;
 	}
 
-	public String getUrlImage() {
-		return urlImage;
+	public String getImage() {
+		return image;
 	}
 
-	public void setUrlImage(String urlImage) {
-		this.urlImage = urlImage;
+	public void setImage(String image) {
+		this.image = image;
 	}
 
-	public String getCsvName() {
-		return csvName;
+	public String getFileName() {
+		return filename;
 	}
 
-	public void setCsvName(String csvName) {
-		this.csvName = csvName;
+	public void setFileName(String fileName) {
+		this.filename = fileName;
 	}
 
 	public String getSource() {
@@ -385,12 +382,12 @@ public class LocationModel implements Serializable {
 		this.username = username;
 	}
 
-	public String getOtherInfo() {
-		return otherInfo;
+	public String getData() {
+		return data;
 	}
 
-	public void setOtherInfo(String otherInfo) {
-		this.otherInfo = otherInfo;
+	public void setData(String data) {
+		this.data = data;
 	}
 
 	public String getYear() {
@@ -468,4 +465,5 @@ public class LocationModel implements Serializable {
 	public void setPrivate_mode(boolean private_mode) {
 		this.private_mode = private_mode;
 	}
+
 }

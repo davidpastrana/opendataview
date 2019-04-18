@@ -91,7 +91,19 @@
 																							<td><h3>Main configuration</h3></td><td> </td>
 																						</tr>
 																						<tr class="main-config"></tr>
-																					<tr class="main-config">
+																					<tr id="random_color" class="main-config">
+																						<td>Enable Random Color: <i
+																							class="fa fa-info-circle"
+																							data-toggle="tooltip"
+																							data-placement="right"
+																							title="Allows you to change randomly the marker color for each dataset upload"
+																						/></td>
+																						<td><select
+																							wicket:id="random_color"
+																							class="form-control"
+																						/></td>
+																					</tr>
+																					<tr class="hide-color-sel main-config">
 																							<td>Design Your Marker (real size): <i
 																								class="fa fa-info-circle"
 																								data-toggle="tooltip"
@@ -114,12 +126,13 @@
 													</div><!-- end row -->
 									</td>
 									</tr>
+
 									<tr id="active_dictionary" class="main-config">
 										<td>Enable Schema Headers: <i
 											class="fa fa-info-circle"
 											data-toggle="tooltip"
 											data-placement="right"
-											title="Allows to manually create header mappings, having relations of *:1 where 1 is the dictionary type"
+											title="Allows you to manually create header mappings, having relations of *:1 where 1 is the dictionary type"
 										/></td>
 										<td><select
 											wicket:id="active_dictionary"
@@ -133,7 +146,7 @@
 											data-placement="right"
 											title="Available types that can be used for your headers, keeping a structured format"
 										/></td>
-										<td>titles, description, latitudes, longitudes, shape, latlong, data_publishers, emails, urls, phones, cities, postal_codes, working_hours, dates, images</td>
+										<td>titles, description, latitudes, longitudes, shape, latlong, source, emails, urls, phones, cities, postal_codes, working_hours, dates, images</td>
 									</tr>
 									<tr class="dictionary_matches main-config">
 										<td><br /><br />Schema to Map Multiple Headers (use '%' for multiple match, multiple words can be mapped to a single dictionary type, end of row must have a ';' and you can comment line adding '#' to the front): <i
@@ -650,11 +663,10 @@
 									</wicket:enclosure>
 								</table>
 							</div>
-<!-- END CONFIG PROPERTIES -->
-
-  </div>
-  <div class="tab-pane fade" id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab">
-  
+			<!-- END CONFIG PROPERTIES -->
+			
+			  </div>
+			  <div class="tab-pane fade" id="nav-logs" role="tabpanel" aria-labelledby="nav-logs-tab">
   							<span
 								id="linkSaveLogDetails"
 								class="hide"
@@ -670,14 +682,10 @@
 							id="logDetails"
 							class="output form-control"
 							wicket:id="resultsBox"
-							placeholder="Processed file logs will appear here .."
+							placeholder="Processed file logs will appear here ..."
 						></textarea>
-  
- 
-  </div>
-    <div class="tab-pane fade" id="nav-uploads" role="tabpanel" aria-labelledby="nav-uploads-tab">
-    
-    
+					  </div>
+					    <div class="tab-pane fade" id="nav-uploads" role="tabpanel" aria-labelledby="nav-uploads-tab">
     							<span
 								id="removeLocations"
 								class="radio"
@@ -694,11 +702,8 @@
 								type="submit"
 								value="Save Configuration"
 							>Remove All files</button>
-    
-    
-    </div>
-  
-</div>
+						    </div>
+						</div>
 						</form>
 					</div>
 				</div>
@@ -710,8 +715,6 @@
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.css"/>
 		<script src="https://cdn.jsdelivr.net/npm/pickr-widget/dist/pickr.min.js"></script>
 <script>
-
-
 function changeMarker() {
 	  $('#marker-design').html('<svg xmlns="http://www.w3.org/2000/svg" height="'+sc1+'" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(45)"></g></defs><circle style="fill:gray" r="80" opacity="'+oc1+'" /><circle r="65" stroke-width="5" fill="#'+cc1+'" opacity="'+oc1+'" /></svg>');
 	  $('#iconmarker').val(cc1+'#'+sc1+'#'+oc1);
@@ -726,8 +729,6 @@ var cc1 = "E91E63";
 var sc1 = "12";
 var oc1 = "0.9";
 $(function() {
-
-	
 	var marker_info = $('#iconmarker').val().split("#");
 	//console.log("ccs is "+marker_info[0]);
 	//console.log("sc1 is "+marker_info[1]);
@@ -777,7 +778,6 @@ $(function() {
 	       rest: "label",
     	   labels: valMap
    	});
-
 	cc1=marker_info[0];
 	sc1=marker_info[1];
 	oc1=marker_info[2];
@@ -815,7 +815,7 @@ $(function() {
 	        opacity: false,
 	        hue: true,
 
-	        interaction: {
+	     interaction: {
 	            hex: true,
 	            rgba: false,
 	            hsva: false,
@@ -824,28 +824,32 @@ $(function() {
 	            save: false
 	        }
 	    }
-
 	});
-	
-	 if($("#active_dictionary option:selected").text() == "true") {
+	if($("#active_dictionary option:selected").text() == "true") {
 		 	$(".dictionary_matches").show();
-		 } else {
+	} else {
 		 	$(".dictionary_matches").hide();
-		 }
-		 if($("#schema_autodetection option:selected").text() == "true") {
+	}
+	
+	if($("#schema_autodetection option:selected").text() == "true") {
 		 	$(".hide_schema_auto").show();
-		 } else {
+	} else {
 		 	$(".hide_schema_auto").hide();
-		 }
+	}
+	
+	if($("#random_color option:selected").text() == "false") {
+	 	$(".hide-color-sel").show();
+	} else {
+		$(".hide-color-sel").hide();
+	}
 
-		$("#schema_autodetection select").on("change",function(){
-			 if($("#schema_autodetection option:selected").text() == "true") {
-			 	$(".hide_schema_auto").show();
-			 } else {
-			 	$(".hide_schema_auto").hide();
-			 }
-		});
-		 
+	$("#schema_autodetection select").on("change",function(){
+		if($("#schema_autodetection option:selected").text() == "true") {
+			$(".hide_schema_auto").show();
+		} else {
+			$(".hide_schema_auto").hide();
+		}
+	});
 	$("#active_dictionary select").on("change",function(){
 		 if($("#active_dictionary option:selected").text() == "true") {
 		 	$(".dictionary_matches").show();
@@ -853,15 +857,15 @@ $(function() {
 		 	$(".dictionary_matches").hide();
 		 }
 	});
-	
-	$('.fileinput-upload-button').on('click', function()
-	          {
-		 
-	            showBusysign();
-	          }
-	     );
+	$("#random_color select").on("change",function(){
+		 if($("#random_color option:selected").text() == "false") {
+		 	$(".hide-color-sel").show();
+		 } else {
+		 	$(".hide-color-sel").hide();
+		 }
+	});
+	$('.fileinput-upload-button').on('click', function(){showBusysign();});
 });
-
 </script>		
 		<wicket:panel wicket:id="footer" />
 		<!-- /.Footer -->

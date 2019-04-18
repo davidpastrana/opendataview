@@ -11,8 +11,6 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.ArrayList;
 
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -57,102 +55,74 @@ public class GenerateFile extends MainClass {
 			throws FileNotFoundException, UnsupportedEncodingException {
 
 		PrintWriter wr = new PrintWriter(dest, "utf-8");
+		DELIMITER = "'" + DELIMITER + "'";
 
 		// ADD VALUE WHEN WE INSERT SOME NEW FIELD INTO LOCATIONS TABLE - ALWAYS TO ADD
 		// AT THE END - MAKE SURE IS IN BOTH APPENDS AND SAME ORDER
-		wr.append("Title" + DELIMITER + "Description" + DELIMITER + "Type" + DELIMITER + "Address" + DELIMITER
-				+ "Postal code" + DELIMITER + "City" + DELIMITER + "Latitude" + DELIMITER + "Longitude" + DELIMITER
-				+ "Website" + DELIMITER + "Phone" + DELIMITER + "Date" + DELIMITER + "Schedule" + DELIMITER + "Email"
-				+ DELIMITER + "CsvName" + DELIMITER + "Population" + DELIMITER + "Elevation" + DELIMITER + "Last editor"
-				+ DELIMITER + "Data publisher" + DELIMITER + "Published date" + DELIMITER + "Last update" + DELIMITER
-				+ "Description" + DELIMITER + "Marker icon" + DELIMITER + "Extra info");
-		wr.append(NEW_LINE);
+//		wr.append("'Title" + DELIMITER + "Description" + DELIMITER + "Type" + DELIMITER + "Address" + DELIMITER
+//				+ "Postalcode" + DELIMITER + "City" + DELIMITER + "Latitude" + DELIMITER + "Longitude" + DELIMITER
+//				+ "Polygon" + DELIMITER + "Website" + DELIMITER + "Phone" + DELIMITER + "Date" + DELIMITER + "Schedule"
+//				+ DELIMITER + "Email" + DELIMITER + "Filename" + DELIMITER + "Population" + DELIMITER + "Elevation"
+//				+ DELIMITER + "Last editor" + DELIMITER + "Data publisher" + DELIMITER + "Published date" + DELIMITER
+//				+ "Last update" + DELIMITER + "Description" + DELIMITER + "Marker icon" + DELIMITER + "Data'");
+//		wr.append(NEW_LINE);
 
 		for (LocationModel loc : new_format) {
-			wr.append(loc.getName());
+			// if (loc.getLatitude() != null && loc.getLongitude() != null) {
+
+			wr.append("'");
+			wr.append(loc.getName() == null ? "" : loc.getName());
 			wr.append(DELIMITER);
-			wr.append(loc.getDescription());
+			wr.append(loc.getDescription() == null ? "" : loc.getDescription());
 			wr.append(DELIMITER);
-			wr.append(loc.getType());
+			wr.append(loc.getType() == null ? "" : loc.getType());
 			wr.append(DELIMITER);
-			wr.append(loc.getAddress());
+			wr.append(loc.getAddress() == null ? "" : loc.getAddress());
 			wr.append(DELIMITER);
-			wr.append(loc.getPostcode());
+			wr.append(loc.getPostcode() == null ? "" : loc.getPostcode());
 			wr.append(DELIMITER);
-			wr.append(loc.getCity());
+			wr.append(loc.getCity() == null ? "" : loc.getCity());
 			wr.append(DELIMITER);
-			// RoundingMode.DOWN very important to keep decimals constant
-			wr.append(String.valueOf(loc.getLatitude().setScale(6, RoundingMode.FLOOR)));
+			wr.append(loc.getLatitude() == null ? "" : loc.getLatitude().toString().toString());
 			wr.append(DELIMITER);
-			wr.append(String.valueOf(loc.getLongitude().setScale(6, RoundingMode.FLOOR)));
+			wr.append(loc.getLongitude() == null ? "" : loc.getLongitude().toString());
 			wr.append(DELIMITER);
-			wr.append(loc.getWebsite());
+			wr.append(loc.getWebsite() == null ? "" : loc.getWebsite());
 			wr.append(DELIMITER);
-			wr.append(loc.getPhone());
+			wr.append(loc.getPhone() == null ? "" : loc.getPhone());
 			wr.append(DELIMITER);
-			wr.append(loc.getDate());
+			wr.append(loc.getDate() == null ? "" : loc.getDate());
 			wr.append(DELIMITER);
-			wr.append(loc.getSchedule());
+			wr.append(loc.getSchedule() == null ? "" : loc.getSchedule());
 			wr.append(DELIMITER);
-			wr.append(loc.getEmail());
+			wr.append(loc.getEmail() == null ? "" : loc.getEmail());
 			wr.append(DELIMITER);
-			wr.append(loc.getCsvName());
+			wr.append(loc.getFileName() == null ? "" : loc.getFileName());
 			wr.append(DELIMITER);
-			wr.append(loc.getPopulation());
+			wr.append(loc.getPopulation() == null ? "" : loc.getPopulation());
 			wr.append(DELIMITER);
-			wr.append(loc.getElevation());
+			wr.append(loc.getElevation() == null ? "" : loc.getElevation());
 			wr.append(DELIMITER);
-			wr.append(loc.getUsername());
+			wr.append(loc.getUsername() == null ? "" : loc.getUsername());
 			wr.append(DELIMITER);
-			wr.append(loc.getSource());
+			wr.append(loc.getSource() == null ? "" : loc.getSource());
 			wr.append(DELIMITER);
-			wr.append(loc.getDate_published());
+			wr.append(loc.getDate_published() == null ? "" : loc.getDate_published());
 			wr.append(DELIMITER);
-			wr.append(loc.getDate_updated());
+			wr.append(loc.getDate_updated() == null ? "" : loc.getDate_updated());
 			wr.append(DELIMITER);
-			wr.append(loc.getIconmarker());
+			wr.append(loc.getIconmarker() == null ? "" : loc.getIconmarker());
 			wr.append(DELIMITER);
 			wr.append(String.valueOf(loc.getPrivate_mode()));
 			wr.append(DELIMITER);
-			wr.append(loc.getOtherInfo());
+			wr.append(loc.getData() == null ? "" : loc.getData());
+			wr.append("'");
 			wr.append(NEW_LINE);
+
+			// }
 		}
 		wr.close();
 	}
-
-	// CREATE NEW CSV FILE IN ENRICHED DIRECTORY (dest)
-
-//	public static void CreateEnrichedCSV(File source, File dest, ArrayList<LocationModel> new_format)
-//			throws IOException {
-//
-//		PrintWriter wr = new PrintWriter(
-//				dest.toString().replace("new_format", "enriched").replace(".csv", "-enriched.csv"), "utf-8");
-//
-//		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "iso-8859-1"));
-//
-//		int i = 0;
-//
-//		String line;
-//		while ((line = br.readLine()) != null) {
-//			wr.append(line);
-//			if (i == 0) {
-//				wr.append(DELIMITER);
-//				wr.append("Latitude");
-//				wr.append(DELIMITER);
-//				wr.append("Longitude");
-//			} else if (i < new_format.size()) {
-//				wr.append(DELIMITER);
-//				wr.append(String.valueOf(new_format.get(i - 1).getLatitude()));
-//				wr.append(DELIMITER);
-//				wr.append(String.valueOf(new_format.get(i - 1).getLongitude()));
-//			}
-//			wr.append(NEW_LINE);
-//			i++;
-//		}
-//		wr.close();
-//		br.close();
-//
-//	}
 
 	public GenerateFile(PageParameters parameters) throws IOException {
 		super(parameters);
@@ -167,61 +137,63 @@ public class GenerateFile extends MainClass {
 
 		String line;
 
-		log.info("file taken: " + source.getAbsolutePath());
-
-		log.info("line " + br.readLine());
+		// log.info("line " + br.readLine());
 		int no_inserts = 0;
 		while ((line = br.readLine()) != null) {
 
-			// we do not insert the header
-			// if (i != 0) {
-
 			// we split the row by ";" separator
 			String[] value = line.split(DELIMITER);
-			// log.info("out!!");
 			int j = 0;
 
 			int pos_latitude = 6;
 			int pos_longitude = 7;
+			int pos_polygon = 8;
 			// we create the insert just if we have latitude and longitude
-			if (!value[pos_latitude].contentEquals("null") && !value[pos_longitude].contentEquals("null")) {
+			// if (!value[pos_latitude].contentEquals("null") &&
+			// !value[pos_longitude].contentEquals("null")) {
+			try {
+//				log.info("LAT IS " + loc.getLatitude());
+//				log.info("LNG IS " + loc.getLongitude());
 
-				// ADD VALUE WHEN WE INSERT SOME NEW FIELD INTO LOCATIONS TABLE - ALWAYS TO ADD
-				// AT THE END - MAKE SURE IS SAME ORDER
-				buffer.append(
-						"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,otherinfo) VALUES(");
-				j = 0;
-				while (j < value.length) {
-					value[j] = value[j].replaceAll("\'", "").replaceAll("\"", "").replaceAll(",", ";");
+				if ((!value[pos_latitude].isEmpty() && !value[pos_longitude].isEmpty())
+						|| !value[pos_polygon].isEmpty()) {
+					// ADD VALUE WHEN WE INSERT SOME NEW FIELD INTO LOCATIONS TABLE - ALWAYS TO ADD
+					// AT THE END - MAKE SURE IS SAME ORDER
+					buffer.append(
+							"INSERT INTO locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,filename,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,data) VALUES(");
+					j = 0;
+					while (j < value.length) {
+						// value[j] = value[j].replaceAll("\'", "").replaceAll("\"", "").replaceAll(",",
+						// ";");
 
-					// we format strings with single quotes except latitude (position 7) and
-					// longitude (position 8)
-					if (!value[j].contentEquals("null") && j != pos_latitude && j != pos_longitude) {
-						buffer.append("'");
-						buffer.append(value[j]);
-						buffer.append("'");
+						value[j] = value[j].trim().replaceAll("\'", "");
+//						if (!value[j].isEmpty()) {
+//							buffer.append("'" + value[j] + "'");
+//						} else {
+//							buffer.append("''"); // make field empty in database and not null
+//						}
+						if (!value[j].isEmpty() && (j == pos_latitude || j == pos_longitude)) {
+							buffer.append(value[j]);
+						} else if (!value[j].isEmpty()) {
+							buffer.append("'" + value[j] + "'");
+						} else {
+							buffer.append("''"); // make field empty in database and not null
+						}
 
-						// we add lat and long without quotes
-					} else if (j == pos_latitude || j == pos_longitude) {
-						buffer.append(String.valueOf(new BigDecimal(value[j]).setScale(6, RoundingMode.UNNECESSARY)));
-
-						// its a null value
-					} else {
-						buffer.append("''"); // make field empty in database and not null
+						// we insert separator ","
+						if (j != value.length - 1) {
+							buffer.append(DELIMITER2);
+						}
+						j++;
 					}
-
-					// we insert separator ","
-					if (j != value.length - 1) {
-						buffer.append(DELIMITER2);
-					}
-					j++;
+					buffer.append(");");
+					buffer.append(NEW_LINE);
+				} else {
+					no_inserts++;
 				}
-				buffer.append(");");
-				buffer.append(NEW_LINE);
-			} else {
-				no_inserts++;
+			} catch (NumberFormatException e) {
+				log.info("We do not insert!!!! latlng are failing: " + e.getMessage());
 			}
-
 		}
 		if (no_inserts > 0) {
 			log.info("\n\n" + no_inserts + " Failed to upload! either latitude or longitude could be missing.");

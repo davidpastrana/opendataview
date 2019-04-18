@@ -8,12 +8,25 @@
 # Date: 25 of January 2019
 
 #paste here any CKAN url (ending with /action)
+#e.g.http://www.tenerifedata.com/api/3/action/package_show?id=medicina-y-salud
+#e.g.http://www.tenerifedata.com/api/3/action/package_show?id=comercio
+#e.g. https://www.data.gv.at/katalog/api/3/action/package_show?id=almnutzungskartierung-nationalpark-hohe-tauern-erweiterung-fleisstaler
+#e.g. https://www.data.gv.at/katalog/api/3/action/package_show?id=stadt-wien_citybikestandortewien
+#interesting "metadata" fields: name, url, metadata_created, metadata_modified, maintainer_email, maintainer, metadata_linkage, update_frequency, license_id, attribute_description,schema_language
+#"format": "CSV", "format": "XLS", "mimetype": "text/csv"
 url="
+#https://opendata-ajuntament.barcelona.cat/data/api/3/action
 #http://www.tenerifedata.com/api/3/action
-http://opendata-ajuntament.barcelona.cat/data/api/3/action
-https://www.data.gv.at/katalog/api/3/action
-http://opendatastore.brussels/api/3/action
-https://www.offenesdatenportal.de/api/3/action
+#https://www.data.gv.at/katalog/api/3/action
+#http://opendatastore.brussels/api/3/action
+#https://www.offenesdatenportal.de/api/3/action
+#http://data.europa.eu/euodp/data/api/3/action
+https://www.govdata.de/ckan/api/3/action
+https://africaopendata.org/api/3/action
+http://opendata.aragon.es/catalogo/api/3/action
+https://data.qld.gov.au/api/3/action
+http://open.canada.ca/data/api/3/action
+https://data.vulekamali.gov.za/api/3/action
 "
 
 for urlIt in $url; do
@@ -22,15 +35,16 @@ echo "web: $urlIt"
 dir=$(echo $urlIt | cut -d'/' -f3)
 
 [ ! -d /data/$dir ] && mkdir -p ./data/$dir
-[ ! -d /data/$dir/xsl ] && mkdir -p ./data/$dir/xsl
+[ ! -d /data/$dir/xls ] && mkdir -p ./data/$dir/xls
 [ ! -d /data/$dir/logs ] && mkdir -p ./data/$dir/logs
-[ ! -d /data/$dir/xsl_tabs ] && mkdir -p ./data/$dir/xsl_tabs
+[ ! -d /data/$dir/xls_tabs ] && mkdir -p ./data/$dir/xls_tabs
 
 #we get all the results from all packageids
 result=($(curl -s $urlIt/package_list | jq -c '.result | .[]'))
 
 #we loop through every packageid
 for packageIt in "${result[@]}"; do
+
   
 packageId=`echo ${packageIt//\"}`
 
@@ -40,40 +54,102 @@ echo "packageid: $packageId"
 
 ckanUrl=`echo $urlIt/package_show?id=$packageId`
 
+mydir=$(pwd)
+touch $mydir/data/$dir/logs/errors.log
 #we select the formats which we want to download
-results=($(curl -s $ckanUrl | jq -r '.result | .resources[] | select(.url | endswith("xls","xlsx","csv")) | [.name, .url]')) 2>> ./data/$dir/logs/errors.log
+#results=($(curl -s $ckanUrl | jq -r '.result | .resources[] | select(.url | endswith("csv","xls","xlsx")) | [.name, .url]')) 2>> $mydir/data/$dir/logs/errors.log
+results=($(curl -s $ckanUrl | jq -r '.result | .resources[] | select(.format=="CSV") | [.name, .url]')) 2>> $mydir/data/$dir/logs/errors.log
 
 csvName=`echo ${results[@]} | sed 's/\[//g;s/\]//g;s/^ //g'  | tr "," "\n" | tr -d '"' | tr " " _ | head -1`
 csvUrl=`echo ${results[@]} | sed 's/\[//g;s/\]//g;s/^ //g'  | tr "," "\n" | tr -d '"' | tail -1`
+csvUrl=`echo $csvUrl | xargs`
 
 #we print our results we've found
 echo "filename: $csvName"
 echo "fileurl: $csvUrl"
 
-if [[ $csvUrl =~ .*\.(csv) ]]; then
-   echo "CSV File: $csvUrl"
-   curl -s $csvUrl > ./data/$dir/$csvName.csv 2>> ./data/$dir/logs/errors.log
+
+if [[ $csvUrl =~ csv$ ]]; then
+
+   #to slower down api calls
+   #sleep .2
+
+   separator=";"
+   separator2=","
+
+   #check if csv extension exists 
+   if [[ $csvName =~ .*\.csv$ ]]; then
+        echo "CSV name: $mydir/data/$dir/$csvName"
+        echo "CSV url: $csvUrl"
+
+        curl -s $csvUrl > $mydir/data/$dir/$csvName 2>> $mydir/data/$dir/logs/errors.log
+        if `head -1 $mydir/data/$dir/$csvName | grep -q ','`; then
+            echo "we have comma separator"
+            #we add a first column to the csv file with headername "source" and value "csvUrl" of the file
+            awk 'NR==1{sub(/^/,"source'"$separator2"'")} 1' $mydir/data/$dir/$csvName > $mydir/data/$dir/tmp.csv
+            awk 'NR>1{sub(/^/,"'"$csvUrl$separator2"'")} 1' $mydir/data/$dir/tmp.csv > $mydir/data/$dir/tmp2.csv
+        elif `head -1 $mydir/data/$dir/$csvName.csv | grep -q ';'`; then
+            echo "we have semicolon separator"
+            #we add a first column to the csv file with headername "source" and value "csvUrl" of the file
+            awk 'NR==1{sub(/^/,"source'"$separator"'")} 1' $mydir/data/$dir/$csvName > $mydir/data/$dir/tmp.csv
+            awk 'NR>1{sub(/^/,"'"$csvUrl$separator"'")} 1' $mydir/data/$dir/tmp.csv > $mydir/data/$dir/tmp2.csv
+        fi
+        mv $mydir/data/$dir/tmp2.csv $mydir/data/$dir/$csvName
+   else
+        echo "CSV name (changed): $mydir/data/$dir/$csvName.csv"
+        echo "CSV url: $csvUrl"
+
+        curl -s $csvUrl > $mydir/data/$dir/$csvName.csv 2>> $mydir/data/$dir/logs/errors.log
+        if `head -1 $mydir/data/$dir/$csvName.csv | grep -q ','`; then
+            echo "we have comma separator"
+            #we add a first column to the csv file with headername "source" and value "csvUrl" of the file
+            awk 'NR==1{sub(/^/,"source'"$separator2"'")} 1' $mydir/data/$dir/$csvName.csv > $mydir/data/$dir/tmp.csv
+            awk 'NR>1{sub(/^/,"'"$csvUrl$separator2"'")} 1' $mydir/data/$dir/tmp.csv > $mydir/data/$dir/tmp2.csv
+        elif `head -1 $mydir/data/$dir/$csvName.csv | grep -q ';'`; then
+            echo "we have semicolon separator"
+            #we add a first column to the csv file with headername "source" and value "csvUrl" of the file
+            awk 'NR==1{sub(/^/,"source'"$separator"'")} 1' $mydir/data/$dir/$csvName.csv > $mydir/data/$dir/tmp.csv
+            awk 'NR>1{sub(/^/,"'"$csvUrl$separator"'")} 1' $mydir/data/$dir/tmp.csv > $mydir/data/$dir/tmp2.csv
+        fi
+        mv $mydir/data/$dir/tmp2.csv $mydir/data/$dir/$csvName.csv
+   fi
 
 #in case we got XLS or XLSX formats, we convert its stylesheets into single files in CSV format
 elif [[ $csvUrl =~ .*\.(xls|xlsx) ]]; then
 
-    cd ./data/$dir/xsl/ && curl -s -L -O $csvUrl
-    cd ../../..
+    cd $mydir/data/$dir/xls/ && curl -s -L -O $csvUrl
+    cd $mydir
 
     echo "Converting $csvName to CSV ..."
-    ssconvert -S ./data/$dir/xsl/${csvUrl##*/} ./data/$dir/$csvName.csv 2>> ./data/$dir/logs/errors.log
+    ssconvert -S $mydir/data/$dir/xls/${csvUrl##*/} $mydir/data/$dir/xls/$csvName.csv 2>> $mydir/data/$dir/logs/errors.log
 
-    [[ -f ./data/$dir/$csvName.csv.0 ]] && mv ./data/$dir/${csvName}.csv.0 ./data/$dir/${csvName}.csv
-    [[ -f ./data/$dir/$csvName.csv.1 ]] && mv ./data/$dir/${csvName}.csv.1 ./data/$dir/xsl_tabs/${csvName}_1.csv
-    [[ -f ./data/$dir/$csvName.csv.2 ]] && mv ./data/$dir/${csvName}.csv.2 ./data/$dir/xsl_tabs/${csvName}_2.csv
-    [[ -f ./data/$dir/$csvName.csv.3 ]] && mv ./data/$dir/${csvName}.csv.3 ./data/$dir/xsl_tabs/${csvName}_3.csv
-    [[ -f ./data/$dir/$csvName.csv.4 ]] && mv ./data/$dir/${csvName}.csv.4 ./data/$dir/xsl_tabs/${csvName}_4.csv
-    [[ -f ./data/$dir/$csvName.csv.5 ]] && mv ./data/$dir/${csvName}.csv.5 ./data/$dir/xsl_tabs/${csvName}_5.csv
+    #we delay 2ms because of the XLS to CSV conversion
+    #sleep 1
 
+    #first xls spreadsheet will be converted to csv inside "data" folder together with the other csv files
+    [[ -f $mydir/data/$dir/xls/$csvName.csv.0 ]] && mv $mydir/data/$dir/xls/${csvName}.csv.0 $mydir/data/$dir/${csvName}.csv
+    #if `head -1 $mydir/data/$dir/$csvName.csv | grep -q ','`; then
+        #echo "we have comma separator" => after conversion is always comma
+        #we add a first column to the csv file with headername "source" and value "csvUrl" of the file
+    awk 'NR==1{sub(/^/,"source,")} 1' $mydir/data/$dir/$csvName.csv > $mydir/data/$dir/tmp.csv
+    awk 'NR>1{sub(/^/,"'"$csvUrl"',")} 1' $mydir/data/$dir/tmp.csv > $mydir/data/$dir/tmp2.csv
+    #fi
+    mv $mydir/data/$dir/tmp2.csv $mydir/data/$dir/$csvName.csv
+
+    # we transform next existing tabs (spreadsheets limited to 5) into csv inside xls_tabs" folder
+    [[ -f ./data/$dir/xls/$csvName.csv.1 ]] && mv ./data/$dir/xls/${csvName}.csv.1 ./data/$dir/xls_tabs/${csvName}_1.csv
+    [[ -f ./data/$dir/xls/$csvName.csv.2 ]] && mv ./data/$dir/xls/${csvName}.csv.2 ./data/$dir/xls_tabs/${csvName}_2.csv
+    [[ -f ./data/$dir/xls/$csvName.csv.3 ]] && mv ./data/$dir/xls/${csvName}.csv.3 ./data/$dir/xls_tabs/${csvName}_3.csv
+    [[ -f ./data/$dir/xls/$csvName.csv.4 ]] && mv ./data/$dir/xls/${csvName}.csv.4 ./data/$dir/xls_tabs/${csvName}_4.csv
+    [[ -f ./data/$dir/xls/$csvName.csv.5 ]] && mv ./data/$dir/xls/${csvName}.csv.5 ./data/$dir/xls_tabs/${csvName}_5.csv
+    
+: '
 else
     echo "Other File?: $csvUrl!"
-    curl -s $csvUrl > ./data/$dir/$csvName.csv 2>> ./data/$dir/logs/errors.log
+    curl -s $csvUrl > $mydir/data/$dir/$csvName.csv 2>> $mydir/data/$dir/logs/errors.log
+'
 fi
+rm -f $mydir/data/$dir/tmp.csv $mydir/data/$dir/tmp2.csv
 
 done
 done

@@ -94,7 +94,7 @@
 					wicket:id="mapZoomLevel" title="Current Zoom"
 					type="text"
 				/>
-				<input class=hide""
+				<input class="hide"
 					id="geoCoordDistance"
 					wicket:id="geoCoordDistance"
 					type="text"
@@ -145,18 +145,16 @@
 					<div class="radio"
 						wicket:id="listConfig"
 					></div>
-					<br />
 					<p
-						class="h3 list-route"
+						class="h3 list-route top-padding"
 						wicket:id="importedFilesLabel"
 					>Imported datasets:</p>
 					<div
 						class="radio"
 						wicket:id="listLocations"
 					></div>
-					<br />
 										<p
-						class="h3 list-route breakline"
+						class="h3 list-route top-padding breakline"
 						wicket:id="downloadLabel"
 					>Download search:</p>
 						<span
@@ -169,9 +167,9 @@
 							class="hide"
 							wicket:id="sqlLocBackup"
 						/>
-						<a href="#" wicket:id="saveVisibleLocFile" class="breakline">Download CSV</a>
+						<a href="#" wicket:id="saveVisibleLocFile" class="breakline">Download CSV file</a>
 						<a href="#" wicket:id="saveSqlLocBackup" class="padding-bottom breakline">Download SQL Backup</a>
-					<p
+					<!--  <p
 						class="h3 list-route"
 						wicket:id="removeSelectedLabel"
 					>Files to remove:</p>
@@ -182,7 +180,7 @@
 					<button
 						class="btn btn-lg btn-primary"
 						wicket:id="removeSelected"
-					>Remove selected</button>
+					>Remove selected</button>-->
 				</div>
 			</form>
 
@@ -195,70 +193,13 @@
 	<div id="demo-panel" class="wrapper">
     	<div id="container" wicket:id="chart" />
 	</div>
-
-			<!--  <form wicket:id="coordGeoForm">
-
-			</form>-->
-
-
-
-<!--  
-			<span id="switch4" data-toggle="tooltip" data-placement="top" title="Show Graph Duplicate Attributes (slowing down performance)">
-				<input id="showDuplicateAtt" type="checkbox" data-toggle="toggle" />
-        	</span>
-			<span id="switch3" data-toggle="tooltip" data-placement="top" title="Show Private Map">
-				<input id="mapPrivate" type="checkbox" data-toggle="toggle" />
-        	</span>
-			<span id="switch2" data-toggle="tooltip" data-placement="top" title="Disable Clustering (slowing down performance)">
-				<input id="disableClustering" type="checkbox" data-toggle="toggle" />
-        	</span>
-			<span id="switch" data-toggle="tooltip" data-placement="top" title="Enable Fullscreen">
-				<input id="enableFullscreen" type="checkbox" data-toggle="toggle" />
-        	</span>
--->
         	<div id="zoom-overlay">
 				  <button id="zoomOut" class="btn" title="Zoom Out">-</button>
 				  <button id="zoomIn" class="btn" title="Zoom In">+</button>
 			</div>
-
-			<button id="attribution-button" class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample" title="Maps Attribution">?</button>
+			<button id="attribution-button" class="btn btn-primary" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" title="Maps Attribution">?</button>
 			<div id="panel">
-
-
-					<!--  <span class="mapTypeId"> <select
-						id="mapTypeId"
-						class="form-control"
-						title="Type of Layer"
-					>
-							<option value="grayscale">Grayscale</option>
-							<option value="satellite">Satellite</option>
-							<option value="terrain">Terrain</option>
-							<option value="roadmap">Roadmap</option>
-							<option value="route">Route</option>
-							<option value="silver">Silver</option>
-							<option value="night">Night</option>
-							<option value="retro">Retro</option>
-							<option value="light">Light</option>
-							<option value="snow">Snow</option>
-							<option value="monotone">Monotone</option>
-							<option value="nature">Nature</option>
-							<option value="colourful">Colourful</option>
-							<option value="bluewater">BlueWater</option>
-					</select>
-					</span>-->
 				</div>
-			<!-- <div id="color-palette" class="hide">
-				<i
-					class="fa fa-eraser"
-					id="delete-all-button"
-					title="Clear everything which is over the map"
-				/> <i
-					class="fa fa-unlink"
-					id="delete-button"
-					title="Clear after selecting a polygon"
-				/>
-			</div> -->
-			
 			<form wicket:id="showMarkerInfo" class="hide">
 				<input
 					id="idInput2"
@@ -300,7 +241,7 @@
 							<td>Name category: <input
 								class="form-control"
 								type="text"
-								wicket:id="csvName"
+								wicket:id="filename"
 							/></td>
 							<td>Type: <input
 								class="form-control"
@@ -368,9 +309,9 @@
 								type="text"
 								wicket:id="schedule"
 							/></td>
-							<td>Other searchable attributes: <textarea
+							<td>Data: <textarea
 								id="text-location-edit" class="form-control"
-								wicket:id="otherInfo"
+								wicket:id="data2"
 							/></td>
 						</tr>
 						<tr><td><button
@@ -383,56 +324,30 @@
 					</tbody>
 				</table>
 			</form>
-			
-
-			
-			
 		</div>
-		
 		<div class="wrapper">
     <!-- Sidebar -->
     <nav id="sidebar">
     <div id="mly2" />
-				            <div id="dismiss">
+		<div id="dismiss">
             <i class="ion-android-close"></i>
         </div>
-		
 		<div wicket:id="wmc2">
-			    <span wicket:id="locations_counter" />
-							<!--<form wicket:id="showMarkerForm" id="showMarkerForm" />
-							  <i
-					id="closeEdit"
-					
-					class="fa fa-times-circle fa-2x"
-				/>-->
-
-
+			    <span wicket:id="locations_counter2" />
 				<table class="markersTable2">
 				<tr>
 					<td>
 						<table class="markersTableContainer2">
-							<!-- <i id="arrowHideLocationsTable2"
-								class="arrowHideLocation2 arrowHideDirection2 ion-chevron-left" onclick="buttonDisplayLocations();"
-							></i>-->
 							<tr
 								class="row" wicket:id="showMarkerInfoList"
 							>
-								<td><!-- <i
-									class="fa fa-info-circle fa-2x iconInfo"
-									onclick="displayMoreInfo()"
-								/> <i
-									class="fa fa-street-view fa-2x iconStreetView"
-									onclick="displayStreetView()"
-								/>--> 
+								<td>
 									<table class="selectMarkersTable2">
 										<tr>
 											<td>
 												<table class="main-title">
 													<tr>
 														<td>
-														<!-- Do not touch - necessary to show the markers 
-															<span itemprop="csvName" wicket:id="csvName2"
-															class="hide" />-->
 															<span
 															wicket:id="name2"
 															class="title h4"
@@ -442,10 +357,7 @@
 														/> <span id="userPublished2"
 															wicket:id="userPublished2"
 															class="h5"
-														/> <!-- <span
-															wicket:id="userSession2"
-															class="hide"
-														/>  --><span
+														/><span
 															wicket:id="icon_marker2"
 															class="hide"
 														/> <img
@@ -455,18 +367,15 @@
 														<td>
 														<i wicket:id="iconEditInfo" class="fa fa-pencil fa-2x iconEditInfo"
 																onclick="editMarkerInfo()"
-															/><!--  
-															 <i
-																class="fa fa-map fa-2x iconDirection"
-																onclick="displayDirectionTable()"
-															/>-->
+															/>
 														</td>
 													</tr>
-													
 													<tr>
-														<td><span
-															wicket:id="type2"
-														/></td>
+														<td><span wicket:id="filenameTag2" />
+														<span
+															wicket:id="filename2"
+														/>
+														</td>
 													</tr>
 													<tr>
 															<td><span wicket:id="cityTag2" />
@@ -479,10 +388,13 @@
 															</td>
 													</tr>
 												</table>
-
-												
-												
 												<table class="moreInfo2">
+													<tr>
+														<td><span
+															wicket:id="sourcePublishedTag2"
+														/></td>
+														<td><span wicket:id="sourcePublished2" /></td>
+													</tr>
 													<tr>
 														<td><span
 															wicket:id="descriptionTag2"
@@ -532,12 +444,6 @@
 													</tr>
 													<tr>
 														<td><span
-															wicket:id="otherTag2"
-														/></td>
-														<td><span class="other2" wicket:id="other2" /></td>
-													</tr>
-													<tr>
-														<td><span
 															wicket:id="datePublishedTag2"
 														/></td>
 														<td><span wicket:id="datePublished2" /></td>
@@ -547,12 +453,6 @@
 															wicket:id="dateUpdatedTag2"
 														/></td>
 														<td><span wicket:id="dateUpdated2" /></td>
-													</tr>
-													<tr>
-														<td><span
-															wicket:id="sourcePublishedTag2"
-														/></td>
-														<td><span wicket:id="sourcePublished2" /></td>
 													</tr>
 													<tr>
 														<td><span
@@ -572,33 +472,28 @@
 															<span id="location_id" wicket:id="id_location2" />
 														</td>
 													</tr>
+													<tr>
+														<td><span
+															wicket:id="otherTag2"
+														/></td>
+														<td><span class="other2" wicket:id="other2" /></td>
+													</tr>
 												</table>
 												
 											</td>
 										</tr>
-									</table></td>
+								</table></td>
 							</tr>
 						</table>
 					</td>
 				</tr>
-				<!--  
-				<tr>
-					<td><wicket:panel wicket:id="direction2" /></td>
-				</tr>
-				-->
 			</table>
-			
-
-
 		</div>
-		   </nav>
-
+		</nav>
 </div>
 	<span id="jsonObject" />
     <!-- IMPORTANT - Dark Overlay element when click out from the Markerinfo Sidebar -->
     <div class="overlay" />
-
-	<!--  ><div wicket:id="wmc" />-->
 </div>
 </wicket:extend>
 </body>

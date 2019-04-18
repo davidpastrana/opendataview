@@ -73,21 +73,13 @@ public class GeonamesSQLQueries extends MainClass {
 						DebugInfo(ps, rs);
 					return rs;
 				}
-			} else {
-				ps = conn.prepareStatement(st2postcode);
-				ps.setString(1, String.valueOf(postcode));
-				rs = ps.executeQuery();
-
-				if (!rs.next()) {
-					if (geonamesdebugmode)
-						DebugError(ps, rs);
-					return null;
-				} else {
-					if (geonamesdebugmode)
-						DebugInfo(ps, rs);
-					return rs;
-				}
-			}
+			} /*
+				 * else { ps = conn.prepareStatement(st2postcode); ps.setString(1,
+				 * String.valueOf(postcode)); rs = ps.executeQuery();
+				 * 
+				 * if (!rs.next()) { if (geonamesdebugmode) DebugError(ps, rs); return null; }
+				 * else { if (geonamesdebugmode) DebugInfo(ps, rs); return rs; } }
+				 */
 		}
 
 		return null;
@@ -150,17 +142,24 @@ public class GeonamesSQLQueries extends MainClass {
 			}
 			JSONObject jso = new JSONObject(jsonFormat.toString());
 			String status = jso.getString("status");
-			if (status.equals("OVER_QUERY_LIMIT")) {
+			if (status.equals("REQUEST_DENIED")) {
+				log.info("GoogleMaps API Key '" + googleMapsAPI
+						+ "' for Geocoding NOT valid! be aware that GoogleMaps is the most accurate when finding places.");
+				outputinfo.append("\nGoogleMaps API Key '" + googleMapsAPI
+						+ "' for Geocoding NOT valid! be aware that GoogleMaps is the most accurate when finding places.");
+			} else if (status.equals("OVER_QUERY_LIMIT")) {
 
 				try {
 					log.info("Error ! Timeout for location " + location);
+					outputinfo.append("\nError ! Timeout for location " + location);
 					Thread.sleep(500);
 				} catch (InterruptedException ex) {
 					Thread.currentThread().interrupt();
 				}
 
 			} else if (status.equals("ZERO_RESULTS")) {
-				log.info("ZERO RESULTS FOR PLACE " + location);
+				log.info("NO RESULTS from GoogleMaps for place: " + location);
+				outputinfo.append("\nNO RESULTS from GoogleMaps for place: " + location);
 
 			} else {
 				log.info(status.toString());
@@ -300,7 +299,7 @@ public class GeonamesSQLQueries extends MainClass {
 				indexOfWhere = input.indexOf(" where "); // notice the spaces
 				input.insert(indexOfWhere + 7, "country = '" + code_found + "' and ");
 				st1city = input.toString();
-				input = new StringBuilder(st2city);
+				// input = new StringBuilder(st2city);
 				indexOfWhere = input.indexOf(" where "); // notice the spaces
 				input.insert(indexOfWhere + 7, "country = '" + code_found + "' and ");
 				executed = true;

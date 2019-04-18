@@ -22,30 +22,30 @@
 		
 		<h1>Uploading a CSV file</h1>(After being registered and logging in into your Configuration Panel, you can start dragging multiple files in CSV format - before, you can also change the marker colors and adapt the schema mapping to your own needs)
 		<br /><br />
-		In this example, we first upload a file (city_walk.csv) setting the marker to green color and then we re-upload that same file changing the markers to purple color:
+		In the example below, we first upload a file (city_walk.csv) setting the marker to green color to later re-upload that same file changing the markers color to purple (this can be done with any other field via the Schema-mapping configuration):
 		<br /><br />
 		<div class='youtube-player' data-id='c93iQBMO0Pg'></div>
 		<br /><br /><br /><br />
 		
 		
-		<h1>Using your own Schema mapping to match any header field</h1>(You can use any desired header pattern adding wildcard symbol '%' and use multiple csv-header tags (seperated by comma) to map them to the desired dictionary words - Dictionary words are defined below)<br /><br />
+		<h1>Using your own Schema mapping config to match any header field</h1>(You can use any desired header pattern adding wildcard symbol '%' and use multiple csv-header tags (seperated by comma) to map them to the desired dictionary words - Dictionary words are defined below)<br /><br />
 		<div class='youtube-player' data-id='lSePb3lYi2A'></div>
 		<br /><br />
 		<h4><strong>Dictionary words</strong></h4>
-		id, name, csvname, latitude, longitude, email, username, website, source, otherinfo, description, date_published, date_updated, address, archive, city, country, currency, date, document, elevation, iconmarker, number, percentage, phone, population, postcode, private_mode, schedule, street, type, urlimage, year
+		id, name, filename, latitude, longitude, email, username, website, source, data, description, date_published, date_updated, address, archive, city, country, currency, date, document, elevation, iconmarker, number, percentage, phone, population, postcode, private_mode, schedule, street, type, image, year
 		
 		<br /><br /><br /><br />
 		
 		
 		<h1>Creating SQL backup files - Keeping your data safe</h1>(SQL backups can be created after searching the desired information, delete any files without worries and restore the backup to its original state)<br /><br />
-		<div class='youtube-player' data-id='lSePb3lYi2A'></div>
+		<div class='youtube-player' data-id='sm4iBdztH2k'></div>
 		<br /><br /><br /><br />
 		
 		
 		
-		<h1>API Exposure - All information gets exposed via location id or dataset name</h1> (responses format are in JSON)<br /><br />
+		<h1>API Exposure - All information gets exposed via the location Id's and dataset names</h1> (responses format are in JSON)<br /><br />
 		<div class='youtube-player' data-id='Im1LLM7g7nc'></div>
-		<br /><br />
+		<br />
 		<code>
 		https://www.opendataview.com/api/datasets<br />
 		https://www.opendataview.com/api/datasets/{dataset_name}</code><br />
@@ -61,35 +61,35 @@
 		<br /><br /><br /><br />
 		
 		
-		<h1>Search via SQL Query language - Query data which was auto-detected or fields which you schema-mapped</h1> (in front of the sql-query requires to write <strong>'sql:'</strong>, must have sql format and appear after the sql-clause <strong>'where'</strong>) - Dictionary words you can provide are below:<br /><br />
+		<h1>Search via SQL Query language - Query your auto recognized data or query your own schema-mapped data</h1> (in front of the sql-query requires to write <strong>'sql:'</strong>, must have sql format and appear after the sql-clause <strong>'where'</strong>) - Dictionary words you can provide are below:<br /><br />
 		<div class='youtube-player' data-id='YZzH8fgGdPA'></div>
-		<br /><br />
+		<br />
 		The following samples can be typed in into the search box (remember to always include 'sql:' name in front of the query, otherwise will make a standard search):<br />
 		e.g.<code>
 		sql: latitude &gt;= 48 and longitude &lt;= 17<br />
 		sql: latitude &gt; 28 and longitude &lt; -16<br />
-		sql: lower(otherinfo) like '%citybikeogd%'<br />
-		sql: lower(otherinfo) like '%fid:%spazierpunktogd%'<br />
-		sql: (lower(otherinfo) like '%fid:%parkanlageogd%' or lower(otherinfo) like '%trinkbrunnen%1%')<br />
-		sql: (lower(otherinfo) like '%fid:%parkanlageogd%' or lower(otherinfo) like '%hundezone%1%')<br />
-		sql: (lower(otherinfo) like '%bezirk: 1 %' or lower(otherinfo) like '%zip: 1010%')<br />
-		sql: csvname='city_walk.csv' and description &lt;&gt; ''<br />
-		sql: csvname='city_walk.csv' and description like ''<br />
+		sql: lower(data) like '%citybikeogd%'<br />
+		sql: lower(data) like '%fid:%spazierpunktogd%'<br />
+		sql: (lower(data) like '%fid:%parkanlageogd%' or lower(data) like '%trinkbrunnen%1%')<br />
+		sql: (lower(data) like '%fid:%parkanlageogd%' or lower(data) like '%hundezone%1%')<br />
+		sql: (lower(data) like '%bezirk: 1 %' or lower(data) like '%zip: 1010%')<br />
+		sql: filename='city_walk.csv' and description &lt;&gt; ''<br />
+		sql: filename='city_walk.csv' and description like ''<br />
 		sql: lower(name) like '%neue donau%'<br />
 		sql: lower(description) like '%oper%'<br />
 		sql: name like 'Polizei%'<br />
 		sql: username = 'admin'<br />
 		sql: id &gt; 1 and id &lt;= 5<br />
-		sql: csvname = 'Police.csv'<br />
+		sql: filename = 'Police.csv'<br />
 		sql: date_published = 'March 18 2019'<br />
 		sql: date_updated = 'March 18 2019'<br /><br />
 		</code>
 		<h4><strong>Dictionary words</strong></h4>
-		id, name, csvname, latitude, longitude, email, username, website, source, otherinfo, description, date_published, date_updated, address, archive, city, country, currency, date, document, elevation, iconmarker, number, percentage, phone, population, postcode, private_mode, schedule, street, type, urlimage, year
+		id, name, filename, latitude, longitude, email, username, website, source, data, description, date_published, date_updated, address, archive, city, country, currency, date, document, elevation, iconmarker, number, percentage, phone, population, postcode, private_mode, schedule, street, type, image, year
 		<br /><br /><br /><br />
 		
 		
-		<h1>Search any attribute - Navigate through the most repeated fields</h1>
+		<h1>Search any attribute and navigate through the ones most repeated</h1>(You can enable the graph option from the top-right gear icon and see which attributes repeat most)
 		<br /><br />
 		<div class='youtube-player' data-id='mrsme5RVpmg'></div>
 		<br /><br /><br /><br />
@@ -98,7 +98,7 @@
 		<br /><br />
 		<div class='youtube-player' data-id='34g31qrzYHU'></div>
 		<br />
-		After pressing the button (next to the magnifier-search icon), you can later adjust the distance from the top-left slider and drag the marker to any other desired location.<br /><br />
+		After pressing the button (next to the magnifier icon) you can adjust the Km distance from the top-left slider, you can also drag the marker to any other desired place.<br /><br />
 		<br /><br />
 		
 		
@@ -112,7 +112,7 @@
 		
 		
 		
-		<h1>Open layers - Tweak to your preferred layouts</h1>(Using Leaflet JS for the layers and WebGL Leaflet.glify to plot the markers)
+		<h1>Open layers - Tweak the layout as you most like</h1>(Using Leaflet JS for the layers and WebGL Leaflet.glify to plot the markers)
 		<br /><br />
 		<div class='youtube-player' data-id='7mLXexTr9tQ'></div>
 		<br /><br />OpenStreetMap layer:<br />
@@ -122,7 +122,7 @@
 		Satellite layer:<br />
 		<a href="https://www.opendataview.com/search?value=karlsplatz&map=satellite" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=satellite</a><br />
 		Topography layer:<br />
-		<a href="https://www.opendataview.com/search?value=karlsplatz&map=topography" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=topography</a><br />
+		<a href="https://www.opendataview.com/search?value=karlsplatz&map=topography" target="_blank">https://www.opendataview.com/search?value=karlsplatz&map=topography</a>
 		<br /><br /><br /><br />
 		
 		
@@ -152,7 +152,46 @@
 		<br />
 		Swimming places in Vienna (where the 22nd district has the highest amount):<br />
 		<a href="https://www.opendataview.com/search?value=swimming_places&zoom=13&fullscreen=true&map=dark&group=bezirk" target="_blank">https://www.opendataview.com/search?value=swimming_places&zoom=13&fullscreen=true&map=dark&group=bezirk</a><br />
+		<br /><br /><br /><br />
 
+
+		<h1>Development - Helpful commands to collaborate and improve as a principle of this project</h1>
+		<h1><i>Share Data and Share Knowledge!</i></h1>
+		(Working and tested with the latest versions of Tomcat 9, PostgreSQL 11 and Java JRE 8)
+		<br /><br />
+<code>
+#Clone Github repository to your server<br />
+git clone https://github.com/davidpastrana/opendataview.git<br />
+<br />
+#Default database configuration - locally restricted<br />
+Database name:  opendataview<br />
+User (with all privileges): postgres<br />
+Password (with all privileges): postgres<br />
+<br />
+#In case your war file is named opendataview.war, you would run the following:<br />
+rm -rf /opt/tomcat/webapps/opendataview /opt/tomcat/webapps/opendataview.war<br />
+#now you can upload the exported project war file inside /opt/tomcat/webapps/, either using FileZilla or SSH<br />
+<br />
+#Close all the open DB sessions<br />
+psql -U postgres<br />
+SELECT pg_terminate_backend(pid)<br />
+FROM pg_stat_get_activity(NULL::integer)<br />
+WHERE datid=(SELECT oid from pg_database where datname = 'opendataview');<br />
+<br />
+#Recreate database and privileges for a clean installation<br />
+drop database opendataview;<br />
+create database opendataview;<br />
+grant all privileges on database opendataview to postgres;<br />
+\q<br />
+<br />
+#Restart database PostgreSQL 11<br />
+service postgresql-11 restart<br />
+<br />
+#Restart Apache Tomcat 9<br />
+/opt/tomcat/bin/shutdown.sh<br />
+/opt/tomcat/bin/startup.sh<br />
+</code>
+<br /><br /><br /><br />
 		</section>
 		</div>
 		</div>

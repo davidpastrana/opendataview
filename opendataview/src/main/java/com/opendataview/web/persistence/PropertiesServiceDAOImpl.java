@@ -35,9 +35,9 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 	@Transactional
 	public List<PropertiesModel> readPropertiesModel(String user) throws DataAccessException {
 
-		Query query = getEntityManager().createQuery("select a from properties a where a.username='" + user + "'",
-				PropertiesModel.class);
-		List<PropertiesModel> resultList = query.getResultList();
+		List<PropertiesModel> resultList = getEntityManager()
+				.createQuery("select a from properties a where a.username='" + user + "'", PropertiesModel.class)
+				.getResultList();
 		return resultList;
 	}
 
@@ -48,7 +48,7 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 		// Exception to only allow the admin user to make changes!
 		if (propModel.getWeb_dbdriver() == null) {
 
-			Iterator itr = getEntityManager()
+			Iterator<?> itr = getEntityManager()
 					.createQuery(
 							"select web_dbdriver,web_dburl,web_dbusr,web_dbpwd from properties where username='admin'")
 					.getResultList().iterator();
@@ -87,24 +87,26 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 
 			// 38 field in properties table
 			Query query = getEntityManager().createNativeQuery(
-					"INSERT INTO properties(id,mapsAPI,executeSQLqueries,autodetectSchema,fieldtypesdebugmode,active_dictionary,dictionary_matches,nrowchecks,pvalue_nrowchecks,imageRegex, phoneRegex,cityRegex,archiveRegex,documentRegex,openinghoursRegex,dateRegex,yearRegex,currencyRegex,percentageRegex,postcodeRegex, nutsRegex,shapeRegex,latitudeRegex,longitudeRegex,latlngRegex,possiblenameRegex,countrycode,geonames_dbdriver,geonames_dburl,geonames_dbusr, geonames_dbpwd,web_dbdriver,web_dburl,web_dbusr,web_dbpwd,st1postcode,st1city,geonamesdebugmode,descriptionRegex,iconmarker,private_mode) VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?)");
+					"INSERT INTO properties(id,mapsAPI,executeSQLqueries,autodetectSchema,fieldtypesdebugmode,active_dictionary,dictionary_matches,nrowchecks,pvalue_nrowchecks,imageRegex, phoneRegex,cityRegex,archiveRegex,documentRegex,openinghoursRegex,dateRegex,yearRegex,currencyRegex,percentageRegex,postcodeRegex, nutsRegex,shapeRegex,latitudeRegex,longitudeRegex,latlngRegex,possiblenameRegex,countrycode,geonames_dbdriver,geonames_dburl,geonames_dbusr, geonames_dbpwd,web_dbdriver,web_dburl,web_dbusr,web_dbpwd,st1postcode,st1city,geonamesdebugmode,descriptionRegex,iconmarker,private_mode,random_color) VALUES (?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?, ?,?,?,?,?,?,?,?,?,?,?,?)");
 
 			query.setParameter(1, 1);
-			query.setParameter(2, "AIzaSyDadUi1huN5fz0Z15duVzgiS1mjXsE89oE");
-			query.setParameter(3, false);
+			query.setParameter(2, "AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o");
+			query.setParameter(3, true);
 			query.setParameter(4, true);
 			query.setParameter(5, true);
 			query.setParameter(6, true);
 			query.setParameter(7,
-					"%title%, %name%, nom%, artbez, parkanlage, bezeichnung, station : titles;\n"
-							+ "%description%, %comment%, bemerkung: description;\n"
-							+ "%latitud%, %coord%x%, lat, breitegrad : latitudes;\n"
-							+ "%longitud%, %coord%y%, lng, long, laengengrad : longitudes;\n"
-							+ "%geom%, shape : shape;\n" + "#coord% : latlong;\n" + "%publisher% : data_publishers;\n"
-							+ "%mail, correo : emails;\n" + "web%, %url%, link, %ftp%, %homepage% : urls;\n"
-							+ "phone, tel%, tf: phones;\n" + "city, place, %address%, adresse : cities;\n"
-							+ "zipcode, postal%, cp : postal_codes;\n" + "%hours, %open%, %working% : working_hours;\n"
-							+ "%date% : dates;\n" + "%image%, %img%, %gif% : images;");
+					"%title%,%name%, nom%, parkanlage, bezeichnung, station,denominacion,naam,nom,Text13id: titles;\n"
+							+ "%description%, %comment%, bemerkung,parada: description;\n"
+							+ "%latitud%, %coord%x%, lat, breitegrad,point_x : latitudes;\n"
+							+ "%longitud%, %coord%y%,lon, lng, long, laengengrad,point_y : longitudes;\n"
+							+ "%geom%, shape : shape;\n" + "%coördinaten,coord%: latlong;\n" + "source:source;\n"
+							+ "%mail, correo,e-mail% : emails;\n" + "web%, %url%, link, %ftp%, %homepage% : urls;\n"
+							+ "phone, tel%, tf,telefoonnummer: phones;\n"
+							+ "city, place, %address%, adresse,adres : cities;\n"
+							+ "zipcode, postal%, cp,bez,postcode, %postal: postal_codes;\n"
+							+ "%hours, %open%, %working% : working_hours;\n" + "%date% : dates;\n"
+							+ "%image%, %img%, %gif% : images;\n" + "openingsuren:schedule;");
 			query.setParameter(8, "10");
 			query.setParameter(9, "0.5");
 			query.setParameter(10, ".*.(jpg|gif|png|bmp|ico)$");
@@ -143,6 +145,7 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 			query.setParameter(39, "[\\s\\S]{100,}");
 			query.setParameter(40, "E91E63#12#12.9");
 			query.setParameter(41, false);
+			query.setParameter(42, true);
 
 			query.executeUpdate();
 			clone = entityManager.find(PropertiesModel.class, (long) 1);
@@ -151,6 +154,8 @@ public class PropertiesServiceDAOImpl implements PropertiesServiceDAO {
 		entityManager.flush();
 		clone.setId((long) 0);
 		clone.setUsername(user);
+
+		// TODO
 		entityManager.merge(clone);
 		setEntityManager(entityManager);
 	}

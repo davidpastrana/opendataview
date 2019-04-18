@@ -31,6 +31,8 @@ public class PropertiesModel implements Serializable {
 	protected boolean fieldtypesdebugmode;
 	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
 	protected boolean active_dictionary;
+	@Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
+	protected boolean random_color;
 	@Column(columnDefinition = "TEXT")
 	protected String dictionary_matches;
 	@Column(columnDefinition = "TEXT")
@@ -440,5 +442,13 @@ public class PropertiesModel implements Serializable {
 
 	public void setPrivate_mode(boolean private_mode) {
 		this.private_mode = private_mode;
+	}
+
+	public boolean getRandom_color() {
+		return random_color;
+	}
+
+	public void setRandom_color(boolean random_color) {
+		this.random_color = random_color;
 	}
 }

@@ -16,7 +16,7 @@ http://www.springframework.org/schema/tx
 	<bean id="jpaVendorAdapter"
 		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
 		<property name="databasePlatform"
-			value="org.hibernate.dialect.PostgreSQL82Dialect" />
+			value="org.hibernate.spatial.dialect.postgis.PostgisDialect" />
 		<property name="generateDdl" value="true" />
 		<property name="showSql" value="false" />
 	</bean>

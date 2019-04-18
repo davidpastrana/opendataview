@@ -1,14 +1,10 @@
 package com.opendataview.web.pages.properties;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -122,25 +118,25 @@ public class SetPropertiesPage extends BasePage {
 		sep.add(";");
 	}
 
-	public List<String> showSampleCSV(FileUpload uploadedFile) {
-		List<String> sampleRows = null;
-		try {
-			BufferedReader csvFile = null;
-			String datasetFile = upload_folder + uploadedFile.getClientFileName();
-
-			csvFile = new BufferedReader(
-					new InputStreamReader(new FileInputStream(datasetFile), StandardCharsets.ISO_8859_1));
-			String line1 = csvFile.readLine();
-			String line2 = csvFile.readLine();
-			String line3 = csvFile.readLine();
-			csvFile.close();
-			sampleRows = Arrays.asList(line1, line2, line3);
-
-		} catch (IOException e) {
-			log.error("Error while reading from csv " + e.getMessage());
-		}
-		return sampleRows;
-	}
+//	public List<String> showSampleCSV(FileUpload uploadedFile) {
+//		List<String> sampleRows = null;
+//		try {
+//			BufferedReader csvFile = null;
+//			String datasetFile = upload_folder + uploadedFile.getClientFileName();
+//
+//			csvFile = new BufferedReader(
+//					new InputStreamReader(new FileInputStream(datasetFile), StandardCharsets.UTF_8));
+//			String line1 = csvFile.readLine();
+//			String line2 = csvFile.readLine();
+//			String line3 = csvFile.readLine();
+//			csvFile.close();
+//			sampleRows = Arrays.asList(line1, line2, line3);
+//
+//		} catch (IOException e) {
+//			log.error("Error while reading from csv " + e.getMessage());
+//		}
+//		return sampleRows;
+//	}
 
 	String user = null;
 
@@ -167,9 +163,9 @@ public class SetPropertiesPage extends BasePage {
 			names.clear();
 
 			for (int i = 0; i < origList.size(); i++) {
-				if (!names.contains(origList.get(i).getCsvName()) && origList.get(i).getUsername() != null
+				if (!names.contains(origList.get(i).getFileName()) && origList.get(i).getUsername() != null
 						&& origList.get(i).getUsername().contentEquals(session.getAttribute("user_name").toString())) {
-					names.add(origList.get(i).getCsvName());
+					names.add(origList.get(i).getFileName());
 				}
 			}
 
@@ -242,19 +238,9 @@ public class SetPropertiesPage extends BasePage {
 					item.add(new DropDownChoice<Boolean>("fieldtypesdebugmode",
 							new PropertyModel<Boolean>(item.getModelObject(), "fieldtypesdebugmode"),
 							Arrays.asList(true, false)));
-
-//            item.add(new TextField<String>("csvfiles_dir",new PropertyModel<String>(item.getModelObject(),
-//                    "csvfiles_dir")));
-//            item.add(new TextField<String>("tmp_dir",new PropertyModel<String>(item.getModelObject(),
-//                    "tmp_dir")));
-//            item.add(new TextField<String>("processed_dir",new PropertyModel<String>(item.getModelObject(),
-//                    "processed_dir")));
-//            item.add(new TextField<String>("missinggeoreference_dir",new PropertyModel<String>(item.getModelObject(),
-//                    "missinggeoreference_dir")));
-//    item.add(new TextField<String>("sqlinserts_file",new PropertyModel<String>(item.getModelObject(),
-//                    "sqlinserts_file")));
-//    item.add(new TextField<String>("newformat_dir",new PropertyModel<String>(item.getModelObject(),
-//                    "newformat_dir")));
+					item.add(new DropDownChoice<Boolean>("random_color",
+							new PropertyModel<Boolean>(item.getModelObject(), "random_color"),
+							Arrays.asList(true, false)));
 					item.add(new DropDownChoice<Boolean>("active_dictionary",
 							new PropertyModel<Boolean>(item.getModelObject(), "active_dictionary"),
 							Arrays.asList(true, false)));
@@ -414,8 +400,6 @@ public class SetPropertiesPage extends BasePage {
 				public void onSubmit() {
 					super.onSubmit();
 					if (propertiesServiceDAO.readPropertiesModel(user).size() != 0) {
-						// list = locationsServiceDAO.readLocationModel();
-						log.info("we are here");
 						locationServiceDAO.removeAllLocations(user);
 						feedbackPanel.setVisible(false);
 					}
@@ -465,32 +449,13 @@ public class SetPropertiesPage extends BasePage {
 				deleteAllUploads.setVisible(true);
 			}
 
-//			final Button retrieveCKAN = new Button("retrieveCKAN") {
-//
-//				private static final long serialVersionUID = 1L;
-//
-//				@Override
-//				public void onSubmit() {
-//					super.onSubmit();
-//					ClassLoader classLoader = getClass().getClassLoader();
-//					String[] cmd = new String[] { "/bin/sh", classLoader.getResource("api_exec.sh").getFile() };
-//					try {
-//						Process pr = Runtime.getRuntime().exec(cmd);
-//					} catch (IOException e) {
-//						e.printStackTrace();
-//					}
-//				}
-//			};
-//			form.add(retrieveCKAN);
 			resultsBox = new TextArea<String>("resultsBox", textResult);
 			resultsBox.setOutputMarkupPlaceholderTag(true);
 			form.add(resultsBox);
 
 			if (session.getAttribute("user_name").toString().contentEquals("admin")) {
-				// retrieveCKAN.setVisible(true);
 				admin_user_visibility.setVisible(true);
 			} else {
-				// retrieveCKAN.setVisible(false);
 				admin_user_visibility.setVisible(false);
 			}
 
@@ -543,12 +508,14 @@ public class SetPropertiesPage extends BasePage {
 									upload.writeTo(newFile);
 
 									// clear only if its first file
-									if (countfile == 1) {
-										clear = true;
-									} else {
-										clear = false;
-									}
-									MainClass.start(upload_folder + "uploads/", newFile, feedbackPanel, clear, user);
+//									if (countfile == 1) {
+//										clear = true;
+//									} else {
+//										clear = false;
+//										
+//									}
+									MainClass.start(upload_folder + "uploads/", newFile, feedbackPanel,
+											fileUploads.size(), user);
 
 								} catch (Exception ex) {
 									StringWriter errors = new StringWriter();
@@ -599,7 +566,8 @@ public class SetPropertiesPage extends BasePage {
 									} else {
 										clear = false;
 									}
-									MainClass.start(upload_folder + "/uploads/", newFile, feedbackPanel, clear, user);
+									MainClass.start(upload_folder + "/uploads/", newFile, feedbackPanel,
+											fileUploads.size(), user);
 								} catch (Exception e) {
 									e.printStackTrace();
 								}

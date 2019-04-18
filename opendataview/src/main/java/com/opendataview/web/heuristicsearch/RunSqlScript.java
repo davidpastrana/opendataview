@@ -14,6 +14,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import javax.persistence.PersistenceException;
 
@@ -32,9 +33,8 @@ public class RunSqlScript {
 
 		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "utf-8"));
 
-		// we return the greatest id or 0 as the starting id
+		// we return the greatest id or 0 in case is the first insert-id
 		String sql = "SELECT coalesce(max(id), 0) FROM locations";
-
 		try {
 			PreparedStatement ps = conn.prepareStatement(sql);
 			ResultSet rs = ps.executeQuery();
@@ -45,27 +45,32 @@ public class RunSqlScript {
 
 			String line = br.readLine();
 			if (line == null) {
-				log.info("File empty! No inserts to execute.");
-				outputinfo.append("File empty! No inserts to execute.");
+				log.info("\nFile empty! No inserts to execute.");
+				outputinfo.append("\n\nFile empty! No inserts to execute.");
 			}
 
 			boolean hasid = false;
 			boolean isupdate = false;
 			int countinserts = 0;
-
 			int num_updates = 0;
 			int num_inserts = 0;
 			while (line != null) {
 				new_id++;
 
-				String queryid_field = line.split(",")[0].split("\\(")[1].toLowerCase();
-
-				// splits on colon and gets the first part being "INSERT INTO locations(id"
-				String queryid_value = line.replaceAll("'", "").split("VALUES\\(")[1].split(",")[0];
+				hasid = line.contains("INSERT INTO locations(id");
 
 				List<String> listValues = new ArrayList<String>();
-				listValues = Arrays.asList(line.replaceAll("'", "").split("VALUES\\(")[1].split("\\);$")[0].split(","));
+				listValues = Arrays.asList(
+						line.split("VALUES\\(")[1].split("\\);$")[0].split(",(?=(?:[^\']*\'[^\']*\')*[^\']*$)"));
+
+				// we clean all single quotes
+				for (int i = 0; i < listValues.size(); i++) {
+					listValues.set(i, listValues.get(i).replaceAll("'", ""));
+				}
 				// log.info("\n\nvalues1 " + Arrays.asList(listValues));
+				// "INSERT INTO
+				// locations(name,description,type,address,postcode,city,latitude,longitude,website,phone,date,schedule,email,filename,population,elevation,username,source,date_published,date_updated,iconmarker,private_mode,data)
+				// VALUES(");
 				LocationModel o = new LocationModel();
 				o.setName(listValues.get(0));
 				o.setDescription(listValues.get(1));
@@ -80,7 +85,7 @@ public class RunSqlScript {
 				o.setDate(listValues.get(10));
 				o.setSchedule(listValues.get(11));
 				o.setEmail(listValues.get(12));
-				o.setCsvName(listValues.get(13));
+				o.setFileName(listValues.get(13));
 				o.setPopulation(listValues.get(14));
 				o.setElevation(listValues.get(15));
 				o.setUsername(listValues.get(16));
@@ -89,45 +94,52 @@ public class RunSqlScript {
 				o.setDate_updated(listValues.get(19));
 				o.setIconmarker(listValues.get(20));
 				o.setPrivate_mode(Boolean.valueOf(listValues.get(21)));
-				o.setOtherInfo(listValues.get(22));
-				// log.info("\n\nvalues2 " + Arrays.asList(listValues));
+				o.setData(listValues.get(22));
 
-				// check if requires an sql update or not, by executing the inster query
-
-//			log.info("list size is: " + listValues.size());
+				// check if requires an sql update or not, and execute the corresponding query
 				// log.info("query id value is: " + queryid_value);
 				if (listValues != null) {
-					if (queryid_field.contentEquals("id")) {
-						hasid = true;
-						isupdate = locationServiceDAO.checkLocationExistanceByID(queryid_value);
-					} else {
-
-						isupdate = locationServiceDAO.checkLocationExistanceByOtherName(o);
-
+					try {
+						if (hasid) {
+							// we take the id value from the query
+							Pattern pattern = Pattern.compile("\\((.*?)\\,");
+							String queryid_value = pattern.matcher(line).group(2);
+							isupdate = locationServiceDAO.checkLocationExistanceById(queryid_value);
+						} else if (!listValues.get(6).equals("null") && !listValues.get(7).equals("null")) {
+							isupdate = locationServiceDAO.checkLocationExistanceByNameLatLng(o);
+						}
+					} catch (PersistenceException | NullPointerException e) {
+						log.error("Error (CheckUpdate): " + e);
+						outputinfo.append("\n\nError database (CheckUpdate):  " + e.getLocalizedMessage());
 					}
-
-					// line = line.replaceAll(";", ",");
-
 					// log.info("is update? " + isupdate);
 					// log.info("hasid? " + hasid);
 					if (isupdate == true) {
 						// log.info("we update!!");
-						locationServiceDAO.updateQuery(listValues, hasid);
+						try {
+							locationServiceDAO.updateQuery(listValues, hasid);
+						} catch (PersistenceException e) {
+							log.error("Error (CreateUpdate): " + e);
+							outputinfo.append("\n\nError database (CreateUpdate):  " + e.getLocalizedMessage());
+						}
 						num_updates++;
 					} else if (isupdate == false) {
 						// log.info("we insert!!");
 						// if has id is true and is not an update => we create a new id being the last
 						// existing id number
 						if (hasid == false) {
-							line = line.replaceFirst("\\(", "(id,").replace("VALUES(", "VALUES(" + new_id + ",");
+							line = line.replaceFirst("\\(", "(id,").replace("VALUES('", "VALUES(" + new_id + ",'");
 						} else {
-							line = line.replace("VALUES(.*,", "VALUES(" + new_id + ",");
+							line = line.replace("VALUES('.*,", "VALUES(" + new_id + ",'");
 						}
-						line = line.replaceAll(",,", ",'',");
-						// log.info("line to execute: " + line);
+						// log.info("line to exec " + line);
 
-						locationServiceDAO.executeQuery(line);
-
+						try {
+							locationServiceDAO.executeQuery(line);
+						} catch (PersistenceException e) {
+							log.error("Error (InsertSQL): " + e);
+							outputinfo.append("\n\nError database (InsertSQL):  " + e.getLocalizedMessage());
+						}
 						num_inserts++;
 					}
 				}

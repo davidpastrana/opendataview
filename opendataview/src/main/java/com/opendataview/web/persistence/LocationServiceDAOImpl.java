@@ -51,31 +51,32 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 
 	@Override
 	@Transactional
-	public void removeLocationByName(String csvName) {
-		Query query = entityManager.createNativeQuery("delete from locations l where l.csvName = ?",
+	public void removeLocationByName(String filename) {
+		Query query = entityManager.createNativeQuery("delete from locations l where l.filename = ?",
 				LocationModel.class);
-		query.setParameter(1, csvName);
+		query.setParameter(1, filename);
 		query.executeUpdate();
 	}
 
 	@Override
 	@Transactional
-	public List<LocationModel> showLocationByName(String csvName) {
+	public List<LocationModel> showLocationByName(String filename) {
 		List<LocationModel> resultList = getEntityManager()
-				.createQuery("select l from locations l where l.csvName = '" + csvName + "'", LocationModel.class)
-				.getResultList();
+				.createQuery("select l from locations l where l.filename = '" + filename + "'", LocationModel.class)
+				.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
 		return resultList;
 	}
 
 	@Override
 	@Transactional
-	public boolean checkLocationExistanceByID(String queryidvalue) {
+	public boolean checkLocationExistanceById(String queryidvalue) {
 
-		log.info("we check queryid select l from locations l where l.id = " + queryidvalue + "");
-		Query query = getEntityManager().createQuery("select l from locations l where l.id = " + queryidvalue + "",
+		// log.info("we check queryid select l from locations l where l.id = " +
+		// queryidvalue + "");
+		Query query = getEntityManager().createQuery("select l from locations l where l.id = " + queryidvalue,
 				LocationModel.class);
 
-		if (!query.getResultList().isEmpty()) {
+		if (!query.setHint(QueryHints.HINT_CACHEABLE, true).getResultList().isEmpty()) {
 			return true;
 		} else {
 			return false;
@@ -87,23 +88,22 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	public List<LocationModel> getLocationByID(String queryidvalue) {
 
 		List<LocationModel> resultList = getEntityManager()
-				.createQuery("select l from locations l where l.id = " + queryidvalue + "", LocationModel.class)
-				.getResultList();
+				.createQuery("select l from locations l where l.id = " + queryidvalue, LocationModel.class)
+				.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
 		return resultList;
 	}
 
 	@Override
 	@Transactional
-	public boolean checkLocationExistanceByOtherName(LocationModel locationModel) {
+	public boolean checkLocationExistanceByNameLatLng(LocationModel locationModel) {
 
-//		log.info("from locations where lower(name) like '%" + locationModel.getName().toLowerCase()
-//				+ "%' and latitude = '" + locationModel.getLatitude() + "'" + " and longitude = '"
-//				+ locationModel.getLongitude() + "')");
+//		log.info("from locations where lower(name) = '" + locationModel.getName().toLowerCase() + "' and latitude = '"
+//				+ locationModel.getLatitude() + "' and longitude = '" + locationModel.getLongitude() + "'");
 
 		if (locationModel != null) {
 			Query query = getEntityManager().createQuery("from locations where lower(name) = '"
-					+ locationModel.getName().toLowerCase() + "' and latitude = '" + locationModel.getLatitude() + "'"
-					+ " and longitude = '" + locationModel.getLongitude() + "'", LocationModel.class);
+					+ locationModel.getName().toLowerCase() + "' and latitude = '" + locationModel.getLatitude()
+					+ "' and longitude = '" + locationModel.getLongitude() + "'", LocationModel.class);
 
 			// log.info("return is: " + query.getResultList());
 			if (!query.getResultList().isEmpty()) {
@@ -119,25 +119,25 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 
 		Query query = null;
 		if (hasid == true) {
-			// id,name,type,address,district,postcode,city,latitude,longitude,description,website,phone,date,schedule,email,csvName,population,elevation,username,source,date_published,date_updated,otherinfo,rating,nrating
+			// id,name,type,address,district,postcode,city,latitude,longitude,description,website,phone,date,schedule,email,filename,population,elevation,username,source,date_published,date_updated,data,rating,nrating
 			query = entityManager.createNativeQuery(
 					"update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
-							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
-							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,otherinfo=:otherinfo where id = :id",
+							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,filename=:filename,population=:population,elevation=:elevation,username=:username,"
+							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,data=:data where id = :id",
 					LocationModel.class);
 			query.setParameter("id", new Float(listValues.get(0)));
 
 		} else {
 			String latitude = listValues.get(6);
 			String longitude = listValues.get(7);
-			String csvname = listValues.get(13);
+			String filename = listValues.get(13);
 
 			query = entityManager.createNativeQuery(
 					"update locations set name=:name,description=:description,type=:type,address=:address,postcode=:postcode,city=:city,latitude=:latitude,longitude=:longitude,"
-							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,csvName=:csvName,population=:population,elevation=:elevation,username=:username,"
-							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,otherinfo=:otherinfo where latitude = '"
-							+ latitude + "' and longitude = '" + longitude + "' and lower(csvname) = '"
-							+ csvname.toLowerCase() + "'",
+							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,filename=:filename,population=:population,elevation=:elevation,username=:username,"
+							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,data=:data where latitude = '"
+							+ latitude + "' and longitude = '" + longitude + "' and lower(filename) = '"
+							+ filename.toLowerCase() + "'",
 					LocationModel.class);
 		}
 		query.setParameter("name", listValues.get(0));
@@ -153,7 +153,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 		query.setParameter("date", listValues.get(10));
 		query.setParameter("schedule", listValues.get(11));
 		query.setParameter("email", listValues.get(12));
-		query.setParameter("csvName", listValues.get(13));
+		query.setParameter("filename", listValues.get(13));
 		query.setParameter("population", listValues.get(14));
 		query.setParameter("elevation", listValues.get(15));
 		query.setParameter("username", listValues.get(16));
@@ -162,7 +162,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 		query.setParameter("date_updated", listValues.get(19));
 		query.setParameter("iconmarker", listValues.get(20));
 		query.setParameter("private_mode", Boolean.valueOf(listValues.get(21)));
-		query.setParameter("otherinfo", listValues.get(22));
+		query.setParameter("data", listValues.get(22));
 		query.executeUpdate();
 	}
 
@@ -205,14 +205,13 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 		if (location_value.contains("sql:")) {
 			String sqlquery = location_value.split("sql:")[1].trim();
 			resultList = getEntityManager()
-					.createQuery("select l from locations l where " + sqlquery, LocationModel.class).getResultList();
+					.createQuery("select l from locations l where " + sqlquery, LocationModel.class)
+					.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
 		} else {
 			resultList = getEntityManager()
-					.createQuery(
-							"select l from locations l where lower(replace(replace(otherinfo,'##',''),' ', '')) like '%"
-									+ location_value.replaceAll("\\s+", "").toLowerCase() + "%'",
-							LocationModel.class)
-					.getResultList();
+					.createQuery("select l from locations l where lower(replace(replace(data,'##',''),' ', '')) like '%"
+							+ location_value.replaceAll("\\s+", "").toLowerCase() + "%'", LocationModel.class)
+					.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
 		}
 		return resultList;
 	}
@@ -222,8 +221,8 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	public List<LocationModel> searchLocationByFileName(String filename) throws DataAccessException {
 
 		List<LocationModel> resultList = getEntityManager()
-				.createQuery("from locations where csvname = :filename", LocationModel.class)
-				.setParameter("filename", filename).getResultList();
+				.createQuery("from locations where filename = :filename", LocationModel.class)
+				.setParameter("filename", filename).setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
 		return resultList;
 	}
 
