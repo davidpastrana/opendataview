@@ -45,8 +45,8 @@ public class LocationModel implements Serializable {
 
 	public LocationModel(Long id, String address, String archive, String city, String country, String filename,
 			String currency, String date, String date_published, String date_updated, String description,
-			String document, String elevation, String email, String iconmarker, BigDecimal bigDecimal,
-			BigDecimal bigDecimal2, String name, String number, String data, String percentage, String phone,
+			String document, String elevation, String email, String iconmarker, BigDecimal latitude,
+			BigDecimal longitude, String name, String number, String data, String percentage, String phone,
 			String population, String postcode, boolean b, String schedule, String source, String street, String type,
 			String image, String username, String website, String year) {
 		this.id = id;
@@ -56,8 +56,9 @@ public class LocationModel implements Serializable {
 		this.phone = phone;
 		this.email = email;
 		this.description = description;
-		this.latitude = bigDecimal;
-		this.longitude = bigDecimal2;
+		this.latitude = latitude;
+		this.longitude = longitude;
+
 		this.iconmarker = iconmarker;
 		this.date = date;
 		this.date_published = date_published;

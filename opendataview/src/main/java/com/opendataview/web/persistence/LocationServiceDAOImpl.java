@@ -15,6 +15,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.opendataview.web.api.LocationsRestResource;
 import com.opendataview.web.model.LocationModel;
 
 @Service
@@ -23,6 +24,8 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	private final static Logger log = LoggerFactory.getLogger(LocationServiceDAOImpl.class);
 
 	protected EntityManager entityManager;
+
+	// LocationsRestResource locationsRestResource;
 
 	public EntityManager getEntityManager() {
 		return entityManager;
@@ -56,6 +59,9 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 				LocationModel.class);
 		query.setParameter(1, filename);
 		query.executeUpdate();
+
+		// we update the plain static data into the server
+		new LocationsRestResource();
 	}
 
 	@Override
@@ -179,6 +185,9 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 				LocationModel.class);
 		query.setParameter("admin", username);
 		query.executeUpdate();
+
+		// we update the plain static data into the server
+		new LocationsRestResource();
 	}
 
 	@Override
@@ -186,6 +195,9 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	public void updateLocationModel(LocationModel locationModel) {
 		LocationModel item = entityManager.merge(locationModel);
 		entityManager.merge(item);
+
+		// we update the plain static data into the server
+		new LocationsRestResource();
 	}
 
 	@Override
@@ -193,7 +205,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	public List<LocationModel> readLocationModel() throws DataAccessException {
 
 		List<LocationModel> resultList = getEntityManager().createQuery("from locations", LocationModel.class)
-				.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
+				.setHint(QueryHints.HINT_READONLY, true).getResultList();
 		return resultList;
 	}
 

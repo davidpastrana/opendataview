@@ -50,6 +50,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
+import com.opendataview.web.api.LocationStaticData;
 import com.opendataview.web.model.LocationModel;
 import com.opendataview.web.model.PieChartModel;
 import com.opendataview.web.pages.index.BasePage;
@@ -181,7 +182,7 @@ public class LocationServicePage extends BasePage {
 	private UserServiceDAO userServiceDAO;
 
 	@SpringBean
-	private static PropertiesServiceDAO propertiesServiceDAO;
+	private PropertiesServiceDAO propertiesServiceDAO;
 
 	public static final double distance(double lat1, double lon1, double lat2, double lon2, char unit) {
 		double theta = lon1 - lon2;
@@ -211,7 +212,19 @@ public class LocationServicePage extends BasePage {
 	final Label locations_counter = new Label("locations_counter2", Model.of(""));
 	final ListView<LocationModel> lview = displayList("rows", list);
 
+	@Override
+	public void MemoryConsumed() {
+		int mb = 1048576;
+		Runtime runtime = Runtime.getRuntime();
+		log.info("##### Heap utilization statistics [MB] #####");
+		log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb);
+		log.info("Free Memory:" + runtime.freeMemory() / mb);
+		log.info("Total Memory:" + runtime.totalMemory() / mb);
+		log.info("Max Memory:" + runtime.maxMemory() / mb);
+	}
+
 	public LocationServicePage(PageParameters parameters) throws IOException {
+		// MemoryConsumed();
 		setStatelessHint(false);
 		setVersioned(false);
 		WebSession session = WebSession.get();
@@ -219,7 +232,7 @@ public class LocationServicePage extends BasePage {
 		add(lview);
 		add(formSearch);
 
-		String username = null;
+		// String username = null;
 		if (session.getAttribute("user_name") != null) {
 			username = session.getAttribute("user_name").toString();
 		}
@@ -244,7 +257,9 @@ public class LocationServicePage extends BasePage {
 		wmc2.setOutputMarkupId(true);
 		add(wmc2);
 
-		origList = locationServiceDAO.readLocationModel();
+		// origList = locationServiceDAO.readLocationModel();
+		origList.clear();
+		origList.addAll(LocationStaticData.loc);
 		wmc2.add(locations_counter);
 
 		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
@@ -318,19 +333,14 @@ public class LocationServicePage extends BasePage {
 							double dist = distance(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]),
 									loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
 
-							if (dist < distanceKm) {
-
+							if (dist < distanceKm)
 								list.add(loc);
-							}
 						} else {
-							if (myPolygon.contains(loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue())) {
+							if (myPolygon.contains(loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue()))
 								list.add(loc);
-							}
 						}
-
 					}
 				}
-
 			}
 		}
 
@@ -905,10 +915,10 @@ public class LocationServicePage extends BasePage {
 					pageParameters.set("group", chart_group);
 				if (!showPrivateMapValue.equals("null"))
 					pageParameters.set("user", showPrivateMapValue);
-				if (polygonCoordInputValue == null) { // used when using check my current location
-					pageParameters.set("coords", parameters.get("coords"));
-				} else {
+				if (polygonCoordInputValue != null) { // used when using check my current location
 					pageParameters.set("coords", polygonCoordInputValue);
+				} else {
+					pageParameters.set("coords", parameters.get("coords"));
 				}
 				setResponsePage(getPage().getClass(), pageParameters);
 			}
@@ -975,7 +985,7 @@ public class LocationServicePage extends BasePage {
 				super.onBeforeRender();
 			}
 
-			JSONObject o, ch;
+			JSONObject o;
 			LocationModel obj;
 
 			Series<Number> serie4 = null;

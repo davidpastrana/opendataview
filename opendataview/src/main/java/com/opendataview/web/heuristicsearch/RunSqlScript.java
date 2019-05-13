@@ -21,6 +21,7 @@ import javax.persistence.PersistenceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.opendataview.web.api.LocationsRestResource;
 import com.opendataview.web.model.LocationModel;
 import com.opendataview.web.persistence.LocationServiceDAO;
 
@@ -146,6 +147,9 @@ public class RunSqlScript {
 				line = br.readLine();
 				countinserts++;
 			}
+			// we update the plain static data into the server
+			new LocationsRestResource();
+
 			br.close();
 			ps.close();
 			rs.close();

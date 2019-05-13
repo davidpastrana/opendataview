@@ -30,6 +30,8 @@ public class LocationsRestResource extends GsonRestResource {
 	@SpringBean
 	protected EntityManager entityManager;
 
+	private LocationStaticData locationStaticData;
+
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
@@ -39,6 +41,9 @@ public class LocationsRestResource extends GsonRestResource {
 		String url = "jdbc:postgresql://localhost:5432/opendataview";
 		String user = "postgres";
 		String password = "postgres";
+
+		// locationStaticData.init();
+		LocationStaticData.loc = new ArrayList<LocationModel>();
 
 		try (Connection con = DriverManager.getConnection(url, user, password);
 				// id,address,archive,city,country,filename,currency,date,date_published,date_updated,description,document,elevation,email,iconmarker,latitude,longitude,name,number,data,percentage,phone,population,postcode,private_mode,schedule,source,street,type,image,username,website,year
@@ -58,6 +63,8 @@ public class LocationsRestResource extends GsonRestResource {
 						rs.getString("schedule"), rs.getString("source"), rs.getString("street"), rs.getString("type"),
 						rs.getString("image"), rs.getString("username"), rs.getString("website"), rs.getString("year"));
 				locations.add(l);
+				LocationStaticData.loc.add(l);
+
 			}
 			rs.close();
 			st.close();
@@ -67,6 +74,9 @@ public class LocationsRestResource extends GsonRestResource {
 			System.out.println(ex.getMessage());
 			System.out.println(ex);
 		}
+
+//		locations = getEntityManager().createQuery("from locations", LocationModel.class)
+//				.setHint(QueryHints.HINT_READONLY, true).getResultList();
 	}
 
 	@MethodMapping("/locations")

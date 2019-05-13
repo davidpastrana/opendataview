@@ -140,13 +140,14 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		mountPage("/session-expired", PageExpiredErrorPage.class);
 		mountResource("sitemap.xml", new SitemapPage());
 
+		getRequestCycleSettings().setGatherExtendedBrowserInfo(false);
 		// getApplicationSettings().addPostComponentOnBeforeRenderListener(new
 		// StatelessChecker());
 		getDebugSettings().setAjaxDebugModeEnabled(false);
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		getResourceSettings().getResourceFinders()
 				.add(new WebApplicationPath(getServletContext(), "/src/main/resources/"));
-		getStoreSettings().setInmemoryCacheSize(50);
+		// getStoreSettings().setInmemoryCacheSize(50);
 		getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
 		// set cookie mode to keep open the same session id

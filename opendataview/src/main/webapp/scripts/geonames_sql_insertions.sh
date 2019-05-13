@@ -62,8 +62,8 @@ echo "DONE"
 echo "--------- Copying data into database, please wait..."
 psql -e -U $DBUSER -h $DBHOST -p $DBPORT geonames <<EOT
 
-copy geoname (geonameid,name,asciiname,alternatenames,latitude,longitude,fclass,fcode,country,cc2,admin1,admin2,admin3,admin4,population,elevation,gtopo30,timezone,moddate) from '${DIR}/geoname/allCountries.txt' null as '';
-copy postalcodes (country,code,name,admin1name,admin1,admin2name,admin2,admin3name,admin3,latitude,longitude,accuracy) from '${DIR}/postalcodes/AT.txt' null as '';
+\copy geoname (geonameid,name,asciiname,alternatenames,latitude,longitude,fclass,fcode,country,cc2,admin1,admin2,admin3,admin4,population,elevation,gtopo30,timezone,moddate) from '${DIR}/geoname/allCountries.txt' null as '';
+\copy postalcodes (country,code,name,admin1name,admin1,admin2name,admin2,admin3name,admin3,latitude,longitude,accuracy) from '${DIR}/postalcodes/AT.txt' null as '';
 
 EOT
 echo "DONE"
@@ -73,7 +73,7 @@ psql -e -U $DBUSER -h $DBHOST -p $DBPORT geonames <<EOT
 
 ALTER TABLE geoname DROP COLUMN fclass, DROP COLUMN fcode, DROP COLUMN cc2, DROP COLUMN admin4, DROP COLUMN gtopo30, DROP COLUMN timezone, DROP COLUMN moddate;
 UPDATE geoname SET asciiname=lower(asciiname);
-CREATE INDEX geoname_coord_idx ON geonames (asciiname,latitude,longitude,population,elevation);
+CREATE INDEX geoname_coord_idx ON geoname (asciiname,latitude,longitude,population,elevation);
 
 EOT
 echo "DONE"

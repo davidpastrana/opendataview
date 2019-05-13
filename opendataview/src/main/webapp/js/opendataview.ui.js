@@ -31,17 +31,19 @@ function onLocationFound(e) {
 	    var lat = latlng[0].replace(/%28|\(/, '');
 	    var lng = latlng[1].replace(/%29|\)/, '');
 	    latlng = new L.latLng(lat,lng);
-	    marker = L.marker(latlng, {icon: iconMarker})
-	      .bindPopup('Drag your current location<br>Control the distance visibility from the top left corner')
-	      .openPopup()
-	      .on('mouseover', function (e) {this.openPopup();})
-		  .on('mouseout', function (e) {this.closePopup();});
-        marker.on("dragend",function(e){
-            $('#polygonCoordInput').val(e.target.getLatLng().toString().replace(/\LatLng|\s+/g, ''));
-            $('#savePolygonCoordinates').trigger('click');
-        }); 
-	    $(".slider_wrapper").show();
-	    marker.addTo(map2).dragging.enable();
+	    if(getSearchParams('coords').split(',').length == 2) {
+		    marker = L.marker(latlng, {icon: iconMarker})
+		      .bindPopup('Drag your current location<br>Control the distance visibility from the top left corner',{'maxWidth': '400', 'width': '200', 'className' : 'current-location-popup'})
+		      .openPopup()
+		      .on('mouseover', function (e) {this.openPopup();})
+			  .on('mouseout', function (e) {this.closePopup();});
+	        marker.on("dragend",function(e){
+	            $('#polygonCoordInput').val(e.target.getLatLng().toString().replace(/\LatLng|\s+/g, ''));
+	            $('#savePolygonCoordinates').trigger('click');
+	        }); 
+		    $(".slider_wrapper").show();
+		    marker.addTo(map2).dragging.enable();
+	    }
 	}
 }
 function onLocationError(e) {
@@ -166,6 +168,7 @@ $(function() {
 	      zoom: 2,
 	      zoomControl:false,
 	  });
+	  map2.locate();
 		  var satellite = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      topography = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
@@ -322,17 +325,16 @@ $(function() {
 				  if(getSearchParams("opacity")!=null) {
 					  opacity=getSearchParams("opacity");
 				  }
-
-				  point_markers = L.glify.points({
-				        map: map2,
-				        color: function(index,point){if(!colorsel){color=fromHex('#'+point[2].split('#')[2])};return color},
-				        opacity: opacity,
-				        click: function(e,point,xy) {
-				        L.popup().setLatLng([point[0],point[1]]).setContent(point[2].split('#')[0],callStreetView(point[0],point[1]),showSidebar(point[2].split('#')[1])).openOn(map2);
-				        },
-				        data: markers2,
-				        size: size,		        
-				      });
+				     point_markers = L.glify.points({
+					        map: map2,
+					        color: function(index,point){if(!colorsel){color=fromHex('#'+point[2].split('#')[2])};return color},
+					        opacity: opacity,
+					        click: function(e,point,xy) {
+					        L.popup().setLatLng([point[0],point[1]]).setContent(point[2].split('#')[0],callStreetView(point[0],point[1]),showSidebar(point[2].split('#')[1])).openOn(map2);
+					        },
+					        data: markers2,
+					        size: size,   
+					      });
 					  if(getSearchParams("coords") != null && getSearchParams("coords").split(',').length == 2) {
 						    var latlng = getSearchParams('coords').split(',');
 						    var lat = latlng[0].replace(/%28|\(/, '');
@@ -348,9 +350,10 @@ $(function() {
 							  map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[markers.length-1].lat,markers[markers.length-1].lng]]);
 							  map2.setZoom(getSearchParams("zoom"));
 						  }
-			  } else {
-				  //point_markers.remove();
 			  }
+		  
+		  
+		  
 		// Initialise the FeatureGroup to store editable layers
 		  editableLayers = new L.FeatureGroup();
 		  map2.addLayer(editableLayers);

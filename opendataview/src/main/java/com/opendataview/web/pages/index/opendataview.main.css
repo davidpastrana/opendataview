@@ -158,8 +158,14 @@ section.contact-infos {
     background: #f7f7f7 url(/images/gif/loading.gif) 50% 45% no-repeat;
     background-size: 27px;
 }
-.leaflet-control-layers {
-
+.leaflet-popup {
+	bottom: -4px !important;
+}
+.current-location-popup {
+    left: -135px !important;
+}
+.marker-popup {
+    left: -135px !important;
 }
 .leaflet-touch .leaflet-control-layers-toggle {
     width: 32px;
