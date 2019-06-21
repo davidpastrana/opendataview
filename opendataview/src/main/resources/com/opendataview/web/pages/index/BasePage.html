@@ -61,15 +61,16 @@
 <meta name="theme-color" content="#ffffff">
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 
-<!-- Leaflet Maps -->
-<link rel="stylesheet" type="text/css" href="/css/leaflet/leaflet.min.css" />
+<!-- Leaflet Maps 
+<link rel="stylesheet" type="text/css" href="/css/leaflet/leaflet.min.css" />-->
+<link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
 <!-- SVG icons -->
 <link rel="stylesheet" type="text/css" href="/css/icons/glyphicons.min.css" />
 <link rel="stylesheet" type="text/css" href="/css/icons/font-awesome.min.css" />
 <link rel="stylesheet" type="text/css" href="/css/icons/ion-icons.min.css" />
 <!-- Mapillary Streetview -->
-<link href='https://unpkg.com/mapillary-js@2.17.0/dist/mapillary.min.css' rel='stylesheet' />
+<link href='https://unpkg.com/mapillary-js@2.18.0/dist/mapillary.min.css' rel='stylesheet' />
 </wicket:link>
 </head>
 <body>
@@ -169,8 +170,10 @@
 
 		<!-- <wicket:container wicket:id="footer-container"/> -->
 
-		<!-- Leaflet libraries -->
-	    <script src='/js/leaflet/leaflet.min.js'></script>
+		<!-- Leaflet libraries 
+	    <script src='/js/leaflet/leaflet.min.js'></script>-->
+	    <script src='https://unpkg.com/leaflet@1.5.1/dist/leaflet.js'></script>
+	    
        	<script src='/js/leaflet/leaflet.draw.min.js'></script>
 		<script src="/js/leaflet/glify.js"></script>
 		<script src="/js/leaflet/leaflet-openweathermap.min.js"></script>

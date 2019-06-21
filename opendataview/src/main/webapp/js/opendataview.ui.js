@@ -16,7 +16,7 @@ function showSidebar(id) {
   $('#showMarkerInfoBttn').trigger('click');
 }
 function customMarker() {
-	return 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(45)"></g></defs><g fill="#F39C123D"><circle fill="#724600" r="38px" /><circle fill="#f39c12" r="30" /><circle r="100" /><use xlink:href="#a"/><g transform="rotate(120)"><use xlink:href="#a"/></g><g transform="rotate(240)"><use xlink:href="#a"/></g></g></svg>');
+	return 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(65)"></g></defs><g fill="#cc464600"><circle fill="#333" r="50px" /><circle fill="#ef3737" r="39" /><circle r="100" /><use xlink:href="#a"/><g transform="rotate(120)"><use xlink:href="#a"/></g><g transform="rotate(240)"><use xlink:href="#a"/></g></g></svg>');
 }
 function onLocationFound(e) {
 	if(getSearchParams("coords") === undefined) {
@@ -151,6 +151,39 @@ function fromHex(hex) {
 
     return {r: r / 255, g: g / 255, b: b / 255};
   };
+  function displayPosition(position) {
+	  //map2.locate({setView: true, maxZoom: 16});
+	    var iconMarker = L.icon({draggable: true,iconUrl: customMarker()});
+	  	var lat = position.coords.latitude;
+	  	var lng = position.coords.longitude;
+	    latlng = new L.latLng(lat,lng);
+	    
+		if(getSearchParams("coords") === undefined) {
+		    $('#polygonCoordInput').val("\("+lat+","+lng+"\)");
+		    $('#savePolygonCoordinates').trigger('click');
+		} 
+	    
+//		    marker = L.marker(latlng, {icon: iconMarker})
+//		      .bindPopup('Drag your current location<br>Control the distance visibility from the top left corner',{'maxWidth': '400', 'width': '200', 'className' : 'current-location-popup'})
+//		      .openPopup()
+//		      .on('mouseover', function (e) {this.openPopup();})
+//			  .on('mouseout', function (e) {this.closePopup();});
+//	        marker.on("dragend",function(e){
+//	            $('#polygonCoordInput').val(e.target.getLatLng().toString().replace(/\LatLng|\s+/g, ''));
+//	            $('#savePolygonCoordinates').trigger('click');
+//	        }); 
+//		    $(".slider_wrapper").show();
+//		    marker.addTo(map2).dragging.enable();
+	  console.log("Latitude: " + lat + ", Longitude: " + lng);
+	}
+  function displayError(error) {
+	  var errors = { 
+	    1: 'Permission denied',
+	    2: 'Position unavailable',
+	    3: 'Request timeout'
+	  };
+	  alert("Error: " + errors[error.code]);
+	}
 var mly;
   var key_image;
   var map2;
@@ -168,7 +201,17 @@ $(function() {
 	      zoom: 2,
 	      zoomControl:false,
 	  });
-	  map2.locate();
+	  /*navigator.geolocation ? map2.locate({setView: true, maxZoom: 16}) : alert("Geolocation is not supported by this browser.");*/
+	  
+	  if (navigator.geolocation)  {
+		  var timeoutVal = 10 * 1000 * 1000;
+		  navigator.geolocation.getCurrentPosition(
+		    displayPosition, 
+		    displayError,
+		    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+		  );
+		} else alert("Geolocation is not supported by this browser");
+	  
 		  var satellite = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      topography = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),

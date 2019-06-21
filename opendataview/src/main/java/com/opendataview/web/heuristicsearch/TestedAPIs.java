@@ -16,7 +16,6 @@ import org.geonames.ToponymSearchResult;
 import org.geonames.WebService;
 import org.slf4j.LoggerFactory;
 
-import com.github.andrewoma.dexx.collection.Map;
 import com.opendataview.web.model.LocationModel;
 
 public class TestedAPIs {
@@ -118,13 +117,13 @@ public class TestedAPIs {
 			try {
 				final List<Object> dealData = mapper.readValue(jsonStream, List.class);
 				if (dealData != null && dealData.size() == 1) {
-					final Map<String, Object> locationMap = (Map<String, Object>) dealData.get(0);
-					if (locationMap != null && locationMap.containsKey(LATITUDE)
-							&& locationMap.containsKey(LONGITUDE)) {
-						final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
-						final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
-						coordinate = new LatLng(lat, lng);
-					}
+//					final Map<String, Object> locationMap = (Map<String, Object>) dealData.get(0);
+//					if (locationMap != null && locationMap.containsKey(LATITUDE)
+//							&& locationMap.containsKey(LONGITUDE)) {
+//						final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
+//						final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
+//						coordinate = new LatLng(lat, lng);
+//					}
 				} else {
 					Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE, "NO RESULTS",
 							"NO RESULTS");
