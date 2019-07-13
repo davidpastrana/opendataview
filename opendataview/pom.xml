@@ -27,7 +27,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<java.version>1.8</java.version>
+		<java.version>11</java.version>
 		<wicket.version>8.5.0</wicket.version>
 		<wicketstuff.version>8.5.0</wicketstuff.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M11</wicket-bootstrap-extensions.version>

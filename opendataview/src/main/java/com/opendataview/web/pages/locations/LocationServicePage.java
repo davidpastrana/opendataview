@@ -46,8 +46,6 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.opendataview.web.api.LocationStaticData;
@@ -89,6 +87,7 @@ public class LocationServicePage extends BasePage {
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
 
+		String value = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value").toString();
 		String coords = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("coords").toString();
 		String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist").toString();
 		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
@@ -101,7 +100,10 @@ public class LocationServicePage extends BasePage {
 		String group = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group").toString();
 		String showPrivateMap = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user")
 				.toString();
-
+		response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val("
+				+ fullscreen + ");$('#mapType').val('" + mapType + "');$('#showGraph').val('" + showGraph
+				+ "');$('#chart_total').val('" + total + "');$('#chart_group').val('" + group
+				+ "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
 		if (showPrivateMap != null) {
 			config_names_select.add(privatemaps_label);
 			response.render(OnDomReadyHeaderItem.forScript("$('.header').show();$('#viewHidePanels').val('false');"));
@@ -118,14 +120,15 @@ public class LocationServicePage extends BasePage {
 		} else {
 			response.render(OnDomReadyHeaderItem.forScript("$('#showGraph').val('false');$('#demo-panel').hide()"));
 		}
-		response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val("
-				+ fullscreen + ");$('#mapType').val('" + mapType + "');$('#showGraph').val('" + showGraph
-				+ "');$('#chart_total').val('" + total + "');$('#chart_group').val('" + group
-				+ "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
+		if (value != null) {
+			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
+		}
+
 		if (dist != null) {
 			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + dist + ")"));
 		}
 		if (coords != null) {
+			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
 			String[] att = coords.substring(1, coords.length() - 1).split("\\),\\(");
 			if (att.length == 1) {
 				response.render(OnDomReadyHeaderItem
@@ -152,14 +155,12 @@ public class LocationServicePage extends BasePage {
 	private String graphs_label = "Enable Charts (most repeated fields)";
 	private List<LocationModel> list = new ArrayList<LocationModel>();
 	private List<LocationModel> list2 = new ArrayList<LocationModel>();
+	private List<LocationModel> tmp_list = new ArrayList<LocationModel>();
 	private List<LocationModel> origList = new ArrayList<LocationModel>();
 	private List<String> names = new ArrayList<String>();
 	private Form<?> locationsForm = null;
-	// private ArrayList<String> namesRemoveSelect = new ArrayList<String>();
 	private ArrayList<String> namesSelect = new ArrayList<String>();
 	private ArrayList<String> config_names_select = new ArrayList<String>();
-	private List<LocationModel> temp_list = new ArrayList<LocationModel>();
-	private List<LocationModel> temp_list2 = new ArrayList<LocationModel>();
 
 	private String username = null;
 	private List<String> addlinks = null;
@@ -173,7 +174,8 @@ public class LocationServicePage extends BasePage {
 	private List<Integer> allSums = new ArrayList<Integer>();
 	private static Series<Point> series = new PointSeries();
 
-	private final static Logger log = LoggerFactory.getLogger(LocationServicePage.class);
+	// private final static Logger log =
+	// LoggerFactory.getLogger(LocationServicePage.class);
 
 	@SpringBean
 	private LocationServiceDAO locationServiceDAO;
@@ -209,30 +211,30 @@ public class LocationServicePage extends BasePage {
 		return (rad * 180 / Math.PI);
 	}
 
-	final Label locations_counter = new Label("locations_counter2", Model.of(""));
+	// final Label locations_counter = new Label("locations_counter2",
+	// Model.of(""));
 	final ListView<LocationModel> lview = displayList("rows", list);
 
-	@Override
-	public void MemoryConsumed() {
-		int mb = 1048576;
-		Runtime runtime = Runtime.getRuntime();
-		log.info("##### Heap utilization statistics [MB] #####");
-		log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb);
-		log.info("Free Memory:" + runtime.freeMemory() / mb);
-		log.info("Total Memory:" + runtime.totalMemory() / mb);
-		log.info("Max Memory:" + runtime.maxMemory() / mb);
-	}
+	/*
+	 * @Override public void MemoryConsumed() { int mb = 1048576; Runtime runtime =
+	 * Runtime.getRuntime();
+	 * log.info("##### Heap utilization statistics [MB] #####");
+	 * log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) /
+	 * mb); log.info("Free Memory:" + runtime.freeMemory() / mb);
+	 * log.info("Total Memory:" + runtime.totalMemory() / mb);
+	 * log.info("Max Memory:" + runtime.maxMemory() / mb); }
+	 */
 
 	public LocationServicePage(PageParameters parameters) throws IOException {
 		// MemoryConsumed();
-		setStatelessHint(false);
-		setVersioned(false);
-		WebSession session = WebSession.get();
+//		setStatelessHint(false);
+//		setVersioned(false);
 
 		add(lview);
 		add(formSearch);
 
 		// String username = null;
+		WebSession session = WebSession.get();
 		if (session.getAttribute("user_name") != null) {
 			username = session.getAttribute("user_name").toString();
 		}
@@ -240,16 +242,21 @@ public class LocationServicePage extends BasePage {
 		datacontainer.setOutputMarkupId(true);
 		add(datacontainer);
 
-		chart_options.setExporting(new ExportingOptions().setEnableImages(false).setEnabled(false));
-		chart_options.setChartOptions(new ChartOptions().setType(SeriesType.PIE));
-		chart_options.setCredits(new CreditOptions().setEnabled(false));
-		chart_options.setTitle(new Title("").setEnabled(true));
+		if (!parameters.get("graph").isNull()) {
+			chart_options.setExporting(new ExportingOptions().setEnableImages(false).setEnabled(false));
+			chart_options.setChartOptions(new ChartOptions().setType(SeriesType.PIE));
+			chart_options.setCredits(new CreditOptions().setEnabled(false));
+			chart_options.setTitle(new Title("").setEnabled(true));
+		}
 		pie_chart.setVisible(false);
 		datacontainer.add(pie_chart);
-		chart_options2.setExporting(new ExportingOptions().setEnableImages(false).setEnabled(false));
-		chart_options2.setChartOptions(new ChartOptions().setType(SeriesType.COLUMN));
-		chart_options2.setCredits(new CreditOptions().setEnabled(false));
-		chart_options2.setTitle(new Title("").setEnabled(true));
+
+		if (!parameters.get("total").isNull() || !parameters.get("group").isNull()) {
+			chart_options2.setExporting(new ExportingOptions().setEnableImages(false).setEnabled(false));
+			chart_options2.setChartOptions(new ChartOptions().setType(SeriesType.COLUMN));
+			chart_options2.setCredits(new CreditOptions().setEnabled(false));
+			chart_options2.setTitle(new Title("").setEnabled(true));
+		}
 		column_chart.setVisible(false);
 		datacontainer.add(column_chart);
 
@@ -260,7 +267,7 @@ public class LocationServicePage extends BasePage {
 		// origList = locationServiceDAO.readLocationModel();
 		origList.clear();
 		origList.addAll(LocationStaticData.loc);
-		wmc2.add(locations_counter);
+		// wmc2.add(locations_counter);
 
 		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
 		AjaxButton showMarkerInfoBttn = new AjaxButton("showMarkerInfoBttn") {
@@ -271,8 +278,8 @@ public class LocationServicePage extends BasePage {
 			protected void onSubmit(AjaxRequestTarget target) {
 				super.onSubmit(target);
 				String idInputValue2 = idInput2.getModelObject();
-				temp_list2.clear();
-				temp_list2.addAll(locationServiceDAO.getLocationByID(idInputValue2));
+				tmp_list.clear();
+				tmp_list.addAll(locationServiceDAO.getLocationByID(idInputValue2));
 				target.add(wmc2);
 			}
 		};
@@ -282,8 +289,7 @@ public class LocationServicePage extends BasePage {
 		showMarkerInfo.add(showMarkerInfoBttn);
 
 		if (!parameters.get("value").isNull()) {
-			list2 = locationServiceDAO.searchLocationModel(parameters.get("value").toString());
-			list.addAll(list2);
+			list.addAll(locationServiceDAO.searchLocationModel(parameters.get("value").toString()));
 		}
 
 		if (!parameters.get("coords").isNull()) {
@@ -344,7 +350,7 @@ public class LocationServicePage extends BasePage {
 			}
 		}
 
-		ListView<LocationModel> showMarkerInfoList = new ListView<LocationModel>("showMarkerInfoList", temp_list2) {
+		ListView<LocationModel> showMarkerInfoList = new ListView<LocationModel>("showMarkerInfoList", tmp_list) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -369,7 +375,7 @@ public class LocationServicePage extends BasePage {
 				}
 
 				if (obj.getName() != null && !obj.getName().isEmpty()) {
-					item.add(new Label("name2", obj.getName()));
+					item.add(new Label("name2", "</br>" + obj.getName()).setEscapeModelStrings(false));
 				} else {
 					item.add(new Label("name2").setVisible(false));
 				}
@@ -384,18 +390,16 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("filenameTag2").setVisible(false));
 					item.add(new Label("filename2").setVisible(false));
 				}
-				if (obj.getCity() != null && !obj.getCity().isEmpty()) {
-					item.add(new Label("cityTag2", "Address: "));
-					item.add(new Label("city2", obj.getAddress()));
-				} else {
-					item.add(new Label("cityTag2").setVisible(false));
-					item.add(new Label("city2").setVisible(false));
-				}
-				if (obj.getPostcode() != null && !obj.getPostcode().isEmpty()) {
-					item.add(new Label("postcode2", obj.getPostcode()));
-				} else {
-					item.add(new Label("postcode2").setVisible(false));
-				}
+				/*
+				 * if (obj.getCity() != null && !obj.getCity().isEmpty()) { item.add(new
+				 * Label("cityTag2", "Address: ")); item.add(new Label("city2",
+				 * obj.getAddress())); } else { item.add(new
+				 * Label("cityTag2").setVisible(false)); item.add(new
+				 * Label("city2").setVisible(false)); } if (obj.getPostcode() != null &&
+				 * !obj.getPostcode().isEmpty()) { item.add(new Label("postcode2",
+				 * obj.getPostcode())); } else { item.add(new
+				 * Label("postcode2").setVisible(false)); }
+				 */
 				if (obj.getLatitude() != null) {
 					item.add(new Label("coordsTag2", "Coords: "));
 					item.add(new Label("latitude2", obj.getLatitude().toString()));
@@ -437,13 +441,12 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("phoneTag2").setVisible(false));
 					item.add(new Label("phone2").setVisible(false));
 				}
-				if (obj.getDate() != null && !obj.getDate().isEmpty()) {
-					item.add(new Label("dateTag2", "Date: "));
-					item.add(new Label("date2", obj.getDate()));
-				} else {
-					item.add(new Label("dateTag2").setVisible(false));
-					item.add(new Label("date2", obj).setVisible(false));
-				}
+				/*
+				 * if (obj.getDate() != null && !obj.getDate().isEmpty()) { item.add(new
+				 * Label("dateTag2", "Date: ")); item.add(new Label("date2", obj.getDate())); }
+				 * else { item.add(new Label("dateTag2").setVisible(false)); item.add(new
+				 * Label("date2", obj).setVisible(false)); }
+				 */
 				if (obj.getSchedule() != null && !obj.getSchedule().isEmpty()) {
 					item.add(new Label("scheduleTag2", "Schedule: "));
 					item.add(new Label("schedule2", obj.getSchedule()));
@@ -452,14 +455,17 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("schedule2").setVisible(false));
 				}
 				if (obj.getData() != null) {
-					item.add(new Label("otherTag2", "Searcahable attributes: "));
+					item.add(new Label("otherTag2", "File attributes (potential linked attributes):"));
 					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
 					String newinfo = "";
 
 					for (int i = 0; i < addlinks.size(); i++) {
-						newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+")
-								+ "&fullscreen=" + fullscreen + "&map=" + maptype + "'>" + addlinks.get(i)
-								+ "</a><br />";
+						if (!addlinks.get(i).contains("Filename: ") && !addlinks.get(i).contains("Source: ")
+								&& !addlinks.get(i).contains("Published by: ")) {
+							newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+")
+									+ "&fullscreen=" + fullscreen + "&map=" + maptype + "'>" + addlinks.get(i)
+									+ "</a><br />";
+						}
 					}
 					item.add(new Label("other2", newinfo).setEscapeModelStrings(false));
 				} else {
@@ -486,15 +492,15 @@ public class LocationServicePage extends BasePage {
 							"<a href='search?&value=Published by: " + obj.getUsername() + "&fullscreen=" + fullscreen
 									+ "&map=" + maptype + "'>" + obj.getUsername() + "</a>")
 											.setEscapeModelStrings(false));
-
 				} else {
 					item.add(new Label("userPublishedTag2").setVisible(false));
 					item.add(new Label("userPublished2").setVisible(false));
 				}
 				if (obj.getSource() != null && !obj.getSource().isEmpty()) {
 					item.add(new Label("sourcePublishedTag2", "Download file: "));
-					item.add(new Label("sourcePublished2", "<a href='" + obj.getSource() + "'>" + obj.getSource() + "")
-							.setEscapeModelStrings(false));
+					item.add(new Label("sourcePublished2",
+							"<a href='" + obj.getSource() + "'><i class='dw-file ion-ios-cloud-download' /></a>")
+									.setEscapeModelStrings(false));
 				} else {
 					item.add(new Label("sourcePublishedTag2").setVisible(false));
 					item.add(new Label("sourcePublished2").setVisible(false));
@@ -827,7 +833,7 @@ public class LocationServicePage extends BasePage {
 				saveSqlLocBackup.setVisible(false);
 				target.add(wmc2);
 				PageParameters pageParameters = new PageParameters();
-				setResponsePage(LocationServicePage.class, pageParameters);
+				setResponsePage(getPage().getClass(), pageParameters);
 			}
 		};
 		resetInputSubmit.setDefaultFormProcessing(false);
@@ -843,7 +849,7 @@ public class LocationServicePage extends BasePage {
 				String name = inputField.getModelObject();
 				String viewPanelsInputValue = viewPanels.getModelObject();
 				String mapTypeInputValue = mapType.getModelObject();
-				String zoomLevelInputValue = mapZoomLevel.getModelObject();
+				// String zoomLevelInputValue = mapZoomLevel.getModelObject();
 				String showGraphInput = showGraph.getModelObject();
 				String chart_total = showChart_total.getModelObject();
 				String chart_group = showChart_group.getModelObject();
@@ -852,10 +858,8 @@ public class LocationServicePage extends BasePage {
 				if (name != null) {
 					String searched_value = inputField.getModelObject();
 					pageParameters.set("value", searched_value);
-					if (zoomLevelInputValue != null)
-						pageParameters.set("zoom", zoomLevelInputValue);
-					else
-						pageParameters.set("zoom", 15);
+//					if (zoomLevelInputValue != null)
+//						pageParameters.set("zoom", zoomLevelInputValue);
 					if (viewPanelsInputValue != null)
 						pageParameters.set("fullscreen", viewPanelsInputValue);
 					if (!mapTypeInputValue.equals("null"))
@@ -868,7 +872,7 @@ public class LocationServicePage extends BasePage {
 						pageParameters.set("group", chart_group);
 					if (!showPrivateMapInput.equals("null"))
 						pageParameters.set("user", showPrivateMapInput);
-					setResponsePage(LocationServicePage.class, pageParameters);
+					setResponsePage(getPage().getClass(), pageParameters);
 				}
 				target.add(wmc2);
 			}
@@ -917,9 +921,10 @@ public class LocationServicePage extends BasePage {
 					pageParameters.set("user", showPrivateMapValue);
 				if (polygonCoordInputValue != null) { // used when using check my current location
 					pageParameters.set("coords", polygonCoordInputValue);
-				} else {
-					pageParameters.set("coords", parameters.get("coords"));
 				}
+				/*
+				 * else { pageParameters.set("coords", parameters.get("coords")); }
+				 */
 				setResponsePage(getPage().getClass(), pageParameters);
 			}
 		};
@@ -967,14 +972,14 @@ public class LocationServicePage extends BasePage {
 			}
 
 			int count = 0;
-			List<String> listchart = null;
 
 			@Override
 			protected void onBeforeRender() {
 				count = 0;
-				chart_options.clearSeries();
-				chart_options2.clearSeries();
+				if (chart != null || chart2 != null)
+					chart_options2.clearSeries();
 				if (showGraph) {
+					chart_options.clearSeries();
 					if (series.getData() != null) {
 						series.getData().clear();
 					}
@@ -988,6 +993,7 @@ public class LocationServicePage extends BasePage {
 			JSONObject o;
 			LocationModel obj;
 
+			List<String> listchart = null;
 			Series<Number> serie4 = null;
 
 			@Override
@@ -1006,11 +1012,11 @@ public class LocationServicePage extends BasePage {
 					o.put("lng", obj.getLongitude());
 					json.add(o);
 				}
-				if (count == list.size() - 1) {
-					locations_counter.setMarkupId("locations_counter2");
-					locations_counter.setDefaultModelObject("Total Markers: " + list.size());
-					locations_counter.modelChanged();
-				}
+//				if (count == list.size() - 1) {
+//					locations_counter.setMarkupId("locations_counter2");
+//					locations_counter.setDefaultModelObject("Total Markers: " + list.size());
+//					locations_counter.modelChanged();
+//				}
 
 				if (chart != null) {
 
@@ -1256,7 +1262,7 @@ public class LocationServicePage extends BasePage {
 					}
 					if (config_names_select.get(j).equals(privatemaps_label)) {
 						if (username == null) {
-							target.appendJavaScript("alert('Ohops, you have to be logged in first. Thanks.')");
+							target.appendJavaScript("alert('Ops, you have to be logged in first. Thanks.')");
 							stop = true;
 						} else {
 							target.appendJavaScript("$('#showPrivateMap').val('" + username + "')");
@@ -1293,6 +1299,7 @@ public class LocationServicePage extends BasePage {
 				for (int j = 0; j < namesSelect.size(); j++) {
 					list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
+				target.prependJavaScript("map2.removeLayer(editableLayers);");
 				if (list2.isEmpty()) {
 					target.appendJavaScript("point_markers.remove()");
 
@@ -1305,7 +1312,7 @@ public class LocationServicePage extends BasePage {
 		listLocations.add(check);
 		locationsForm.add(listLocations);
 
-		ListView<LocationModel> editRowList = new ListView<LocationModel>("editRow", temp_list) {
+		ListView<LocationModel> editRowList = new ListView<LocationModel>("editRow", tmp_list) {
 
 			private static final long serialVersionUID = 1L;
 
@@ -1331,7 +1338,7 @@ public class LocationServicePage extends BasePage {
 				item.add(new TextField<String>("date", new PropertyModel<String>(item.getModelObject(), "date")));
 				item.add(new TextField<String>("schedule",
 						new PropertyModel<String>(item.getModelObject(), "schedule")));
-				item.add(new TextArea<String>("data", new PropertyModel<String>(item.getModelObject(), "data2")));
+				item.add(new TextArea<String>("data", new PropertyModel<String>(item.getModelObject(), "data")));
 			}
 		};
 		editForm.add(editRowList);
@@ -1344,7 +1351,7 @@ public class LocationServicePage extends BasePage {
 			public void onSubmit() {
 				super.onSubmit();
 
-				locationServiceDAO.updateLocationModel(temp_list.get(0));
+				locationServiceDAO.updateLocationModel(tmp_list.get(0));
 				editForm.setVisible(false);
 			}
 		};
@@ -1378,11 +1385,11 @@ public class LocationServicePage extends BasePage {
 
 				int i = 0;
 				boolean find = false;
-				temp_list.clear();
+				tmp_list.clear();
 
 				while (find == false) {
 					if (origList.get(i).getId().toString().contentEquals(idInputValue)) {
-						temp_list.add(origList.get(i));
+						tmp_list.add(origList.get(i));
 						find = true;
 					}
 					i++;
@@ -1404,23 +1411,21 @@ public class LocationServicePage extends BasePage {
 				names.clear();
 				namesSelect.clear();
 
-				// we refresh the list to add all the locations that belong to the selected name
-				list2.clear();
+				list.clear();
+				tmp_list.clear();
 
 				for (int i = 0; i < origList.size(); i++) {
 					for (int j = 0; j < namesSelect.size(); j++) {
 						if (origList.get(i).getFileName().contentEquals(namesSelect.get(j).toString())) {
-							list2.add(origList.get(i));
+							tmp_list.add(origList.get(i));
 						}
 					}
 				}
-				list.clear();
-				list.addAll(list2);
-				locationsForm.setVisible(true);
+				list.addAll(tmp_list);
+				// locationsForm.setVisible(true);
+				// editForm.setVisible(true);
 
-				editForm.setVisible(true);
-
-				setResponsePage(LocationServicePage.class);
+				setResponsePage(getPage());
 			}
 		};
 		displayLocations.setOutputMarkupId(true);

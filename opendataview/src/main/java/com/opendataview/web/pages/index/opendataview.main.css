@@ -499,7 +499,7 @@ float: right;
     text-align: center;
     background: #CC4646;
     position: absolute;
-    top: 273px;
+    top: 246px;
     right: 0px;
     z-index: 10000;
     cursor: pointer;
@@ -1273,8 +1273,8 @@ select.form-control:not([size]):not([multiple]) {
 }
 .markersTable2 {
 	position: relative;
-    height: 100vh;
-    overflow-y: scroll;
+    /*height: 100vh;
+    overflow-y: scroll;*/
     display: block;
 	/*cellspacing: 0;
 	-webkit-overflow-scrolling: touch;*/
@@ -1291,7 +1291,7 @@ select.form-control:not([size]):not([multiple]) {
 .markersTableContainer2 {
 	font-size: 10px;
 	color: #444;
-	margin-bottom: 100px;
+	/*margin-bottom: 100px;*/
 }
 #idInput2 {
 	position: fixed;
@@ -1430,8 +1430,7 @@ select.form-control:not([size]):not([multiple]) {
     width: 13em !important;
 }
 .other2 a:nth-child(1) {
-	background: #ffc36363;
-	padding: 6px 4px;
+
 }
 
 .directionTableHeader td:nth-child(1) {
@@ -1722,7 +1721,10 @@ input.selectCSV {
     color: #777;
     background: #ffffffb8;
     border-radius: 4px;
-    padding:6px;
+}
+.dw-file {
+	font-size: 24px;
+	margin: 10px;
 }
 .breakline {
     float:left;
@@ -1882,8 +1884,10 @@ input[type="checkbox"], input[type="radio"] {
    text-decoration: underline;
 }
 .title {
-    margin-top: 4px;
     font-size: 20px;
+}
+.title2 {
+    font-size: 16px;
 }
 .moreInfo2 {
 	 margin-top: 12px;
@@ -1898,9 +1902,13 @@ input[type="checkbox"], input[type="radio"] {
 	padding: 5px 15px;
 	float: left;
 }
-.moreInfo2 td:nth-child(1) {
+.moreInfo2 .title {
 	font-weight: 600;
+	font-size: 12px;
 	width: 100%;
+}
+.main-title td {
+	padding: 0px 15px;
 }
 td:empty {
  display: none;

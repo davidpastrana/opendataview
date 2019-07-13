@@ -11,8 +11,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.wicketstuff.rest.annotations.MethodMapping;
 import org.wicketstuff.rest.resource.gson.GsonRestResource;
 
@@ -21,7 +19,8 @@ import com.opendataview.web.model.LocationModel;
 public class LocationsRestResource extends GsonRestResource {
 
 	private static final long serialVersionUID = 1L;
-	private final static Logger log = LoggerFactory.getLogger(LocationsRestResource.class);
+	// private final static Logger log =
+	// LoggerFactory.getLogger(LocationsRestResource.class);
 
 	private List<LocationModel> locations = new ArrayList<LocationModel>();
 	private List<String> datasets = new ArrayList<String>();
@@ -29,8 +28,6 @@ public class LocationsRestResource extends GsonRestResource {
 
 	@SpringBean
 	protected EntityManager entityManager;
-
-	private LocationStaticData locationStaticData;
 
 	public EntityManager getEntityManager() {
 		return entityManager;

@@ -9,6 +9,7 @@ public class LocationStaticData {
 	public static List<LocationModel> loc;
 
 	public void init() {
+		loc.clear();
 		loc = new ArrayList<LocationModel>();
 	}
 

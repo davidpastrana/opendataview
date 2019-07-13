@@ -8,8 +8,6 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.protocol.http.WebSession;
 import org.apache.wicket.request.resource.PackageResourceReference;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import com.opendataview.web.pages.contact.AboutPage;
 import com.opendataview.web.pages.contact.ContactPage;
@@ -29,7 +27,7 @@ public class BasePage extends WebPage {
 
 	private static final long serialVersionUID = 1L;
 
-	private final static Logger log = LoggerFactory.getLogger(BasePage.class);
+	// private final static Logger log = LoggerFactory.getLogger(BasePage.class);
 
 	@Override
 	public void renderHead(IHeaderResponse response) {
@@ -41,15 +39,15 @@ public class BasePage extends WebPage {
 		response.render(CssHeaderItem.forReference(new PackageResourceReference(BasePage.class, "styles.css")));
 	}
 
-	public void MemoryConsumed() {
-		int mb = 1048576;
-		Runtime runtime = Runtime.getRuntime();
-		log.info("##### Heap utilization statistics [MB] #####");
-		log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) / mb);
-		log.info("Free Memory:" + runtime.freeMemory() / mb);
-		log.info("Total Memory:" + runtime.totalMemory() / mb);
-		log.info("Max Memory:" + runtime.maxMemory() / mb);
-	}
+	/*
+	 * public void MemoryConsumed() { int mb = 1048576; Runtime runtime =
+	 * Runtime.getRuntime();
+	 * log.info("##### Heap utilization statistics [MB] #####");
+	 * log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) /
+	 * mb); log.info("Free Memory:" + runtime.freeMemory() / mb);
+	 * log.info("Total Memory:" + runtime.totalMemory() / mb);
+	 * log.info("Max Memory:" + runtime.maxMemory() / mb); }
+	 */
 
 	public BasePage() {
 

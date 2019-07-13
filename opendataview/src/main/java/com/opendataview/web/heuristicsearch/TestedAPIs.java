@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.net.URL;
 import java.net.URLEncoder;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.codehaus.jackson.map.ObjectMapper;
 import org.geonames.InvalidParameterException;
 import org.geonames.ToponymSearchCriteria;
 import org.geonames.ToponymSearchResult;
@@ -23,7 +21,8 @@ public class TestedAPIs {
 	private final static org.slf4j.Logger log = LoggerFactory.getLogger(TestedAPIs.class);
 
 	// Google API for Geocoding
-	private static final String GEOCODE_API_V3 = "https://maps.googleapis.com/maps/api/geocode/json?address=";
+	// private static final String GEOCODE_API_V3 =
+	// "https://maps.googleapis.com/maps/api/geocode/json?address=";
 
 	// NOMINATIM OPEN STREET MAP GET LAT LNG LIMITED TO 2.500 reaquests
 	public void NominatimAPI(String name, LocationModel loc) {
@@ -108,30 +107,26 @@ public class TestedAPIs {
 
 	public class OpenStreetMapGeoCodeJacksonParser {
 
-		private static final String LATITUDE = "lat";
-		private static final String LONGITUDE = "lon";
+		// private static final String LATITUDE = "lat";
+		// private static final String LONGITUDE = "lon";
 
 		public LatLng parse(final InputStream jsonStream) {
 			LatLng coordinate = null;
-			final ObjectMapper mapper = new ObjectMapper();
-			try {
-				final List<Object> dealData = mapper.readValue(jsonStream, List.class);
-				if (dealData != null && dealData.size() == 1) {
-//					final Map<String, Object> locationMap = (Map<String, Object>) dealData.get(0);
-//					if (locationMap != null && locationMap.containsKey(LATITUDE)
-//							&& locationMap.containsKey(LONGITUDE)) {
-//						final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
-//						final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
-//						coordinate = new LatLng(lat, lng);
-//					}
-				} else {
-					Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE, "NO RESULTS",
-							"NO RESULTS");
-				}
-			} catch (Exception ex) {
-				Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level.SEVERE, ex.getMessage(),
-						ex);
-			}
+			/*
+			 * final ObjectMapper mapper = new ObjectMapper();
+			 * 
+			 * try { final List<Object> dealData = mapper.readValue(jsonStream, List.class);
+			 * if (dealData != null && dealData.size() == 1) { final Map<String, Object>
+			 * locationMap = (Map<String, Object>) dealData.get(0); if (locationMap != null
+			 * && locationMap.containsKey(LATITUDE) && locationMap.containsKey(LONGITUDE)) {
+			 * final double lat = Double.parseDouble(locationMap.get(LATITUDE).toString());
+			 * final double lng = Double.parseDouble(locationMap.get(LONGITUDE).toString());
+			 * coordinate = new LatLng(lat, lng); } } else {
+			 * Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level
+			 * .SEVERE, "NO RESULTS", "NO RESULTS"); } } catch (Exception ex) {
+			 * Logger.getLogger(OpenStreetMapGeoCodeJacksonParser.class.getName()).log(Level
+			 * .SEVERE, ex.getMessage(), ex); }
+			 */
 			return coordinate;
 		}
 

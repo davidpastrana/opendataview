@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <html
-	itemscope
-	itemtype="https://schema.org/WebPage"
 	xmlns="https://www.w3.org/1999/xhtml"
 	xmlns:wicket="https://wicket.apache.org"
 	lang="en"
@@ -311,7 +309,7 @@
 							/></td>
 							<td>Data: <textarea
 								id="text-location-edit" class="form-control"
-								wicket:id="data2"
+								wicket:id="data"
 							/></td>
 						</tr>
 						<tr><td><button
@@ -333,7 +331,7 @@
             <i class="ion-android-close"></i>
         </div>
 		<div wicket:id="wmc2">
-			    <span wicket:id="locations_counter2" />
+			    <span id="locations_counter2" />
 				<table class="markersTable2">
 				<tr>
 					<td>
@@ -348,15 +346,8 @@
 												<table class="main-title">
 													<tr>
 														<td>
-															<span
-															wicket:id="name2"
-															class="title h4"
-														/><br /> <span
-															wicket:id="userPublishedTag2"
-															
-														/> <span id="userPublished2"
-															wicket:id="userPublished2"
-															class="h5"
+														
+															<span wicket:id="name2" class="title h4" /><br /> <span wicket:id="userPublishedTag2" /> <span id="userPublished2" wicket:id="userPublished2" class="h5"
 														/><span
 															wicket:id="icon_marker2"
 															class="hide"
@@ -372,11 +363,13 @@
 													</tr>
 													<tr>
 														<td><span wicket:id="filenameTag2" />
-														<span
-															wicket:id="filename2"
-														/>
+														<span wicket:id="filename2" />
 														</td>
 													</tr>
+													<tr>
+														<td><span wicket:id="sourcePublishedTag2" class="title2" /><span wicket:id="sourcePublished2" /><br /></td>
+													</tr>
+													<!--  
 													<tr>
 															<td><span wicket:id="cityTag2" />
 																<span
@@ -386,96 +379,41 @@
 																/>
 																<br />
 															</td>
-													</tr>
+													</tr>-->
 												</table>
 												<table class="moreInfo2">
+
 													<tr>
-														<td><span
-															wicket:id="sourcePublishedTag2"
-														/></td>
-														<td><span wicket:id="sourcePublished2" /></td>
+														<td><span wicket:id="descriptionTag2" class="title" /></td>
+														<td><span wicket:id="description2" /></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="descriptionTag2"
-														/></td>
-														<td><span
-															wicket:id="description2"
-														/></td>
+														<td><span wicket:id="scheduleTag2" class="title" /><span wicket:id="schedule2" /></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="scheduleTag2"
-														/></td>
-														<td><span
-															wicket:id="schedule2"
-														/></td>
+														<td><span wicket:id="phoneTag2" class="title" /><span wicket:id="phone2" /></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="phoneTag2"
-														/></td>
-														<td><span
-															wicket:id="phone2"
-														/></td>
+														<td><span wicket:id="emailTag2" class="title" /><a wicket:id="email2" /></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="emailTag2"
-														/></td>
-														<td><a
-															wicket:id="email2"
-														/></td>
+														<td><span wicket:id="websiteTag2" class="title" /><a wicket:id="website2" target="_blank" /></td>
+													</tr>
+													<!--  <tr>
+														<td><span wicket:id="dateTag2" class="title" /><span wicket:id="date2" /></td>
+													</tr>-->
+													<tr>
+														<td><span wicket:id="datePublishedTag2" class="title" /><span wicket:id="datePublished2" /></td>
+														<td><span wicket:id="dateUpdatedTag2" class="title" /><span wicket:id="dateUpdated2" /></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="websiteTag2"
-														/></td>
-														<td><a
-															wicket:id="website2"
-															target="_blank"
-														/></td>
+														<td><span wicket:id="coordsTag2" class="title" /> <span>lat: <span wicket:id="latitude2" />, lng: <span wicket:id="longitude2" /></span></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="dateTag2"
-														/></td>
-														<td><span wicket:id="date2" /></td>
+														<td><span class="title">Location Id: </span><span id="location_id" wicket:id="id_location2" /></td>
 													</tr>
 													<tr>
-														<td><span
-															wicket:id="datePublishedTag2"
-														/></td>
-														<td><span wicket:id="datePublished2" /></td>
-													</tr>
-													<tr>
-														<td><span
-															wicket:id="dateUpdatedTag2"
-														/></td>
-														<td><span wicket:id="dateUpdated2" /></td>
-													</tr>
-													<tr>
-														<td><span
-															wicket:id="coordsTag2"
-														/></td>
-														<td>
-															<span>Lat: <span wicket:id="latitude2" />
-																	Lng: <span
-																	wicket:id="longitude2"
-																/>
-															</span>
-														</td>
-													</tr>
-													<tr>
-														<td>Location ID:</td>
-														<td>
-															<span id="location_id" wicket:id="id_location2" />
-														</td>
-													</tr>
-													<tr>
-														<td><span
-															wicket:id="otherTag2"
-														/></td>
+														<td><span wicket:id="otherTag2" class="title" /></td>
 														<td><span class="other2" wicket:id="other2" /></td>
 													</tr>
 												</table>

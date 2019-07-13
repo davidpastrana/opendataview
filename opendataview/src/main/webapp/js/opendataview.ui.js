@@ -174,7 +174,7 @@ function fromHex(hex) {
 //	        }); 
 //		    $(".slider_wrapper").show();
 //		    marker.addTo(map2).dragging.enable();
-	  console.log("Latitude: " + lat + ", Longitude: " + lng);
+	 // console.log("Latitude: " + lat + ", Longitude: " + lng);
 	}
   function displayError(error) {
 	  var errors = { 
@@ -203,14 +203,14 @@ $(function() {
 	  });
 	  /*navigator.geolocation ? map2.locate({setView: true, maxZoom: 16}) : alert("Geolocation is not supported by this browser.");*/
 	  
-	  if (navigator.geolocation)  {
-		  var timeoutVal = 10 * 1000 * 1000;
-		  navigator.geolocation.getCurrentPosition(
-		    displayPosition, 
-		    displayError,
-		    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
-		  );
-		} else alert("Geolocation is not supported by this browser");
+//	  if (navigator.geolocation)  {
+//		  var timeoutVal = 10 * 1000 * 1000;
+//		  navigator.geolocation.getCurrentPosition(
+//		    displayPosition, 
+//		    displayError,
+//		    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+//		  );
+//		} else alert("Geolocation is not supported by this browser");
 	  
 		  var satellite = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      topography = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
@@ -347,10 +347,10 @@ $(function() {
 			});
 		  //console.log("jsonobj is "+jsonObj);
 		  if (jsonObj !== undefined) {
-			  var markers = JSON.parse(jsonObj);
+			      var markers = JSON.parse(jsonObj);
 			  	  //fitBounds used for positioning screen with the markers
 				  //map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[markers.length-1].lat,markers[markers.length-1].lng]]);
-			  		var markers2 = [];
+			  	  var markers2 = [];
 				  for (var i=0; i<markers.length; ++i){
 					  markers2.push([JSON.parse(markers[i].lat),JSON.parse(markers[i].lng),markers[i].name+"#"+markers[i].id+"#"+markers[i].icon]);
 				  }
@@ -383,16 +383,20 @@ $(function() {
 						    var lat = latlng[0].replace(/%28|\(/, '');
 						    var lng = latlng[1].replace(/%29|\)/, '');
 							  setTimeout(function(){
-								  var zoom = getSearchParams("zoom");
-								  	map2.setZoom(zoom);
+								  //var zoom = getSearchParams("zoom");
+								  	map2.setZoom(11);
 								  	setTimeout(function(){
 								  	map2.panTo([lat,lng]);
 								  	},500); 
 							  },600); 
 						  } else {
-							  map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[markers.length-1].lat,markers[markers.length-1].lng]]);
-							  map2.setZoom(getSearchParams("zoom"));
+							  console.log("total:"+markers.length);
+							  console.log("half:"+markers.length/2);
+							  $('#locations_counter2').html('Total: '+markers.length).css({"padding":"6"});
+							  map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[parseInt(markers.length/2)].lat,markers[parseInt(markers.length/2)].lng]]);
+							  //map2.setZoom(getSearchParams("zoom"));
 						  }
+					  
 			  }
 		  
 		  

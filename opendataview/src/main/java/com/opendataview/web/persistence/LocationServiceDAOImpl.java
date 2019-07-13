@@ -9,8 +9,6 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.hibernate.jpa.QueryHints;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +19,8 @@ import com.opendataview.web.model.LocationModel;
 @Service
 public class LocationServiceDAOImpl implements LocationServiceDAO {
 
-	private final static Logger log = LoggerFactory.getLogger(LocationServiceDAOImpl.class);
+	// private final static Logger log =
+	// LoggerFactory.getLogger(LocationServiceDAOImpl.class);
 
 	protected EntityManager entityManager;
 
@@ -131,7 +130,7 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 							+ "website=:website,phone=:phone,date=:date,schedule=:schedule,email=:email,filename=:filename,population=:population,elevation=:elevation,username=:username,"
 							+ "source=:source,date_updated=:date_updated,iconmarker=:iconmarker,private_mode=:private_mode,data=:data where id = :id",
 					LocationModel.class);
-			query.setParameter("id", new Float(listValues.get(0)));
+			query.setParameter("id", listValues.get(0));
 
 		} else {
 			String latitude = listValues.get(6);

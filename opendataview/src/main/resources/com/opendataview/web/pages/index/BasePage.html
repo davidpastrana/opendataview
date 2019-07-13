@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html>
 <html
-	itemscope
-	itemtype="https://schema.org/WebPage"
 	xmlns="https://www.w3.org/1999/xhtml"
 	xmlns:wicket="https://wicket.apache.org"
 	lang="en"
@@ -10,59 +8,25 @@
 >
 <head>
 <meta charset="utf-8">
-
- <!-- Chrome, Firefox OS and Opera -->
-<meta
-	name="theme-color"
-	content="#cc4646"
->
-<!-- Windows Phone -->
-    <meta name="msapplication-navbutton-color" content="#cc4646"/>
-
-    <!-- iOS Safari -->
-    <meta name="apple-mobile-web-app-status-bar-style" content="#cc4646"/>
-    <meta http-equiv=X-UA-Compatible content="IE=edge">
-<meta
-	name="viewport"
-	content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"
->
-
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
 <title>OpenDataView &#8211; Visualizing the Data Revolution</title>
-
-<!-- SEO Stuff -->
-<meta name="audience" lang="en" content="all"/>
-<meta name="expires" content="7 days"/>
-<meta name="robots" content="follow"/>
-<meta name="revisit-after" content="7 days"/>
-<meta name="page-topic" content="Spatial Data"/>
-<meta
-	name="description"
-	content="Open Data View allows you to visualize, share and report your data."
-/>
-<meta
-	name="keywords"
-	content="open government, open data, transparency, spatial discovery, disambiguation, heuristic search approaches, pattern matching, schema mapping"
-/>
-<meta
-	name="author"
-	content="David Rodriguez-Pastrana Parareda"
-/>
-<meta property=og:title content="OpenDataView &#8211; Visualizing the Data Revolution"> <meta property=og:description content="Open Data View allows you to visualize, share and report your data."> <meta property=og:type content="website"> <meta property=og:url content="https://opendataview.com/"> <meta property=og:image content=/imgages/logos/opendataview.png> <meta name=twitter:card content="summary"> <meta name=twitter:image content=/imgages/logos/opendataview.png> <meta name=twitter:site content=@opendataview> <meta name=twitter:title content="OpenDataView &#8211; Visualizing the Data Revolution"> <meta name=twitter:description content="Open Data View allows you to visualize, share and report your data.">
-
+<meta name="audience" lang="en" content="all" />
+<meta name="expires" content="7 days" />
+<meta name="robots" content="follow" />
+<meta name="revisit-after" content="7 days" />
+<meta name="page-topic" content="Spatial Data" />
+<meta name="description" content="Open Data View allows you to visualize, share and report your data." />
+<meta name="keywords" content="open government, open data, transparency, spatial discovery, disambiguation, heuristic search approaches, pattern matching, schema mapping" />
+<meta name="author" content="David Rodriguez-Pastrana Parareda" />
+<meta name="msapplication-TileColor" content="#da532c">
+<meta name="theme-color" content="#ffffff">
 <wicket:link>
 <link rel=canonical href="https://www.opendataview.com/">
-<!-- Favicons -->
 <link rel="apple-touch-icon" sizes="76x76" href="/images/favicon/apple-touch-icon.png">
 <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon/favicon-16x16.png">
 <link rel="manifest" href="/images/favicon/site.webmanifest">
-<link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg" color="#fb1515">
-<meta name="msapplication-TileColor" content="#da532c">
-<meta name="theme-color" content="#ffffff">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
-
-<!-- Leaflet Maps 
-<link rel="stylesheet" type="text/css" href="/css/leaflet/leaflet.min.css" />-->
+<link rel="mask-icon" href="/images/favicon/safari-pinned-tab.svg">
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" />
 <link rel="stylesheet" type="text/css" href="https://unpkg.com/leaflet-draw@1.0.4/dist/leaflet.draw.css" />
 <!-- SVG icons -->
@@ -92,25 +56,21 @@
 						<li class="nav-item activeLink"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="locationsLink"
 						>Locations</a></li>
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="samplesLink"
 						>Samples</a></li>
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="aboutUsLink"
 						>About</a></li>
 						<li class="nav-item"><a
 							href="/api/datasets"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							target="_blank"
 						>Api</a></li>
 					</ul>
@@ -134,31 +94,26 @@
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="contactLink"
 						>Contact</a></li>
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="configLink"
 						>Config</a></li>
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="loginLink"
 						>Sign In</a></li>
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="logoutLink"
 						>Sign Out</a></li>
 						<li class="nav-item"><a
 							href="#"
 							class="nav-link scroll-link"
-							itemprop="significantLink"
 							wicket:id="registerLink"
 						>Register</a></li>
 					</ul>
@@ -179,13 +134,13 @@
 		<script src="/js/leaflet/leaflet-openweathermap.min.js"></script>
 		
 		<!-- Custom library -->
-		<script async src="/js/opendataview.ui.js"></script>
+		<script src="/js/opendataview.ui.js"></script>
 		
 		<!-- jQuery UI Slider in order to arrange distance and marker size -->
 		<script src="/js/jquery-ui.min.js"></script>
 		<script src="/js/jquery-ui-slider-pips.min.js"></script>
 		
 		<!-- Mapillary functions to manipulate Web UI -->
-		<script async src='https://unpkg.com/mapillary-js@2.17.0/dist/mapillary.min.js'></script>
+		<script src='https://unpkg.com/mapillary-js@2.18.0/dist/mapillary.min.js'></script>
 </body>
 </html>

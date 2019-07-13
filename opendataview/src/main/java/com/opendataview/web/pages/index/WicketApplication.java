@@ -1,9 +1,5 @@
 package com.opendataview.web.pages.index;
 
-import java.util.EnumSet;
-
-import javax.servlet.SessionTrackingMode;
-
 import org.apache.wicket.RuntimeConfigurationType;
 import org.apache.wicket.authroles.authentication.AbstractAuthenticatedWebSession;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -17,7 +13,6 @@ import org.apache.wicket.request.cycle.IRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.IResource;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
@@ -38,7 +33,6 @@ import com.opendataview.web.pages.properties.SetPropertiesPage;
 import com.opendataview.web.pages.user.LoginUserPage;
 import com.opendataview.web.pages.user.LogoutUserPage;
 import com.opendataview.web.pages.user.RegisterUserPage;
-import com.opendataview.web.persistence.LocationServiceDAOLuceneIdx;
 
 import de.agilecoders.wicket.core.Bootstrap;
 
@@ -66,15 +60,13 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		return LoginUserPage.class;
 	}
 
-	@SpringBean
-	private LocationServiceDAOLuceneIdx locationServiceDAOLuceneIdx;
-
 	@Override
 	public void init() {
 		super.init();
 
 		// Avoid DEVELOPMENT with failure checks
-		getDebugSettings().setComponentUseCheck(false);
+		// getDebugSettings().setComponentUseCheck(false);
+		// getDebugSettings().setAjaxDebugModeEnabled(false);
 
 		// Catch runtime exceptions this way:
 		getRequestCycleListeners().add(new IRequestCycleListener() {
@@ -99,16 +91,6 @@ public class WicketApplication extends AuthenticatedWebApplication {
 
 			getMarkupSettings().setMarkupFactory(new HtmlCompressingMarkupFactory(compressor));
 		}
-//		EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("PERSISTENCE");
-//
-//		EntityManager em = entityManagerFactory.createEntityManager();
-//		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search.getFullTextEntityManager(em);
-//		try {
-//			fullTextEntityManager.createIndexer().startAndWait();
-//		} catch (InterruptedException e1) {
-//			// TODO Auto-generated catch block
-//			e1.printStackTrace();
-//		}
 
 		Bootstrap.install(this);
 
@@ -123,12 +105,9 @@ public class WicketApplication extends AuthenticatedWebApplication {
 			}
 		});
 
-		// Make massive indexing for Lucene and ElasticSearch
-		// locationServiceDAOLuceneIdx.initialize();
-
 		mountPage("/search", getHomePage());
 		mountPage("/samples", SamplesPage.class);
-		mountPage("/config/#{usr}", SetPropertiesPage.class);
+		mountPage("/config/", SetPropertiesPage.class);
 		mountPage("/about", AboutPage.class);
 		mountPage("/contact", ContactPage.class);
 		mountPage("/register", RegisterUserPage.class);
@@ -141,17 +120,14 @@ public class WicketApplication extends AuthenticatedWebApplication {
 		mountResource("sitemap.xml", new SitemapPage());
 
 		getRequestCycleSettings().setGatherExtendedBrowserInfo(false);
-		// getApplicationSettings().addPostComponentOnBeforeRenderListener(new
-		// StatelessChecker());
-		getDebugSettings().setAjaxDebugModeEnabled(false);
 		getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 		getResourceSettings().getResourceFinders()
 				.add(new WebApplicationPath(getServletContext(), "/src/main/resources/"));
-		// getStoreSettings().setInmemoryCacheSize(50);
+		getStoreSettings().setInmemoryCacheSize(0);
 		getResourceSettings().setJavaScriptCompressor(new DefaultJavaScriptCompressor());
 
 		// set cookie mode to keep open the same session id
-		getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
+		// getServletContext().setSessionTrackingModes(EnumSet.of(SessionTrackingMode.COOKIE));
 
 		// set error pages
 		getApplicationSettings().setPageExpiredErrorPage(LoginUserPage.class);

@@ -6,7 +6,6 @@ import java.io.StringWriter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.protocol.http.WebSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,7 +29,7 @@ public class ErrorPage404 extends BasePage {
 		StringWriter errors = new StringWriter();
 //		errors.append("Sorry we have receive the followin error:\n" + e);
 
-		final WebSession session = WebSession.get();
+		// final WebSession session = WebSession.get();
 
 		e.printStackTrace(new PrintWriter(errors));
 //		if (session.getAttribute("user_name") == null) {

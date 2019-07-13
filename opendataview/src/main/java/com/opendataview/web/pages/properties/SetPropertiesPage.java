@@ -467,12 +467,12 @@ public class SetPropertiesPage extends BasePage {
 			BootstrapFileInput bootstrapFileInput = new BootstrapFileInput("bootstrapFileinput", model) {
 
 				private static final long serialVersionUID = 1L;
+				// private boolean clear = false;
 
 				@Override
 				protected void onSubmit(AjaxRequestTarget target) {
 					super.onSubmit(target);
 
-					boolean clear = false;
 					List<FileUpload> fileUploads = model.getObject();
 					if (fileUploads != null) {
 
@@ -561,11 +561,9 @@ public class SetPropertiesPage extends BasePage {
 									upload.writeTo(newFile);
 
 									// clear only if its first file
-									if (countfile2 == 1) {
-										clear = true;
-									} else {
-										clear = false;
-									}
+									/*
+									 * if (countfile2 == 1) { clear = true; } else { clear = false; }
+									 */
 									MainClass.start(upload_folder + "/uploads/", newFile, feedbackPanel,
 											fileUploads.size(), user);
 								} catch (Exception e) {
