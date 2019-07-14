@@ -9,6 +9,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.hibernate.jpa.QueryHints;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,8 +21,7 @@ import com.opendataview.web.model.LocationModel;
 @Service
 public class LocationServiceDAOImpl implements LocationServiceDAO {
 
-	// private final static Logger log =
-	// LoggerFactory.getLogger(LocationServiceDAOImpl.class);
+	private final static Logger log = LoggerFactory.getLogger(LocationServiceDAOImpl.class);
 
 	protected EntityManager entityManager;
 
@@ -213,11 +214,22 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	public List<LocationModel> searchLocationModel(String location_value) throws DataAccessException {
 
 		List<LocationModel> resultList;
-		if (location_value.contains("sql:")) {
+		log.info("Starting2...");
+		log.info("my way is: select l from locations l where lower(data) like '%## " + location_value.toLowerCase()
+				+ " ##%'");
+		log.info("other: select l from locations l where data like '%## " + location_value + " ##%'");
+		if (location_value.startsWith("sql:")) {
 			String sqlquery = location_value.split("sql:")[1].trim();
 			resultList = getEntityManager()
 					.createQuery("select l from locations l where " + sqlquery, LocationModel.class)
 					.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
+		} else if (location_value.startsWith("eq:")) {
+			String match = location_value.split("eq:")[1].trim();
+			resultList = getEntityManager()
+					.createQuery("select l from locations l where data like '%## " + match + " ##%'",
+							LocationModel.class)
+					.setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
+
 		} else {
 			resultList = getEntityManager()
 					.createQuery("select l from locations l where lower(replace(replace(data,'##',''),' ', '')) like '%"

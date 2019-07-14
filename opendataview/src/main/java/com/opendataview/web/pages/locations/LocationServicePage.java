@@ -46,6 +46,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.io.Files;
 import com.opendataview.web.api.LocationStaticData;
@@ -174,8 +176,7 @@ public class LocationServicePage extends BasePage {
 	private List<Integer> allSums = new ArrayList<Integer>();
 	private static Series<Point> series = new PointSeries();
 
-	// private final static Logger log =
-	// LoggerFactory.getLogger(LocationServicePage.class);
+	private final static Logger log = LoggerFactory.getLogger(LocationServicePage.class);
 
 	@SpringBean
 	private LocationServiceDAO locationServiceDAO;
@@ -268,6 +269,8 @@ public class LocationServicePage extends BasePage {
 		origList.clear();
 		origList.addAll(LocationStaticData.loc);
 		// wmc2.add(locations_counter);
+
+		log.info("Starting...");
 
 		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
 		AjaxButton showMarkerInfoBttn = new AjaxButton("showMarkerInfoBttn") {
@@ -455,14 +458,14 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("schedule2").setVisible(false));
 				}
 				if (obj.getData() != null) {
-					item.add(new Label("otherTag2", "File attributes (potential linked attributes):"));
+					item.add(new Label("otherTag2", "Search for linked data:"));
 					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
 					String newinfo = "";
 
 					for (int i = 0; i < addlinks.size(); i++) {
 						if (!addlinks.get(i).contains("Filename: ") && !addlinks.get(i).contains("Source: ")
 								&& !addlinks.get(i).contains("Published by: ")) {
-							newinfo += "<a href='search?&value=" + addlinks.get(i).trim().replaceAll(" ", "+")
+							newinfo += "<a href='search?&value=eq:" + addlinks.get(i).trim().replaceAll(" ", "+")
 									+ "&fullscreen=" + fullscreen + "&map=" + maptype + "'>" + addlinks.get(i)
 									+ "</a><br />";
 						}

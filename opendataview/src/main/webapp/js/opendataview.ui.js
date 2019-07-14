@@ -201,6 +201,7 @@ $(function() {
 	      zoom: 2,
 	      zoomControl:false,
 	  });
+	  $('#mapType').val('light');
 	  /*navigator.geolocation ? map2.locate({setView: true, maxZoom: 16}) : alert("Geolocation is not supported by this browser.");*/
 	  
 //	  if (navigator.geolocation)  {
