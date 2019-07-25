@@ -18,32 +18,34 @@ function showSidebar(id) {
 function customMarker() {
 	return 'data:image/svg+xml;base64,' + btoa('<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40" height="40" viewBox="-100 -100 200 200"><defs><g id="a" transform="rotate(65)"></g></defs><g fill="#cc464600"><circle fill="#333" r="50px" /><circle fill="#ef3737" r="39" /><circle r="100" /><use xlink:href="#a"/><g transform="rotate(120)"><use xlink:href="#a"/></g><g transform="rotate(240)"><use xlink:href="#a"/></g></g></svg>');
 }
+function showCurrentLocationMarker() {
+	var iconMarker = L.icon({
+  	  draggable: true,
+		  iconUrl: customMarker()
+	  });
+  var latlng = coordsatt.split(',');
+  var lat = latlng[0].replace(/%28|\(/, '');
+  var lng = latlng[1].replace(/%29|\)/, '');
+  latlng = new L.latLng(lat,lng);
+  if(coordsatt.split(',').length == 2) {
+	    marker = L.marker(latlng, {icon: iconMarker})
+	      .bindPopup('Drag location<br>Adjust distance in Km',{'maxWidth': '400', 'width': '200', 'className' : 'current-location-popup'});
+	    marker.addTo(map2).dragging.enable();
+      marker.on("dragend",function(e){
+          $('#polygonCoordInput').val(e.target.getLatLng().toString().replace(/\LatLng|\s+/g, ''));
+          $('#savePolygonCoordinates').trigger('click');
+      });
+	    marker.openPopup();
+	    map2.setView([lat,lng]);
+	    $(".slider_wrapper").show();
+  }
+}
 function onLocationFound(e) {
-	if(getSearchParams("coords") === undefined) {
-    $('#polygonCoordInput').val(e.latlng.toString().replace(/\LatLng|\s+/g, ''));
-    $('#savePolygonCoordinates').trigger('click');
+	if(coordsatt === undefined) {
+	    $('#polygonCoordInput').val(e.latlng.toString().replace(/\LatLng|\s+/g, ''));
+	    $('#savePolygonCoordinates').trigger('click');
 	} else {
-	    var iconMarker = L.icon({
-	    	  draggable: true,
-			  iconUrl: customMarker()
-		  });
-	    var latlng = getSearchParams('coords').split(',');
-	    var lat = latlng[0].replace(/%28|\(/, '');
-	    var lng = latlng[1].replace(/%29|\)/, '');
-	    latlng = new L.latLng(lat,lng);
-	    if(getSearchParams('coords').split(',').length == 2) {
-		    marker = L.marker(latlng, {icon: iconMarker})
-		      .bindPopup('Drag your current location<br>Control the distance visibility from the top left corner',{'maxWidth': '400', 'width': '200', 'className' : 'current-location-popup'})
-		      .openPopup()
-		      .on('mouseover', function (e) {this.openPopup();})
-			  .on('mouseout', function (e) {this.closePopup();});
-	        marker.on("dragend",function(e){
-	            $('#polygonCoordInput').val(e.target.getLatLng().toString().replace(/\LatLng|\s+/g, ''));
-	            $('#savePolygonCoordinates').trigger('click');
-	        }); 
-		    $(".slider_wrapper").show();
-		    marker.addTo(map2).dragging.enable();
-	    }
+		showCurrentLocationMarker();
 	}
 }
 function onLocationError(e) {
@@ -152,29 +154,15 @@ function fromHex(hex) {
     return {r: r / 255, g: g / 255, b: b / 255};
   };
   function displayPosition(position) {
-	  //map2.locate({setView: true, maxZoom: 16});
 	    var iconMarker = L.icon({draggable: true,iconUrl: customMarker()});
 	  	var lat = position.coords.latitude;
 	  	var lng = position.coords.longitude;
-	    latlng = new L.latLng(lat,lng);
+	    //latlng = new L.latLng(lat,lng);
 	    
-		if(getSearchParams("coords") === undefined) {
+		if(coordsatt === undefined) {
 		    $('#polygonCoordInput').val("\("+lat+","+lng+"\)");
 		    $('#savePolygonCoordinates').trigger('click');
-		} 
-	    
-//		    marker = L.marker(latlng, {icon: iconMarker})
-//		      .bindPopup('Drag your current location<br>Control the distance visibility from the top left corner',{'maxWidth': '400', 'width': '200', 'className' : 'current-location-popup'})
-//		      .openPopup()
-//		      .on('mouseover', function (e) {this.openPopup();})
-//			  .on('mouseout', function (e) {this.closePopup();});
-//	        marker.on("dragend",function(e){
-//	            $('#polygonCoordInput').val(e.target.getLatLng().toString().replace(/\LatLng|\s+/g, ''));
-//	            $('#savePolygonCoordinates').trigger('click');
-//	        }); 
-//		    $(".slider_wrapper").show();
-//		    marker.addTo(map2).dragging.enable();
-	 // console.log("Latitude: " + lat + ", Longitude: " + lng);
+		}
 	}
   function displayError(error) {
 	  var errors = { 
@@ -184,15 +172,44 @@ function fromHex(hex) {
 	  };
 	  alert("Error: " + errors[error.code]);
 	}
+  function helpInit() {
+		var enjoyhint_instance = new EnjoyHint({});
+		var enjoyhint_script_steps = [
+	      {
+			'next #hideLocation' : 'Datasets display. Download & Create charts out of them!'
+		  },
+		  {
+		    'next .leaflet-control-layers-toggle' : 'Customize your Map Layouts'
+		  },
+		  {
+			'next .table-search' : 'Search via any Attribute or Current location'
+		  },
+		  {
+		     'next .leaflet-draw' : 'Draw or Pinmark to find data on specific areas'
+		  }, 
+		  {
+			'next .register' : 'Start and Register ;)</br>Make open geodata possible to share!'
+		  },
+		];
+		enjoyhint_instance.set(enjoyhint_script_steps);
+		enjoyhint_instance.run();
+  }
+  function googleAddress() {
+	  window.open("http://maps.google.com/?q="+$('#coordlat').html()+","+$('#coordlng').html(),"_blank");
+	  //$('#google-address').attr('href', 'https://maps.google.com/?q='+$('#coordlat').html()+','+$('#coordlat').html())
+  }
+  
 var mly;
-  var key_image;
-  var map2;
-  var editableLayers;
-  var jsonObj;
-  var point_markers;
+var key_image;
+var map2;
+var editableLayers;
+var jsonObj;
+var point_markers;
+var coordsatt;
+var mapatt;
   
 $(function() {
-	
+
 	if($('#mapid').length === 1) {
 	  map2 = L.map('mapid', {
 	      center: [20.0, 5.0],
@@ -201,18 +218,28 @@ $(function() {
 	      zoom: 2,
 	      zoomControl:false,
 	  });
+	  coordsatt = getSearchParams('coords');
+	  mapatt = getSearchParams('map');
+	  
+	  if(coordsatt == null && getSearchParams("value") == null) {
+		  if (navigator.geolocation)  {
+			  var timeoutVal = 5000;
+			  navigator.geolocation.getCurrentPosition(
+			    displayPosition, 
+			    displayError,
+			    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+			  );
+			} else alert("Geolocation is not supported by this browser");
+	  }
+	  $('#help').click(function() {
+		    helpInit();
+	  });
+	  urlpath = location.href.split('?')[1];
+	  if(urlpath.charAt(0) == 0 && urlpath.charAt(1) == '&') {
+		  helpInit();
+	  }
+
 	  $('#mapType').val('light');
-	  /*navigator.geolocation ? map2.locate({setView: true, maxZoom: 16}) : alert("Geolocation is not supported by this browser.");*/
-	  
-//	  if (navigator.geolocation)  {
-//		  var timeoutVal = 10 * 1000 * 1000;
-//		  navigator.geolocation.getCurrentPosition(
-//		    displayPosition, 
-//		    displayError,
-//		    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
-//		  );
-//		} else alert("Geolocation is not supported by this browser");
-	  
 		  var satellite = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      topography = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
 	      esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
@@ -301,15 +328,16 @@ $(function() {
 				  "Wind Rose": windrose,
 				  "Snowing": snow,
 				};
-		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true, position: 'bottomleft'}).addTo(map2);
-		  //layerControl.setPosition('topright');
+		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true, position: 'bottomright'}).addTo(map2);
 			$('#icon-mylocation').on('click', function(){
-				  map2.locate();
+				map2.locate({setView: true, maxZoom: 15});
+			    map2.on('locationfound', onLocationFound);
+				map2.on('locationerror', onLocationError);
+			    localStorage['location'] = 'true';
 			});
-			map2.on('locationfound', onLocationFound);
-			map2.on('locationerror', onLocationError);
-		  	if(getSearchParams("map") != undefined) {	 
-		  		switch(getSearchParams("map")) {
+
+		  	if(mapatt != undefined) {	 
+		  		switch(mapatt) {
 		  		case 'light': light.addTo(map2); break
 		  		case 'dark': dark.addTo(map2); break
 		  		case 'openstreetmap': openstreetmap.addTo(map2); break
@@ -329,7 +357,6 @@ $(function() {
 		    	light.addTo(map2);
 		    }
 		 map2.on('baselayerchange', function (e) {
-			    //console.log(e.name);
 			    $('#mapType').val(e.name.toLowerCase());
 			});
 		    L.DomEvent.on(L.DomUtil.get('zoomIn'), 'click', function () {
@@ -339,18 +366,11 @@ $(function() {
 		    L.DomEvent.on(L.DomUtil.get('zoomOut'), 'click', function () {
 		        map2.setZoom(map2.getZoom() - 1);
 		    });
-//		  if(getSearchParams("zoom") != undefined) {
-//			  map2.setZoom(getSearchParams("zoom"));
-//		  }
-		    //$('#mapZoomLevel').val(map2.getZoom());
 		  map2.on('zoom', function() {
 			  $('#mapZoomLevel').val(map2.getZoom());
 			});
-		  //console.log("jsonobj is "+jsonObj);
 		  if (jsonObj !== undefined) {
 			      var markers = JSON.parse(jsonObj);
-			  	  //fitBounds used for positioning screen with the markers
-				  //map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[markers.length-1].lat,markers[markers.length-1].lng]]);
 			  	  var markers2 = [];
 				  for (var i=0; i<markers.length; ++i){
 					  markers2.push([JSON.parse(markers[i].lat),JSON.parse(markers[i].lng),markers[i].name+"#"+markers[i].id+"#"+markers[i].icon]);
@@ -369,7 +389,7 @@ $(function() {
 				  if(getSearchParams("opacity")!=null) {
 					  opacity=getSearchParams("opacity");
 				  }
-				     point_markers = L.glify.points({
+				   point_markers = L.glify.points({
 					        map: map2,
 					        color: function(index,point){if(!colorsel){color=fromHex('#'+point[2].split('#')[2])};return color},
 					        opacity: opacity,
@@ -379,29 +399,13 @@ $(function() {
 					        data: markers2,
 					        size: size,   
 					      });
-					  if(getSearchParams("coords") != null && getSearchParams("coords").split(',').length == 2) {
-						    var latlng = getSearchParams('coords').split(',');
-						    var lat = latlng[0].replace(/%28|\(/, '');
-						    var lng = latlng[1].replace(/%29|\)/, '');
-							  setTimeout(function(){
-								  //var zoom = getSearchParams("zoom");
-								  	map2.setZoom(11);
-								  	setTimeout(function(){
-								  	map2.panTo([lat,lng]);
-								  	},500); 
-							  },600); 
-						  } else {
-							  console.log("total:"+markers.length);
-							  console.log("half:"+markers.length/2);
-							  $('#locations_counter2').html('Total: '+markers.length).css({"padding":"6"});
-							  map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[parseInt(markers.length/2)].lat,markers[parseInt(markers.length/2)].lng]]);
-							  //map2.setZoom(getSearchParams("zoom"));
-						  }
-					  
+				/*if(coordsatt != null && coordsatt.split(',').length != 2) {
+					map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[parseInt(markers.length/2)].lat,markers[parseInt(markers.length/2)].lng]]);
+				}*/
+				map2.fitBounds(markers);
+				$('#locations_counter2').html('Total: '+markers.length).css({"padding":"6px 9px","border":"1px solid rgba(0,0,0,.4)"});
 			  }
-		  
-		  
-		  
+
 		// Initialise the FeatureGroup to store editable layers
 		  editableLayers = new L.FeatureGroup();
 		  map2.addLayer(editableLayers);
@@ -457,13 +461,6 @@ $(function() {
 			    if(type === 'marker') {
 			        var points = layer.getLatLng().toString().replace(/\LatLng|\s+/g, '');
 			   }
-//			    if(type === 'circle') {
-//			        var centerpt = layer.getLatLng();
-//			        var center = [centerpt.lng,centerpt.lat]; 
-//			        var radius = layer.getRadius();
-//			        points = "cent("+center+"),rad("+radius+")";
-//			        console.log("center circle is:"+center+" and radius:"+radius);
-//			   }
 			    $('#polygonCoordInput').val(points);
 			    $('#savePolygonCoordinates').trigger('click');
 			});
@@ -478,7 +475,6 @@ $(function() {
 		            });
 				    $('#polygonCoordInput').val(points);
 				    $('#savePolygonCoordinates').trigger('click');
-		            //console.log("Number of Layers: " + countOfEditedLayers + " layers");
 			});
 		  map2.on('draw:created', function(e) {
 		    var type = e.layerType,
@@ -491,8 +487,24 @@ $(function() {
 		    editableLayers.addLayer(layer);
 		  });
 		  
-		  //L.control.attribution({position: 'bottomright'}).addTo(map2);
-		    // Attribution panel
+		  if ($("#hideLocation input:checkbox:checked").length == false){
+			  if (coordsatt != null && coordsatt.split(',').length == 2) {
+				  if(!Boolean(localStorage['location'])) {// && coordsatt != null && coordsatt.split(',').length == 2) {
+					    map2.locate({setView: true, maxZoom: 15});
+						map2.on('locationfound', onLocationFound);
+						//map2.on('locationerror', onLocationError);
+						localStorage['location'] = 'true';
+				  } else {
+					    showCurrentLocationMarker();
+				  }
+			  }
+		  } else {
+			  if(map2.hasLayer(editableLayers)) {
+				  map2.removeLayer(editableLayers);
+			  }
+		  }
+		  
+		 	// Attribution panel
 		    $('.leaflet-control-attribution').hide();
 			$("#attribution-button").on("mouseover",function(){
 				$('.leaflet-control-attribution').show();
@@ -515,8 +527,19 @@ $(function() {
 				});
 			} else {
 				$('#hideLocation').show();
+				var active = true;
+				$("#displayLocations").on("click",function(){
+					console.log("active? "+active);
+					if(active) { $('#hideLocation').hide(); active = false; }
+					else { $('#hideLocation').show(); active = true; }
+				});
+//				$("#locationView").on("click",function(){
+//					$('#hideLocation').hide();
+//				});
+//				$('html').click(function() {
+//					$('#hideLocation').hide();
+//				});
 			}
-
 			//Sidebar Mobile left menu with black layout
 			  $('#dismiss, .overlay').on('click', function () {
 			      $('#sidebar').removeClass('active');
@@ -564,7 +587,7 @@ $(function() {
 			       change: function (event, ui) {
 			         if (event.originalEvent) {
 			           $('#geoCoordDistance').val(valMap[ui.value]);
-			   	    var latlng = getSearchParams('coords').split(',');
+			   	    var latlng = coordsatt.split(',');
 				    var lat = latlng[0].replace(/%28|\(/, '');
 				    var lng = latlng[1].replace(/%29|\)/, '');
 				    latlng = new L.latLng(lat,lng);
@@ -583,5 +606,4 @@ $(function() {
 		} // END only when loading leaflet maps
 	  // Helpful message when cursor is over - labeled in bootstrap
 	    $('[data-toggle="tooltip"]').tooltip();
-
 });

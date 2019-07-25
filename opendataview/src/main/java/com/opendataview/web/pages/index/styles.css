@@ -23,10 +23,6 @@ body {
 	background: #f7f7f7;
 }
 
-.list-route {
-	font-weight: normal;
-}
-
 select:-moz-focusring {
 	color: transparent;
 	text-shadow: 0 0 0 #000;

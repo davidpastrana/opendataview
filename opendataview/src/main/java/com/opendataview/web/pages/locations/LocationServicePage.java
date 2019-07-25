@@ -14,8 +14,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -45,7 +47,6 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
 import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -133,8 +134,8 @@ public class LocationServicePage extends BasePage {
 			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
 			String[] att = coords.substring(1, coords.length() - 1).split("\\),\\(");
 			if (att.length == 1) {
-				response.render(OnDomReadyHeaderItem
-						.forScript("window.onload = function () {map2.locate({setView: true, maxZoom: 15})}"));
+//				response.render(OnDomReadyHeaderItem
+//						.forScript("window.onload = function () {}"));
 			} else {
 				String coords_format = "[" + coords.toString().replaceAll("\\(", "new L.LatLng(") + "]";
 				response.render(OnDomReadyHeaderItem
@@ -270,8 +271,6 @@ public class LocationServicePage extends BasePage {
 		origList.addAll(LocationStaticData.loc);
 		// wmc2.add(locations_counter);
 
-		log.info("Starting...");
-
 		final TextField<String> idInput2 = new TextField<String>("idInput2", Model.of(""));
 		AjaxButton showMarkerInfoBttn = new AjaxButton("showMarkerInfoBttn") {
 
@@ -298,39 +297,35 @@ public class LocationServicePage extends BasePage {
 		if (!parameters.get("coords").isNull()) {
 
 			String[] att = null;
-
-			String geoCoordDistanceValue = "";
+			double distanceKm = 0;
 			if (parameters.get("dist").isNull()) {
-				geoCoordDistanceValue = "1";
+				distanceKm = Double.valueOf(1);
 			} else {
-				geoCoordDistanceValue = parameters.get("dist").toString();
+				distanceKm = Double.valueOf(parameters.get("dist").toString());
 			}
 
 			String polygonCoordInputValue = parameters.get("coords").toString();
-			double distanceKm = 0;
-			if (geoCoordDistanceValue != null) {
-				distanceKm = Double.valueOf(geoCoordDistanceValue);
-			}
-
-			if (polygonCoordInputValue == null) {
-				list.clear();
-
-			} else if (polygonCoordInputValue != null && polygonCoordInputValue.contains(",")) {
+			if (polygonCoordInputValue != null && polygonCoordInputValue.contains(",")) {
 				polygonCoordInputValue = polygonCoordInputValue.replaceAll("\\s+", "");
 
-				Path2D myPolygon = new Path2D.Double();
 				att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1).split("\\),\\(");
 
 				String[] coordXY = null;
-				for (int i = 0; i < att.length; i++) {
-					coordXY = att[i].split(",");
-					if (i == 0) {
-						myPolygon.moveTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
-					} else {
-						myPolygon.lineTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+				Path2D myPolygon = null;
+				if (att.length != 1) {
+					myPolygon = new Path2D.Double();
+					for (int i = 0; i < att.length; i++) {
+						coordXY = att[i].split(",");
+						if (i == 0) {
+							myPolygon.moveTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+						} else {
+							myPolygon.lineTo(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]));
+						}
 					}
+					myPolygon.closePath();
+				} else {
+					coordXY = att[0].split(",");
 				}
-				myPolygon.closePath();
 
 				list.clear();
 
@@ -383,7 +378,7 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("name2").setVisible(false));
 				}
 				if (obj.getFileName() != null && !obj.getFileName().isEmpty()) {
-					item.add(new Label("filenameTag2", "View all data: "));
+					// item.add(new Label("filenameTag2", "View all data: "));
 					item.add(
 							new Label("filename2",
 									"<a href='search?&value=" + obj.getFileName() + "&fullscreen=" + fullscreen
@@ -458,7 +453,7 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("schedule2").setVisible(false));
 				}
 				if (obj.getData() != null) {
-					item.add(new Label("otherTag2", "Search for linked data:"));
+					item.add(new Label("otherTag2", "Dataset attributes search:"));
 					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
 					String newinfo = "";
 
@@ -502,8 +497,9 @@ public class LocationServicePage extends BasePage {
 				if (obj.getSource() != null && !obj.getSource().isEmpty()) {
 					item.add(new Label("sourcePublishedTag2", "Download file: "));
 					item.add(new Label("sourcePublished2",
-							"<a href='" + obj.getSource() + "'><i class='dw-file ion-ios-cloud-download' /></a>")
-									.setEscapeModelStrings(false));
+							"<a href='" + obj.getSource()
+									+ "'><i class='fa fa-cloud-download fa-2x download-file' /></a>")
+											.setEscapeModelStrings(false));
 				} else {
 					item.add(new Label("sourcePublishedTag2").setVisible(false));
 					item.add(new Label("sourcePublished2").setVisible(false));
@@ -517,7 +513,7 @@ public class LocationServicePage extends BasePage {
 		locationsForm.setOutputMarkupId(true);
 		add(locationsForm);
 
-		Label downloadLabel = new Label("downloadLabel", "Current search download:");
+		Label downloadLabel = new Label("downloadLabel", "Download search:");
 		downloadLabel.setEscapeModelStrings(false);
 		downloadLabel.setVisible(false);
 		locationsForm.add(downloadLabel);
@@ -618,9 +614,6 @@ public class LocationServicePage extends BasePage {
 		};
 		saveVisibleLocFile.setVisible(false);
 		locationsForm.add(saveVisibleLocFile);
-
-		now = new Date();
-		sdf = new SimpleDateFormat("ddMMyyyy'-'HHmm");
 
 		File sqlLocBackup = new File(Files.createTempDir(), "backup-" + sdf.format(now) + ".sql");
 		locationsForm.add(new DownloadLink("sqlLocBackup", sqlLocBackup));
@@ -768,10 +761,15 @@ public class LocationServicePage extends BasePage {
 		namesSelect.clear();
 
 		for (int i = 0; i < list.size(); i++) {
-			if (!names.contains(list.get(i).getFileName())) {
-				names.add(list.get(i).getFileName());
+			String filename = list.get(i).getFileName();
+			if (!names.contains(filename)) {
+				names.add(filename);
 			}
 		}
+//		for (int i = 0; i < names.size(); i++) {
+//			String filename = names.get(i);
+//			names.set(i, filename.substring(0, 1).toUpperCase() + filename.substring(1).toLowerCase());
+//		}
 
 //		if (username != null) {
 //
@@ -812,7 +810,7 @@ public class LocationServicePage extends BasePage {
 
 							if (!choices.contains(tmp_duplicate))
 								choices.add(tmp_duplicate);
-							if (++count == 10)
+							if (++count == 20)
 								break;
 						}
 					}
@@ -907,9 +905,8 @@ public class LocationServicePage extends BasePage {
 				PageParameters pageParameters = new PageParameters();
 				pageParameters.set("zoom", zoomLevelInputValue);
 				att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1).split("\\),\\(");
-				if (att.length == 1) {
+				if (att.length == 1)
 					pageParameters.set("dist", geoCoordDistanceValue);
-				}
 				if (viewPanelsInputValue != null)
 					pageParameters.set("fullscreen", viewPanelsInputValue);
 				if (!mapTypeInputValue.equals("null"))
@@ -922,12 +919,8 @@ public class LocationServicePage extends BasePage {
 					pageParameters.set("group", chart_group);
 				if (!showPrivateMapValue.equals("null"))
 					pageParameters.set("user", showPrivateMapValue);
-				if (polygonCoordInputValue != null) { // used when using check my current location
+				if (!polygonCoordInputValue.equals("null"))
 					pageParameters.set("coords", polygonCoordInputValue);
-				}
-				/*
-				 * else { pageParameters.set("coords", parameters.get("coords")); }
-				 */
 				setResponsePage(getPage().getClass(), pageParameters);
 			}
 		};
@@ -993,21 +986,20 @@ public class LocationServicePage extends BasePage {
 				super.onBeforeRender();
 			}
 
-			JSONObject o;
+			Map<String, Object> o;
 			LocationModel obj;
 
 			List<String> listchart = null;
 			Series<Number> serie4 = null;
 
 			@Override
-			@SuppressWarnings("unchecked")
 			public void populateItem(final ListItem<LocationModel> item) {
 				obj = item.getModelObject();
 
 				// if the marker is not in private mode (do not display it to the public) unless
 				// we are logged is as the marker owner
 				if (obj.getPrivate_mode() == false || obj.getUsername().equals(user)) {
-					o = new JSONObject();
+					o = new HashMap<>();
 					o.put("id", obj.getId());
 					o.put("name", obj.getName());
 					o.put("icon", obj.getIconmarker());
@@ -1223,8 +1215,8 @@ public class LocationServicePage extends BasePage {
 //		};
 //		locationsForm.add(removeSelected);
 
-		Label configLabel = new Label("configLabel", "Configuration:");
-		Label importedFilesLabel = new Label("importedFilesLabel", "Current dataset view:");
+		Label configLabel = new Label("configLabel", "Settings:");
+		Label importedFilesLabel = new Label("importedFilesLabel", "Nearby places:");
 		// Label removeSelectedLabel = new Label("removeSelectedLabel", "Remove
 		// files:");
 
@@ -1248,7 +1240,7 @@ public class LocationServicePage extends BasePage {
 
 		CheckBoxMultipleChoice<String> listConfig = new CheckBoxMultipleChoice<String>("listConfig",
 				new Model<ArrayList<String>>(config_names_select), config_names);
-		listConfig.setSuffix("<br />");
+		// listConfig.setSuffix("<br />");
 		AjaxFormChoiceComponentUpdatingBehavior check2 = new AjaxFormChoiceComponentUpdatingBehavior() {
 
 			private static final long serialVersionUID = 1L;
@@ -1287,7 +1279,6 @@ public class LocationServicePage extends BasePage {
 
 		CheckBoxMultipleChoice<String> listLocations = new CheckBoxMultipleChoice<String>("listLocations",
 				new Model<ArrayList<String>>(namesSelect), names);
-		listLocations.setSuffix("<br />");
 		AjaxFormChoiceComponentUpdatingBehavior check = new AjaxFormChoiceComponentUpdatingBehavior() {
 
 			private static final long serialVersionUID = 1L;
@@ -1302,9 +1293,8 @@ public class LocationServicePage extends BasePage {
 				for (int j = 0; j < namesSelect.size(); j++) {
 					list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
-				target.prependJavaScript("map2.removeLayer(editableLayers);");
 				if (list2.isEmpty()) {
-					target.appendJavaScript("point_markers.remove()");
+					target.appendJavaScript("point_markers.remove();$('#locations_counter2').hide();");
 
 				} else {
 					list.addAll(list2);
@@ -1404,34 +1394,32 @@ public class LocationServicePage extends BasePage {
 		};
 		editFormTriggerClick.add(editInfoButton);
 
-		final Button displayLocations = new Button("displayLocations") {
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-			public void onSubmit() {
-
-				names.clear();
-				namesSelect.clear();
-
-				list.clear();
-				tmp_list.clear();
-
-				for (int i = 0; i < origList.size(); i++) {
-					for (int j = 0; j < namesSelect.size(); j++) {
-						if (origList.get(i).getFileName().contentEquals(namesSelect.get(j).toString())) {
-							tmp_list.add(origList.get(i));
-						}
-					}
-				}
-				list.addAll(tmp_list);
-				// locationsForm.setVisible(true);
-				// editForm.setVisible(true);
-
-				setResponsePage(getPage());
-			}
-		};
-		displayLocations.setOutputMarkupId(true);
+//		final Button displayLocations = new Button("displayLocations") {
+//
+//			private static final long serialVersionUID = 1L;
+//
+//			@Override
+//			public void onSubmit() {
+//
+//				names.clear();
+//				namesSelect.clear();
+//
+//				list.clear();
+//				tmp_list.clear();
+//
+//				for (int i = 0; i < origList.size(); i++) {
+//					for (int j = 0; j < namesSelect.size(); j++) {
+//						if (origList.get(i).getFileName().contentEquals(namesSelect.get(j).toString())) {
+//							tmp_list.add(origList.get(i));
+//						}
+//					}
+//				}
+//				list.addAll(tmp_list);
+//
+//				setResponsePage(getPage());
+//			}
+//		};
+//		displayLocations.setOutputMarkupId(true);
 	}
 
 	@Override

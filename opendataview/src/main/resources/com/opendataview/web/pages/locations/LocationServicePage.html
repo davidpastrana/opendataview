@@ -18,12 +18,11 @@
 				<table class="table-search">
 					<tr>
 						<th>
-							<form
-								class="formSearch"
-								wicket:id="formSearch"
-							>
+							<form class="formSearch" wicket:id="formSearch">
+							    <i id="displayLocations" class="ion-leaf custom-displayloc" />
+							
 								<input
-									placeholder="Search any address, zip, web.."
+									placeholder="Search for any attribute..."
 									type="text"
 									wicket:id="textSearch"
 									id="textsearch"
@@ -122,39 +121,26 @@
 							</div>
 						</th>
 					</tr>
+					
 				</table>
 		</div>
-		<form
-				wicket:id="locationsForm"
-				id="locationView"
-				data-intro="Use this filter to select the type of locations you want to see."
-				data-position="left"
-			>
-				<i
-					id="displayLocations"
-					class="glyphicon glyphicon-cog custom-displayloc"
-				/>
+		<form wicket:id="locationsForm" id="locationView">
+
 				<div id="hideLocation">
 				    <div id ="active_user" wicket:id="active_user" />
-									<p
-						class="h3 list-route"
-						wicket:id="configLabel"
-					>Configuration:</p>
-					<div class="radio"
-						wicket:id="listConfig"
-					></div>
+
 					<p
-						class="h3 list-route top-padding"
+						class="h3 top-padding"
 						wicket:id="importedFilesLabel"
-					>Imported datasets:</p>
+					>Recommended:</p>
 					<div
 						class="radio"
 						wicket:id="listLocations"
 					></div>
-										<p
-						class="h3 list-route top-padding breakline"
+					<span class="download-panel">
+					<span class="h3 top-padding breakline"
 						wicket:id="downloadLabel"
-					>Download search:</p>
+					>Download search:</span>
 						<span
 							id="linkSaveVisibleLoc"
 							class="hide"
@@ -167,18 +153,11 @@
 						/>
 						<a href="#" wicket:id="saveVisibleLocFile" class="breakline">Download CSV file</a>
 						<a href="#" wicket:id="saveSqlLocBackup" class="padding-bottom breakline">Download SQL Backup</a>
-					<!--  <p
-						class="h3 list-route"
-						wicket:id="removeSelectedLabel"
-					>Files to remove:</p>
-					<div
-						class="radio"
-						wicket:id="removeLocations"
+					</span>
+					<h3 wicket:id="configLabel">Settings:</h3>
+					<div class="radio"
+						wicket:id="listConfig"
 					></div>
-					<button
-						class="btn btn-lg btn-primary"
-						wicket:id="removeSelected"
-					>Remove selected</button>-->
 				</div>
 			</form>
 
@@ -195,6 +174,8 @@
 				  <button id="zoomOut" class="btn" title="Zoom Out">-</button>
 				  <button id="zoomIn" class="btn" title="Zoom In">+</button>
 			</div>
+			<span id="help">?</span>
+			<span id="locations_counter2" />
 			<button id="attribution-button" class="btn btn-primary" data-toggle="collapse" role="button" aria-expanded="false" aria-controls="collapseExample" title="Maps Attribution">?</button>
 			<div id="panel">
 				</div>
@@ -331,7 +312,6 @@
             <i class="ion-android-close"></i>
         </div>
 		<div wicket:id="wmc2">
-			    <span id="locations_counter2" />
 				<table class="markersTable2">
 				<tr>
 					<td>
@@ -361,13 +341,14 @@
 															/>
 														</td>
 													</tr>
-													<tr>
-														<td><span wicket:id="filenameTag2" />
-														<span wicket:id="filename2" />
-														</td>
+													<tr><td>
+													      <span class="title2">Directions: </span><a href="" id="google-address" class="fa fa-map-marker fa-2x" onclick="googleAddress();" />  <span wicket:id="sourcePublishedTag2" class="title2" /><span wicket:id="sourcePublished2" />
+													</td>
 													</tr>
 													<tr>
-														<td><span wicket:id="sourcePublishedTag2" class="title2" /><span wicket:id="sourcePublished2" /><br /></td>
+														 <td><!--<span wicket:id="filenameTag2" />-->
+														<span class="dataset-name" wicket:id="filename2" />
+														</td>
 													</tr>
 													<!--  
 													<tr>
@@ -407,15 +388,13 @@
 														<td><span wicket:id="dateUpdatedTag2" class="title" /><span wicket:id="dateUpdated2" /></td>
 													</tr>
 													<tr>
-														<td><span wicket:id="coordsTag2" class="title" /> <span>lat: <span wicket:id="latitude2" />, lng: <span wicket:id="longitude2" /></span></td>
+														<td><span wicket:id="coordsTag2" class="title" /> <span>lat: <span id="coordlat" wicket:id="latitude2" />, lng: <span id="coordlng" wicket:id="longitude2" /></span></td>
 													</tr>
 													<tr>
 														<td><span class="title">Location Id: </span><span id="location_id" wicket:id="id_location2" /></td>
 													</tr>
 													<tr>
-													</tr>
-													<tr>
-														<td><span wicket:id="otherTag2" class="title" /></td>
+														<td><br /><span wicket:id="otherTag2" class="title" /></td>
 													</tr>
 													<tr>
 														<td><span class="other2" wicket:id="other2" /></td>

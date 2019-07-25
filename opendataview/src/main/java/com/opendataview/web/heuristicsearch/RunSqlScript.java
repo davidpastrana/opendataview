@@ -116,7 +116,7 @@ public class RunSqlScript {
 					// log.info("is update? " + isupdate);
 					// log.info("hasid? " + hasid);
 					if (isupdate == true) {
-						// log.info("we update!!");
+						log.info("update " + num_updates);
 						try {
 							locationServiceDAO.updateQuery(listValues, hasid);
 						} catch (PersistenceException e) {
@@ -125,7 +125,7 @@ public class RunSqlScript {
 						}
 						num_updates++;
 					} else if (isupdate == false) {
-						// log.info("we insert!!");
+						log.info("insert " + num_inserts);
 						// if has id is true and is not an update => we create a new id being the last
 						// existing id number
 						if (hasid == false) {

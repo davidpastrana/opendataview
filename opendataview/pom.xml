@@ -341,6 +341,12 @@
 			<artifactId>ibatis-sqlmap</artifactId>
 			<version>2.3.4.726</version>
 		</dependency>
+		<!-- Charset file recognition -->
+		<dependency>
+		    <groupId>org.apache.tika</groupId>
+		    <artifactId>tika-parsers</artifactId>
+		    <version>1.4</version>
+		</dependency>
 		<!-- END HEURISTIC SEARCH -->
 		<!-- Servlet 
 		<dependency>

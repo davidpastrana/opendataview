@@ -1,5 +1,6 @@
 package com.opendataview.web.heuristicsearch;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -9,6 +10,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -25,6 +27,10 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.apache.commons.validator.routines.UrlValidator;
+import org.apache.tika.detect.AutoDetectReader;
+import org.apache.tika.exception.TikaException;
+import org.apache.tika.metadata.Metadata;
+import org.apache.tika.metadata.TikaMetadataKeys;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -201,10 +207,30 @@ public class MainClass extends SetPropertiesPage {
 
 	public static void findFieldTypes(String dir, String name, Model<String> textResult) throws NumberFormatException,
 			CQLException, IOException, NumberParseException, SQLException, URISyntaxException {
+		String file = dir + name;
+		Charset charset = null;
+		final Metadata metadata = new Metadata();
+		// Try to parse the character set from the content-encoding.
+		String orig = metadata.get(Metadata.CONTENT_ENCODING);
 
-		br = new BufferedReader(new InputStreamReader(new FileInputStream(dir + name), "ISO-8859-1"));
+		// Set the file name. This provides some level of type-hinting.
+		metadata.add(TikaMetadataKeys.RESOURCE_NAME_KEY, new File(file).getName());
 
-		BufferedReader reader = new BufferedReader(new FileReader(dir + name));
+		// Try to detect the character set.
+		if (null != orig && Charset.isSupported(orig)) {
+			charset = Charset.forName(orig);
+		}
+
+		try (final BufferedInputStream input = new BufferedInputStream(new FileInputStream(dir + name));
+				final AutoDetectReader detector = new AutoDetectReader(input, metadata)) {
+			charset = detector.getCharset();
+		} catch (TikaException e) {
+			throw new IOException("Unable to detect charset.", e);
+		}
+
+		br = new BufferedReader(new InputStreamReader(new FileInputStream(dir + name), charset));
+
+		BufferedReader reader = new BufferedReader(new FileReader(file));
 		int nlines = 0;
 		while (reader.readLine() != null) {
 			nlines++;
@@ -253,6 +279,8 @@ public class MainClass extends SetPropertiesPage {
 
 					log.info(">> File: " + name);
 					outputinfo.append(">> File: " + name);
+					log.info(">> Charset: " + charset);
+					outputinfo.append("\n>> Charset: " + charset);
 					log.info(">> Columns: " + ncolchecks);
 					outputinfo.append("\n>> Columns: " + ncolchecks);
 					log.info(">> Rows: " + nlines);
@@ -1215,7 +1243,7 @@ public class MainClass extends SetPropertiesPage {
 			throws IOException, ParseException, CQLException, InterruptedException, InvalidParameterException,
 			SQLException, URISyntaxException {
 
-		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "ISO-8859-1"));
+		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(source), "UTF-8"));
 
 		ArrayList<LocationModel> locations_list = new ArrayList<LocationModel>();
 
