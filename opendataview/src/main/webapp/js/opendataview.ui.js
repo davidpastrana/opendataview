@@ -207,7 +207,7 @@ var jsonObj;
 var point_markers;
 var coordsatt;
 var mapatt;
-  
+
 $(function() {
 
 	if($('#mapid').length === 1) {
@@ -223,7 +223,7 @@ $(function() {
 	  
 	  if(coordsatt == null && getSearchParams("value") == null) {
 		  if (navigator.geolocation)  {
-			  var timeoutVal = 5000;
+			  var timeoutVal = 15000;
 			  navigator.geolocation.getCurrentPosition(
 			    displayPosition, 
 			    displayError,
@@ -329,10 +329,10 @@ $(function() {
 				  "Snowing": snow,
 				};
 		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true, position: 'bottomright'}).addTo(map2);
-			$('#icon-mylocation').on('click', function(){
-				map2.locate({setView: true, maxZoom: 15});
-			    map2.on('locationfound', onLocationFound);
-				map2.on('locationerror', onLocationError);
+			$('#icon-findmylocation').on('click', function(){
+				//map2.locate({setView: true, maxZoom: 15});
+			    //map2.on('locationfound', onLocationFound);
+				//map2.on('locationerror', onLocationError);
 			    localStorage['location'] = 'true';
 			});
 
@@ -368,9 +368,11 @@ $(function() {
 		    });
 		  map2.on('zoom', function() {
 			  $('#mapZoomLevel').val(map2.getZoom());
-			});
+		  });
+		  
+		  var markers;
 		  if (jsonObj !== undefined) {
-			      var markers = JSON.parse(jsonObj);
+			      markers = JSON.parse(jsonObj);
 			  	  var markers2 = [];
 				  for (var i=0; i<markers.length; ++i){
 					  markers2.push([JSON.parse(markers[i].lat),JSON.parse(markers[i].lng),markers[i].name+"#"+markers[i].id+"#"+markers[i].icon]);
@@ -402,9 +404,37 @@ $(function() {
 				/*if(coordsatt != null && coordsatt.split(',').length != 2) {
 					map2.fitBounds([[markers[0].lat,markers[0].lng],[markers[parseInt(markers.length/2)].lat,markers[parseInt(markers.length/2)].lng]]);
 				}*/
-				map2.fitBounds(markers);
 				$('#locations_counter2').html('Total: '+markers.length).css({"padding":"6px 9px","border":"1px solid rgba(0,0,0,.4)"});
+				//if($('#geoCoordDistance').val() == '50'){ map2.setZoom(13); }
+	  
+		  } else { map2.setZoom(15); }
+		  if($('#geoCoordDistance').val() == ''){ map2.setZoom(15); }
+		  if($('#mapZoomLevel').val() == ''){ map2.getZoom() };
+		  
+		  if ($("#hideLocation input:checkbox:checked").length == false){
+			  if (coordsatt != null && coordsatt.split(',').length == 2) {
+				  if(!Boolean(localStorage['location'])) {// && coordsatt != null && coordsatt.split(',').length == 2) {
+					    //map2.locate({setView: true, maxZoom: 15});
+						//map2.on('locationfound', onLocationFound);
+						
+						//map2.on('locationerror', onLocationError);
+						
+					  //localStorage['location'] = 'true';
+				  } else {
+					    showCurrentLocationMarker();
+				  }
 			  }
+		  } else if (getSearchParams("value") == null) {
+			  //console.log("out 2 is: "+coordsatt.split(',').length+" and "+coordsatt);
+
+			  if(map2.hasLayer(editableLayers)) {
+				  map2.removeLayer(editableLayers);
+			  }
+			  showCurrentLocationMarker();
+			  //$('#datasetCheckView').val($('#hideLocation input label').value());
+		  }
+		  if (jsonObj !== undefined) {map2.fitBounds(markers);}
+
 
 		// Initialise the FeatureGroup to store editable layers
 		  editableLayers = new L.FeatureGroup();
@@ -487,22 +517,7 @@ $(function() {
 		    editableLayers.addLayer(layer);
 		  });
 		  
-		  if ($("#hideLocation input:checkbox:checked").length == false){
-			  if (coordsatt != null && coordsatt.split(',').length == 2) {
-				  if(!Boolean(localStorage['location'])) {// && coordsatt != null && coordsatt.split(',').length == 2) {
-					    map2.locate({setView: true, maxZoom: 15});
-						map2.on('locationfound', onLocationFound);
-						//map2.on('locationerror', onLocationError);
-						localStorage['location'] = 'true';
-				  } else {
-					    showCurrentLocationMarker();
-				  }
-			  }
-		  } else {
-			  if(map2.hasLayer(editableLayers)) {
-				  map2.removeLayer(editableLayers);
-			  }
-		  }
+
 		  
 		 	// Attribution panel
 		    $('.leaflet-control-attribution').hide();
@@ -597,7 +612,7 @@ $(function() {
 			        }
 			     }).slider("pips", {
 			       rest: "label",
-			    	   suffix: 'Km',
+			    	   suffix: 'K',
 			    	   labels: valMap
 			   	});
 				$('#mapTypeId').change(function() {

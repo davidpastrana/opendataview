@@ -16,6 +16,8 @@ import javax.persistence.UniqueConstraint;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
 import org.hibernate.annotations.Type;
+import org.hibernate.search.annotations.Analyze;
+import org.hibernate.search.annotations.Analyzer;
 import org.hibernate.search.annotations.Field;
 import org.hibernate.search.annotations.Index;
 import org.hibernate.search.annotations.Latitude;
@@ -136,7 +138,7 @@ public class LocationModel implements Serializable {
 	protected String image;
 
 	@Column(columnDefinition = "TEXT", unique = true)
-	@Field(store = Store.YES, index = Index.YES)
+	@Field(name = "filename", store = Store.YES, analyze = Analyze.YES, analyzer = @Analyzer(definition = "nameAnalyzer"), index = Index.YES)
 	protected String filename;
 	@Column(columnDefinition = "TEXT")
 	protected String source;

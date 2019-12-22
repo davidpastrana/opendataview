@@ -46,6 +46,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
+import org.apache.wicket.util.string.StringValue;
 import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,6 +87,8 @@ public class LocationServicePage extends BasePage {
 	private static final long serialVersionUID = 1L;
 	final Form<String> formSearch = new Form<String>("formSearch");
 
+	String datasetCheckView2;
+
 	@Override
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
@@ -93,24 +96,30 @@ public class LocationServicePage extends BasePage {
 		String value = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value").toString();
 		String coords = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("coords").toString();
 		String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist").toString();
-		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
 		boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toBoolean();
 		String mapType = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
+		datasetCheckView2 = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("display")
+				.toString();
 		boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
 				.toBoolean();
 		String total = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("total").toString();
 		String group = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group").toString();
 		String showPrivateMap = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user")
 				.toString();
-		response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val(" + zoom + ");$('#viewPanels').val("
-				+ fullscreen + ");$('#mapType').val('" + mapType + "');$('#showGraph').val('" + showGraph
-				+ "');$('#chart_total').val('" + total + "');$('#chart_group').val('" + group
-				+ "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
-		if (showPrivateMap != null) {
-			config_names_select.add(privatemaps_label);
-			response.render(OnDomReadyHeaderItem.forScript("$('.header').show();$('#viewHidePanels').val('false');"));
-		}
+
+		if (datasetCheckView2 != null)
+			// response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val("
+			// + datasetCheckView + ")"));
+//			response.render(OnDomReadyHeaderItem.forScript("$('#viewPanels').val(" + fullscreen
+//					+ ");$('#datasetCheckView').val(" + datasetCheckView + ");$('#mapType').val('" + mapType
+//					+ "');$('#showGraph').val('" + showGraph + "');$('#chart_total').val('" + total
+//					+ "');$('#chart_group').val('" + group + "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
+			if (showPrivateMap != null) {
+				config_names_select.add(privatemaps_label);
+				response.render(
+						OnDomReadyHeaderItem.forScript("$('.header').show();$('#viewHidePanels').val('false');"));
+			}
 		if (fullscreen) {
 			config_names_select.add(fullscreen_label);
 			response.render(OnDomReadyHeaderItem.forScript("$('.header').hide();$('#viewHidePanels').val('true');"));
@@ -123,20 +132,21 @@ public class LocationServicePage extends BasePage {
 		} else {
 			response.render(OnDomReadyHeaderItem.forScript("$('#showGraph').val('false');$('#demo-panel').hide()"));
 		}
-		if (value != null) {
-			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
-		}
+//		if (value != null) {
+//			// response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
+//		}
 
 		if (dist != null) {
 			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + dist + ")"));
 		}
 		if (coords != null) {
-			response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
+			// response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
 			String[] att = coords.substring(1, coords.length() - 1).split("\\),\\(");
-			if (att.length == 1) {
+			// log.info("coords are: " + att.toString() + " with length: " + att.length);
+			// if (att.length == 1) {
 //				response.render(OnDomReadyHeaderItem
 //						.forScript("window.onload = function () {}"));
-			} else {
+			if (att.length != 1) {
 				String coords_format = "[" + coords.toString().replaceAll("\\(", "new L.LatLng(") + "]";
 				response.render(OnDomReadyHeaderItem
 						.forScript("$(window).on('load',function(){ var shape = new L.Polygon(" + coords_format
@@ -147,8 +157,10 @@ public class LocationServicePage extends BasePage {
 
 	private TextField<String> viewPanels = new TextField<String>("viewPanels", Model.of(""));
 	private TextField<String> mapType = new TextField<String>("mapType", Model.of(""));
-	private TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of("15"));
-	private TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of("1"));
+	// private TextField<String> datasetCheckView = new
+	// TextField<String>("datasetCheckView", Model.of(""));
+	private TextField<String> mapZoomLevel = new TextField<String>("mapZoomLevel", Model.of(""));
+	private TextField<String> geoCoordDistance = new TextField<String>("geoCoordDistance", Model.of(""));
 	private TextField<String> showGraph = new TextField<String>("showGraph", Model.of("false"));
 	private TextField<String> showChart_total = new TextField<String>("chart_total", Model.of(""));
 	private TextField<String> showChart_group = new TextField<String>("chart_group", Model.of(""));
@@ -176,6 +188,8 @@ public class LocationServicePage extends BasePage {
 	private List<String> allAttributes = new ArrayList<String>();
 	private List<Integer> allSums = new ArrayList<Integer>();
 	private static Series<Point> series = new PointSeries();
+
+	private String datasetCheckView = "";
 
 	private final static Logger log = LoggerFactory.getLogger(LocationServicePage.class);
 
@@ -290,8 +304,54 @@ public class LocationServicePage extends BasePage {
 		datacontainer.add(showMarkerInfo);
 		showMarkerInfo.add(showMarkerInfoBttn);
 
-		if (!parameters.get("value").isNull()) {
-			list.addAll(locationServiceDAO.searchLocationModel(parameters.get("value").toString()));
+//		if (!parameters.get("display").isNull()) {
+//			String[] datafilesview = parameters.get("display").toString().split(",");
+//
+//			log.info("Our search is: " + datafilesview.toString());
+//			for (int i = 0; i < datafilesview.length; i++) {
+//				list.addAll(locationServiceDAO.searchLocationModel(datafilesview[i]));
+//			}
+//		}
+
+		StringValue value = parameters.get("value");
+		StringValue display = parameters.get("display");
+		if (!value.isNull()) {
+			list2.clear();
+			list.addAll(locationServiceDAO.searchLocationModel(value.toString()));
+			log.info("display is: " + display + ", value is " + value.toString() + ", list size: " + list.size());
+
+			String[] datafilesview = null;
+			if (!display.isNull())
+				datafilesview = display.toString().toLowerCase().split(",");
+
+			for (LocationModel loc : list) {
+
+				String filename = loc.getFileName();
+				if (!names.contains(filename)) {
+					names.add(filename);
+					// namesSelect.add(filename);
+				}
+				if (!display.isNull()) {
+//					if (filename.toLowerCase().contentEquals(parameters.get("display").toString().toLowerCase())
+//							&& !namesSelect.contains(filename)) {
+//						namesSelect.add(filename);
+//					}
+					// for (int i = 0; i < datafilesview.length; i++) {
+
+					if (Arrays.asList(datafilesview).contains(filename.toLowerCase())) {
+						list2.add(loc);
+						if (!namesSelect.contains(filename)) {
+							namesSelect.add(filename);
+						}
+					}
+					// }
+
+				}
+			}
+			if (!display.isNull()) {
+				list.clear();
+				list.addAll(list2);
+			}
 		}
 
 		if (!parameters.get("coords").isNull()) {
@@ -328,20 +388,100 @@ public class LocationServicePage extends BasePage {
 				}
 
 				list.clear();
+				list2.clear();
+				names.clear();
+				namesSelect.clear();
 
-				for (LocationModel loc : origList) {
+				if (!polygonCoordInputValue.isEmpty()) {
+					if (!parameters.get("display").isNull()) {
 
-					if (!polygonCoordInputValue.isEmpty() && loc.getLatitude() != null && loc.getLongitude() != null) {
-						if (att.length == 1) {
+						String filenames = parameters.get("display").toString().toLowerCase();
 
-							double dist = distance(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]),
-									loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
+						String[] datafilesview = parameters.get("display").toString().split(",");
 
-							if (dist < distanceKm)
-								list.add(loc);
-						} else {
-							if (myPolygon.contains(loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue()))
-								list.add(loc);
+						for (int i = 0; i < datafilesview.length; i++) {
+							list2.addAll(locationServiceDAO.searchLocationByFileName(datafilesview[i]));
+						}
+
+						for (LocationModel loc : list2) {
+
+//							log.info("Import: " + loc.getFileName().toLowerCase());
+//							log.info("Filename is:  " + loc.getFileName().toLowerCase());
+
+							if (filenames.contains(loc.getFileName().toLowerCase())) {
+								if (att.length == 1) {
+
+									double dist = distance(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]),
+											loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
+
+									if (dist < distanceKm)
+										list.add(loc);
+								} else {
+									if (myPolygon.contains(loc.getLatitude().doubleValue(),
+											loc.getLongitude().doubleValue()))
+										list.add(loc);
+								}
+
+								String fname = loc.getFileName();
+								if (!namesSelect.contains(fname)) {
+									namesSelect.add(fname);
+//								namesSelect.add("<span style=\"background-color: #" + loc.getIconmarker() + "\">"
+//										+ loc.getFileName() + "</span>");
+
+									// log.info("image to add is: " + loc.getIconmarker());
+								}
+
+							}
+
+						}
+						list2.clear();
+						for (LocationModel loc : origList) {
+
+							if (att.length == 1) {
+
+								double dist = distance(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]),
+										loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
+
+								if (dist < distanceKm)
+									list2.add(loc);
+							} else {
+								if (myPolygon.contains(loc.getLatitude().doubleValue(),
+										loc.getLongitude().doubleValue()))
+									list2.add(loc);
+							}
+
+						}
+
+						for (int i = 0; i < list2.size(); i++) {
+							String filename = list2.get(i).getFileName();
+							if (!names.contains(filename)) {
+								names.add(filename);
+							}
+						}
+
+					} else {
+						for (LocationModel loc : origList) {
+
+							if (att.length == 1) {
+
+								double dist = distance(Double.valueOf(coordXY[0]), Double.valueOf(coordXY[1]),
+										loc.getLatitude().doubleValue(), loc.getLongitude().doubleValue(), 'K');
+
+								if (dist < distanceKm)
+									list2.add(loc);
+							} else {
+								if (myPolygon.contains(loc.getLatitude().doubleValue(),
+										loc.getLongitude().doubleValue()))
+									list2.add(loc);
+							}
+
+						}
+
+						for (int i = 0; i < list2.size(); i++) {
+							String filename = list2.get(i).getFileName();
+							if (!names.contains(filename)) {
+								names.add(filename);
+							}
 						}
 					}
 				}
@@ -355,6 +495,8 @@ public class LocationServicePage extends BasePage {
 			boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 					.toBoolean();
 			String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
+//			String datasetCheckView = RequestCycle.get().getRequest().getRequestParameters()
+//					.getParameterValue("display").toString();
 
 			@Override
 			public void populateItem(final ListItem<LocationModel> item) {
@@ -757,15 +899,6 @@ public class LocationServicePage extends BasePage {
 			active_user.setDefaultModelObject("Active user: " + WebSession.get().getAttribute("user_name"));
 		}
 
-		names.clear();
-		namesSelect.clear();
-
-		for (int i = 0; i < list.size(); i++) {
-			String filename = list.get(i).getFileName();
-			if (!names.contains(filename)) {
-				names.add(filename);
-			}
-		}
 //		for (int i = 0; i < names.size(); i++) {
 //			String filename = names.get(i);
 //			names.set(i, filename.substring(0, 1).toUpperCase() + filename.substring(1).toLowerCase());
@@ -850,28 +983,31 @@ public class LocationServicePage extends BasePage {
 				String name = inputField.getModelObject();
 				String viewPanelsInputValue = viewPanels.getModelObject();
 				String mapTypeInputValue = mapType.getModelObject();
-				// String zoomLevelInputValue = mapZoomLevel.getModelObject();
+				// String datasetCheckViewInputValue = datasetCheckView.getModelObject();
 				String showGraphInput = showGraph.getModelObject();
 				String chart_total = showChart_total.getModelObject();
 				String chart_group = showChart_group.getModelObject();
 				String showPrivateMapInput = showPrivateMap.getModelObject();
+				String datasetCheckView3 = RequestCycle.get().getRequest().getRequestParameters()
+						.getParameterValue("display").toString();
+				log.info("datasetCheckView3 update: " + datasetCheckView3);
 
 				if (name != null) {
 					String searched_value = inputField.getModelObject();
 					pageParameters.set("value", searched_value);
-//					if (zoomLevelInputValue != null)
-//						pageParameters.set("zoom", zoomLevelInputValue);
 					if (viewPanelsInputValue != null)
 						pageParameters.set("fullscreen", viewPanelsInputValue);
 					if (!mapTypeInputValue.equals("null"))
 						pageParameters.set("map", mapTypeInputValue);
+//					if (datasetCheckViewInputValue != null)
+//						pageParameters.set("display", datasetCheckViewInputValue);
 					if (showGraphInput != null)
 						pageParameters.set("graph", showGraphInput);
-					if (!chart_total.equals("null"))
+					if (chart_total != null)
 						pageParameters.set("total", chart_total);
-					if (!chart_group.equals("null"))
+					if (chart_group != null)
 						pageParameters.set("group", chart_group);
-					if (!showPrivateMapInput.equals("null"))
+					if (showPrivateMapInput != null)
 						pageParameters.set("user", showPrivateMapInput);
 					setResponsePage(getPage().getClass(), pageParameters);
 				}
@@ -883,6 +1019,7 @@ public class LocationServicePage extends BasePage {
 		final TextField<String> polygonCoordInput = new TextField<String>("polygonCoordInput", Model.of(""));
 		polygonCoordInput.setOutputMarkupId(true);
 
+		// IMPORTANT: Is the redirect of the display coords when visualizing the markers
 		AjaxButton savePolygonCoordinates = new AjaxButton("savePolygonCoordinates") {
 
 			private static final long serialVersionUID = 1L;
@@ -891,19 +1028,25 @@ public class LocationServicePage extends BasePage {
 			public void onSubmit(AjaxRequestTarget target) {
 				super.onSubmit(target);
 
+				PageParameters pageParameters = new PageParameters();
+				String filesview = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("display")
+						.toString();
+
 				String[] att = null;
 				String viewPanelsInputValue = viewPanels.getModelObject();
 				String mapTypeInputValue = mapType.getModelObject();
-				String zoomLevelInputValue = mapZoomLevel.getModelObject();
+				// String datasetCheckViewInputValue = datasetCheckView.getModelObject();
+				// String zoomLevelInputValue = mapZoomLevel.getModelObject();
 				String geoCoordDistanceValue = geoCoordDistance.getModelObject();
 				String showGraphValue = showGraph.getModelObject();
 				String chart_total = showChart_total.getModelObject();
 				String chart_group = showChart_group.getModelObject();
 				String showPrivateMapValue = showPrivateMap.getModelObject();
 				String polygonCoordInputValue = polygonCoordInput.getModelObject();
+				String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist")
+						.toString();
 
-				PageParameters pageParameters = new PageParameters();
-				pageParameters.set("zoom", zoomLevelInputValue);
+				// pageParameters.set("zoom", zoomLevelInputValue);
 				att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1).split("\\),\\(");
 				if (att.length == 1)
 					pageParameters.set("dist", geoCoordDistanceValue);
@@ -911,22 +1054,28 @@ public class LocationServicePage extends BasePage {
 					pageParameters.set("fullscreen", viewPanelsInputValue);
 				if (!mapTypeInputValue.equals("null"))
 					pageParameters.set("map", mapTypeInputValue);
-				if (!showGraphValue.equals("null"))
+//				if (datasetCheckViewInputValue != null)
+//					pageParameters.set("view", datasetCheckViewInputValue);
+				if (showGraphValue != null)
 					pageParameters.set("graph", showGraphValue);
-				if (!chart_total.equals("null"))
+				if (chart_total != null)
 					pageParameters.set("total", chart_total);
-				if (!chart_group.equals("null"))
+				if (chart_group != null)
 					pageParameters.set("group", chart_group);
-				if (!showPrivateMapValue.equals("null"))
+				if (showPrivateMapValue != null)
 					pageParameters.set("user", showPrivateMapValue);
-				if (!polygonCoordInputValue.equals("null"))
+				if (polygonCoordInputValue != null)
 					pageParameters.set("coords", polygonCoordInputValue);
+				if (filesview != null)
+					pageParameters.set("display", filesview);
 				setResponsePage(getPage().getClass(), pageParameters);
+
 			}
 		};
 
 		formSearch.add(viewPanels);
 		formSearch.add(mapType);
+		// formSearch.add(datasetCheckView);
 		formSearch.add(mapZoomLevel);
 		formSearch.add(geoCoordDistance);
 		formSearch.add(polygonCoordInput);
@@ -934,6 +1083,7 @@ public class LocationServicePage extends BasePage {
 		formSearch.add(showChart_total);
 		formSearch.add(showChart_group);
 		formSearch.add(showPrivateMap);
+
 		formSearch.add(savePolygonCoordinates);
 		add(formSearch);
 	}
@@ -942,10 +1092,14 @@ public class LocationServicePage extends BasePage {
 
 	public ListView<LocationModel> displayList(String id, List<LocationModel> list) throws IOException {
 
-		String zoom = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
+		// String zoom =
+		// RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
 		boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toBoolean();
 		String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
+		String datasetCheckView = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("view")
+				.toString();
+
 		boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
 				.toBoolean();
 		String user = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user").toString();
@@ -959,11 +1113,19 @@ public class LocationServicePage extends BasePage {
 
 		ListView<LocationModel> listView = new ListView<LocationModel>(id, list) {
 			private static final long serialVersionUID = 1L;
+			String datasetCheckView = "";
 
 			@Override
 			public void renderHead(IHeaderResponse response) {
 				if (!json.isEmpty())
-					response.render(OnDomReadyHeaderItem.forScript("jsonObj = JSON.stringify(" + json + ")"));
+					response.render(OnDomReadyHeaderItem.forScript("jsonObj = JSON.stringify(" + json + ");"));
+				for (int j = 0; j < namesSelect.size(); j++) {
+
+					datasetCheckView += namesSelect.get(j);
+					if (j < namesSelect.size() - 1)
+						datasetCheckView += ",";
+					// list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
+				}
 				super.renderHead(response);
 			}
 
@@ -1142,8 +1304,8 @@ public class LocationServicePage extends BasePage {
 										pieChartList.get(i).getRepetitions())
 												.setEvents(new Events().setClick(new RedirectFunction("search?&value="
 														+ pieChartList.get(i).getAttribute().trim().replaceAll(" ", "")
-														+ "&zoom=" + zoom + "&fullscreen=" + fullscreen + "&map="
-														+ maptype + "&graph=" + showGraph))));
+														+ "&fullscreen=" + fullscreen + "&map=" + maptype + "&graph="
+														+ showGraph + "&display=" + datasetCheckView))));
 							}
 						}
 						series.setShowInLegend(false);
@@ -1286,20 +1448,65 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 
-				json.clear();
-				list.clear();
-				list2.clear();
+//				json.clear();
+//				list.clear();
+//				list2.clear();
 
+				// Retrieval when selecting the Nearby places (when checking or unchecking the
+				// selector fields)
 				for (int j = 0; j < namesSelect.size(); j++) {
-					list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
-				}
-				if (list2.isEmpty()) {
-					target.appendJavaScript("point_markers.remove();$('#locations_counter2').hide();");
 
-				} else {
-					list.addAll(list2);
-					setResponsePage(getPage());
+					datasetCheckView += namesSelect.get(j);
+					if (j < namesSelect.size() - 1)
+						datasetCheckView += ",";
+					// list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
+//				if (list2.isEmpty()) {
+//					// we remove markers over the map in case they exist and we hide the markers
+//					// counter from the bottom-right corner
+//
+//					target.appendJavaScript("point_markers.remove();$('#locations_counter2').hide();");
+//
+//				} else {
+				// list.addAll(list2);
+				// String name = inputField.getModelObject();
+				String viewPanelsInputValue = viewPanels.getModelObject();
+				String mapTypeInputValue = mapType.getModelObject();
+				String showGraphInput = showGraph.getModelObject();
+				String chart_total = showChart_total.getModelObject();
+				String chart_group = showChart_group.getModelObject();
+				String showPrivateMapInput = showPrivateMap.getModelObject();
+				String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist")
+						.toString();
+				String value = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value")
+						.toString();
+
+				// if (name != null) {
+				// String searched_value = inputField.getModelObject();
+				// pageParameters.set("value", searched_value);
+				if (value != null)
+					pageParameters.set("value", value);
+				if (dist != null)
+					pageParameters.set("dist", dist);
+				if (viewPanelsInputValue != null)
+					pageParameters.set("fullscreen", viewPanelsInputValue);
+				if (!mapTypeInputValue.equals("null"))
+					pageParameters.set("map", mapTypeInputValue);
+				if (showGraphInput != null)
+					pageParameters.set("graph", showGraphInput);
+				if (!chart_total.equals("null"))
+					pageParameters.set("total", chart_total);
+				if (!chart_group.equals("null"))
+					pageParameters.set("group", chart_group);
+				if (!showPrivateMapInput.equals("null"))
+					pageParameters.set("user", showPrivateMapInput);
+				if (datasetCheckView != null)
+					pageParameters.set("display", datasetCheckView);
+				setResponsePage(getPage().getClass(), pageParameters);
+//					}
+//					target.add(wmc2);
+//					setResponsePage(getPage());
+				// }
 			}
 		};
 		listLocations.add(check);

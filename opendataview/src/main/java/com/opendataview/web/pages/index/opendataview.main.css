@@ -492,7 +492,7 @@ float: right;
     top: 0;
     left: -315px;
     height: 100vh;
-    z-index: 999;
+    z-index: 100000;
     color: #fff;
     transition: all 0.3s;
     overflow-y: scroll;
@@ -1335,6 +1335,14 @@ select.form-control:not([size]):not([multiple]) {
 	z-index: 1;
 }
 
+#datasetCheckView {
+	position: fixed;
+	bottom: 137px;
+	left: 0px;
+	width: 100px;
+	z-index: 1;
+}
+
 .svg-icon {
 	height: 32px;
 }
@@ -1537,12 +1545,6 @@ input.selectCSV {
 	border-radius: 4px;
 	color: #333;
 }
-.map-panels {
-	position: relative;
-	top: 0px;
-	width: 100%;
-	z-index: 700;
-}
 #searchView {
 	float: left;
 }
@@ -1600,17 +1602,18 @@ input.selectCSV {
 .table-search {
 	position: relative;
 	background: #fff;
+	z-index: 1000;
 }
 #icon-search {
     right: 69px;
 }
-#icon-mylocation {
+#icon-findmylocation {
      right: 40px;
 }
 #resetInputSubmit {
      right: 10px;
 }
-#resetInputSubmit, #icon-mylocation, #icon-search {
+#resetInputSubmit, #icon-findmylocation, #icon-search {
 	position: absolute;
     color: black;
     font-size: 20px;
@@ -1913,11 +1916,11 @@ input[type="checkbox"], input[type="radio"] {
 }
 .dataset-name {
     position: fixed;
-    bottom: 0px;
-    left: 37%;
+    top: 48px;
+    right: 3px;
     background: #cc4646;
     font-size: 19px;
-    padding: 0px 32px;
+    padding: 0px 12px;
     border: 2px solid #444;
     border-radius: 2px;
 }
@@ -1984,7 +1987,7 @@ td:empty {
 
 .search-loc-name {
 	width: 200px;
-	border-bottom: 2px dashed #2222221a !important;
+	border-bottom: 2px solid #999 !important;
 }
 
 .wicketRatingStars img {
@@ -4585,8 +4588,8 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 }*/
 #demo-panel,#demo-panel2 {
     position: fixed;
-    bottom: 0;
-    left: 0px;
+    top: 30px;
+    right: 0px;
     z-index: 1;
     background: white;
 }
@@ -4644,9 +4647,19 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 	    z-index: 1000000;
     position: relative;
 }
+.mapillary-js {
+    z-index: 10000;
+}
 
 /* Starting from Mobile portrait */
 @media (max-width:500px)  {
+	
+	.dataset-name {
+    top: unset;
+    bottom: 0px;
+    left: 0px;
+    right: unset;
+	}
 	/*.overlay {
 	top:0px;
 	left:0px;
@@ -4654,6 +4667,7 @@ input.ui-button::-moz-focus-inner, button.ui-button::-moz-focus-inner {
 .overlay.active {
     display: block;
     opacity: 1;
+    top: 0px;
 }
 
 .properties-table tr td {

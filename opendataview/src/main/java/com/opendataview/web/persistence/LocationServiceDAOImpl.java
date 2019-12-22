@@ -9,6 +9,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
 import org.hibernate.jpa.QueryHints;
+import org.hibernate.search.jpa.FullTextEntityManager;
+import org.hibernate.search.jpa.Search;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -24,12 +26,37 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	private final static Logger log = LoggerFactory.getLogger(LocationServiceDAOImpl.class);
 
 	protected EntityManager entityManager;
+	// protected FullTextEntityManager fullTextEntityManager;
 
 	// LocationsRestResource locationsRestResource;
 
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
+
+	public FullTextEntityManager getFullTextEntityManager() {
+		try {
+			log.info("Beginning to index data.");
+			Search.getFullTextEntityManager(entityManager).createIndexer().startAndWait();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+
+		log.info("Index complete.");
+		return Search.getFullTextEntityManager(entityManager);
+	}
+
+//	public FullTextEntityManager getFullTextEntityManager() {
+//		try {
+//			log.info("Beginning to index data.");
+//			fullTextEntityManager.createIndexer().startAndWait();
+//		} catch (InterruptedException e) {
+//			e.printStackTrace();
+//		}
+//
+//		log.info("Index complete.");
+//		return fullTextEntityManager;
+//	}
 
 	@PersistenceContext(unitName = "opendataview")
 	public void setEntityManager(EntityManager entityManager) {
@@ -214,10 +241,10 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	public List<LocationModel> searchLocationModel(String location_value) throws DataAccessException {
 
 		List<LocationModel> resultList;
-		log.info("Starting2...");
-		log.info("my way is: select l from locations l where lower(data) like '%## " + location_value.toLowerCase()
-				+ " ##%'");
-		log.info("other: select l from locations l where data like '%## " + location_value + " ##%'");
+//		log.info("Starting2...");
+//		log.info("my way is: select l from locations l where lower(data) like '%## " + location_value.toLowerCase()
+//				+ " ##%'");
+//		log.info("other: select l from locations l where data like '%## " + location_value + " ##%'");
 		if (location_value.startsWith("sql:")) {
 			String sqlquery = location_value.split("sql:")[1].trim();
 			resultList = getEntityManager()
@@ -242,11 +269,29 @@ public class LocationServiceDAOImpl implements LocationServiceDAO {
 	@Override
 	@Transactional
 	public List<LocationModel> searchLocationByFileName(String filename) throws DataAccessException {
+//		FullTextEntityManager fullTextEntityManager = org.hibernate.search.jpa.Search
+//				.getFullTextEntityManager(getEntityManager());
+//		EntityContext entityContext = fullTextEntityManager.getSearchFactory().buildQueryBuilder()
+//				.forEntity(LocationModel.class);
+//
+//		entityContext = entityContext.overridesForField("filename", "nameAnalyzer");
+//
+//		// org.apache.lucene.search.Query query =
+//		// qb.keyword().onFields("filename").matching("parks.csv").createQuery();
+//		// wrap Lucene query in a javax.persistence.Query
+//		javax.persistence.Query persistenceQuery = fullTextEntityManager.createFullTextQuery(query,
+//				LocationModel.class);
+//		// execute search
+//		@SuppressWarnings("unchecked")
+//		List<LocationModel> result = persistenceQuery.getResultList();
+
+		// log.info("RESULTS ARE:" + result.get(0).getName());
 
 		List<LocationModel> resultList = getEntityManager()
 				.createQuery("from locations where filename = :filename", LocationModel.class)
 				.setParameter("filename", filename).setHint(QueryHints.HINT_CACHEABLE, true).getResultList();
 		return resultList;
+
 	}
 
 }
