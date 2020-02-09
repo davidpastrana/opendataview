@@ -20,7 +20,7 @@ import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
 public class MailClient {
-	public void sendMail(String mailServer, String from, String to, String subject, String messageBody,
+	public void sendMail(String mailServer, final String from, String to, String subject, String messageBody,
 			String[] attachments) throws MessagingException, AddressException {
 		Properties props = System.getProperties();
 		props.put("mail.smtp.host", mailServer);

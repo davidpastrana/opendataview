@@ -172,7 +172,7 @@ function fromHex(hex) {
 	  };
 	  alert("Error: " + errors[error.code]);
 	}
-  function helpInit() {
+  /*function helpInit() {
 		var enjoyhint_instance = new EnjoyHint({});
 		var enjoyhint_script_steps = [
 	      {
@@ -193,7 +193,7 @@ function fromHex(hex) {
 		];
 		enjoyhint_instance.set(enjoyhint_script_steps);
 		enjoyhint_instance.run();
-  }
+  }*/
   function googleAddress() {
 	  window.open("http://maps.google.com/?q="+$('#coordlat').html()+","+$('#coordlng').html(),"_blank");
 	  //$('#google-address').attr('href', 'https://maps.google.com/?q='+$('#coordlat').html()+','+$('#coordlat').html())
@@ -231,13 +231,13 @@ $(function() {
 			  );
 			} else alert("Geolocation is not supported by this browser");
 	  }
-	  $('#help').click(function() {
+	  /*$('#help').click(function() {
 		    helpInit();
 	  });
 	  urlpath = location.href.split('?')[1];
 	  if(urlpath.charAt(0) == 0 && urlpath.charAt(1) == '&') {
 		  helpInit();
-	  }
+	  }*/
 
 	  $('#mapType').val('light');
 		  var satellite = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {id: 'mapid', attribution: 'Tiles &copy; Esri &mdash; Esri, DeLorme, NAVTEQ'}),
@@ -370,6 +370,8 @@ $(function() {
 			  $('#mapZoomLevel').val(map2.getZoom());
 		  });
 		  
+
+
 		  var markers;
 		  if (jsonObj !== undefined) {
 			      markers = JSON.parse(jsonObj);
@@ -433,6 +435,9 @@ $(function() {
 			  showCurrentLocationMarker();
 			  //$('#datasetCheckView').val($('#hideLocation input label').value());
 		  }
+		  
+		  
+
 		  if (jsonObj !== undefined) {map2.fitBounds(markers);}
 
 
@@ -591,10 +596,13 @@ $(function() {
 			    	 seq_order = 6;
 			       break;
 			   }
+			     
 			     var handle = $("#custom-handle");
+			     
 			     $(".slider").slider({
 			         create: function() {
-			             handle.text(activeValue);
+			        	 console.log("actvie:'"+activeValue+"'");
+			              if(activeValue == '') handle.text("0.2"); else handle.text(activeValue);
 			           },
 			           range: "min",
 			           max: valMap.length - 1,
@@ -602,12 +610,12 @@ $(function() {
 			       change: function (event, ui) {
 			         if (event.originalEvent) {
 			           $('#geoCoordDistance').val(valMap[ui.value]);
-			   	    var latlng = coordsatt.split(',');
-				    var lat = latlng[0].replace(/%28|\(/, '');
-				    var lng = latlng[1].replace(/%29|\)/, '');
-				    latlng = new L.latLng(lat,lng);
-			            $('#polygonCoordInput').val('('+lat+','+lng+')');
-			            $('#savePolygonCoordinates').trigger('click');
+				   	    var latlng = coordsatt.split(',');
+					    var lat = latlng[0].replace(/%28|\(/, '');
+					    var lng = latlng[1].replace(/%29|\)/, '');
+					    latlng = new L.latLng(lat,lng);
+				        $('#polygonCoordInput').val('('+lat+','+lng+')');
+				        $('#savePolygonCoordinates').trigger('click');
 			           }
 			        }
 			     }).slider("pips", {
@@ -615,6 +623,7 @@ $(function() {
 			    	   suffix: 'K',
 			    	   labels: valMap
 			   	});
+
 				$('#mapTypeId').change(function() {
 					  $('#mapType').val(this.value);
 					});

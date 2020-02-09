@@ -18,7 +18,7 @@ public class ContactPage extends BasePage {
 
 	public ContactPage() {
 
-		FeedbackPanel feedback = new FeedbackPanel("feedback");
+		final FeedbackPanel feedback = new FeedbackPanel("feedback");
 		feedback.setVisible(false);
 		add(feedback);
 

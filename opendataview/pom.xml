@@ -27,29 +27,46 @@
 		</license>
 	</licenses>
 	<properties>
-		<java.version>11</java.version>
-		<wicket.version>8.6.1</wicket.version>
-		<wicketstuff.version>8.6.0</wicketstuff.version>
+		<java.version>12</java.version>
+		<wicket.version>8.7.0</wicket.version>
+		<wicketstuff.version>8.7.0</wicketstuff.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M12</wicket-bootstrap-extensions.version>
+		<jetty-maven-plugin.version>9.4.25.v20191220</jetty-maven-plugin.version>
+		<junit.version>4.13</junit.version>
+		<!--  <servlet-api.version>3.1.0</servlet-api.version>-->
+		<spring.version>5.2.2.RELEASE</spring.version>
+		<hibernate.version>5.4.9.Final</hibernate.version>
+		<dbcp.version>1.4</dbcp.version>
+		<postgresql.version>42.2.9</postgresql.version>
+		<!--  <wordutils.version>3.8.1</wordutils.version>-->
+		<slf4j.version>1.7.30</slf4j.version>
+		<log4j.version>2.13.0</log4j.version>
+		<geonames.version>1.0</geonames.version>
+		<!--  <nominatim.version>1.9.4</nominatim.version>-->
+		<fileutils.version>2.6</fileutils.version>
+		<validator.version>1.6</validator.version>
+		<geotools.version>15-RC1</geotools.version>
+		<libphonenumber.version>8.11.1</libphonenumber.version>
+		<json.version>20190722</json.version>
+		<jena.version>3.13.1</jena.version>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<!-- 		<wicket-bootstrap-extensions.version>3.0.0-M12</wicket-bootstrap-extensions.version>
 		<jetty-maven-plugin.version>9.4.22.v20191022</jetty-maven-plugin.version>
 		<junit.version>4.12</junit.version>
-		<!--  <servlet-api.version>3.1.0</servlet-api.version>-->
 		<spring.version>5.2.1.RELEASE</spring.version>
 		<hibernate.version>5.4.9.Final</hibernate.version>
 		<dbcp.version>1.4</dbcp.version>
 		<postgresql.version>42.2.8</postgresql.version>
-		<!--  <wordutils.version>3.8.1</wordutils.version>-->
 		<slf4j.version>1.7.28</slf4j.version>
 		<log4j.version>2.12.1</log4j.version>
 		<geonames.version>1.0</geonames.version>
-		<!--  <nominatim.version>1.9.4</nominatim.version>-->
 		<fileutils.version>2.6</fileutils.version>
 		<validator.version>1.6</validator.version>
 		<geotools.version>15-RC1</geotools.version>
 		<libphonenumber.version>8.10.23</libphonenumber.version>
 		<json.version>20190722</json.version>
 		<jena.version>3.13.1</jena.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding> -->
 	</properties>
 	<dependencies>
 		<!-- Elastic Search via Lucene & Spring 

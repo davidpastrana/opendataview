@@ -178,7 +178,7 @@ public class SetPropertiesPage extends BasePage {
 
 			wmc.add(new Label("userSigned", session.getAttribute("user_name")));
 
-			FeedbackPanel feedbackPanel = new FeedbackPanel("feedback");
+			final FeedbackPanel feedbackPanel = new FeedbackPanel("feedback");
 			feedbackPanel.setOutputMarkupId(true);
 			feedbackPanel.setOutputMarkupPlaceholderTag(true);
 
@@ -207,11 +207,11 @@ public class SetPropertiesPage extends BasePage {
 			};
 			formTypes.add(saveType);
 
-			ArrayList<String> namesRemoveSelect = new ArrayList<String>();
+			final ArrayList<String> namesRemoveSelect = new ArrayList<String>();
 			final Form<?> form = new Form<Void>("propertiesForm");
 			wmc.add(form);
 
-			Label admin_user_visibility = new Label("admin_user_visibility");
+			final Label admin_user_visibility = new Label("admin_user_visibility");
 
 			ListView<PropertiesModel> editPropList = new ListView<PropertiesModel>("editProperties", propList) {
 
@@ -339,7 +339,7 @@ public class SetPropertiesPage extends BasePage {
 
 			Date now = new Date();
 			SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy'_'HH:mm");
-			File downloadLog = new File(Files.createTempDir(), "log_opendataview_"
+			final File downloadLog = new File(Files.createTempDir(), "log_opendataview_"
 					+ file_name.toLowerCase().replaceAll(".csv", "") + "_" + sdf.format(now) + ".log");
 
 			form.add(new DownloadLink("outputDownload", downloadLog));
@@ -428,7 +428,7 @@ public class SetPropertiesPage extends BasePage {
 			};
 			form.add(removeSelectedFiles);
 
-			Label showFilesUpload = new Label("showFilesUpload", "Your uploads:");
+			final Label showFilesUpload = new Label("showFilesUpload", "Your uploads:");
 
 			form.add(showFilesUpload);
 

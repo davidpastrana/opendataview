@@ -33,7 +33,7 @@ public class RegisterUserPage extends BasePage {
 
 	public RegisterUserPage() {
 
-		FeedbackPanel feedback = new FeedbackPanel("feedback");
+		final FeedbackPanel feedback = new FeedbackPanel("feedback");
 		feedback.setVisible(false);
 		add(feedback);
 

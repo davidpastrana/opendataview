@@ -32,7 +32,7 @@ public class LoginUserPage extends BasePage {
 		final TextField<String> username = new TextField<String>("username", Model.of(""));
 		final PasswordTextField password = new PasswordTextField("password", Model.of(""));
 
-		FeedbackPanel feedback = new FeedbackPanel("feedback");
+		final FeedbackPanel feedback = new FeedbackPanel("feedback");
 		feedback.setVisible(false);
 		add(feedback);
 

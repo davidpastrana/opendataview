@@ -1858,16 +1858,11 @@ input[type="checkbox"], input[type="radio"] {
 }
 #displayLocations, #hideLocations {
     cursor: pointer;
-    bottom: -14px;
+    bottom: 0px;
     position: absolute;
-    right: 0px;
+    right: -5px;
     z-index: 1;
     padding: 0px 15px;
-}
-.custom-displayloc {
-    border: 1px solid rgba(0,0,0,.4);
-    border-radius: 2px;
-    background: #ffffffa6;
 }
 .custom-displayloc.glyphicon::before {
   -webkit-text-stroke: 2px #ffffffd4;
@@ -2084,12 +2079,12 @@ td:empty {
 }
 
 .form-control, input[type="text"] {
-	font-size: 1.5rem;
-	padding: 0px 0px 0px 10px;
-	margin: 0.5px 0px;
-	background: #fff;
-	border-radius: 12px;
-	height: 39px;
+    font-size: 1.5rem;
+    padding: 0px 0px 0px 10px;
+    margin: 5px 0px;
+    background: #ececec63;
+    border-radius: 3px;
+    height: 30px;
 }
 
 .form-control:focus {

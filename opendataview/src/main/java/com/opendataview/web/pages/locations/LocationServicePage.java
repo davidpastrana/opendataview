@@ -13,6 +13,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -46,7 +47,6 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
-import org.apache.wicket.util.string.StringValue;
 import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,28 +93,18 @@ public class LocationServicePage extends BasePage {
 	public void renderHead(IHeaderResponse response) {
 		super.renderHead(response);
 
-		String value = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value").toString();
 		String coords = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("coords").toString();
 		String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist").toString();
 		boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 				.toBoolean();
-		String mapType = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
 		datasetCheckView2 = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("display")
 				.toString();
 		boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
 				.toBoolean();
-		String total = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("total").toString();
-		String group = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group").toString();
 		String showPrivateMap = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user")
 				.toString();
 
 		if (datasetCheckView2 != null)
-			// response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val("
-			// + datasetCheckView + ")"));
-//			response.render(OnDomReadyHeaderItem.forScript("$('#viewPanels').val(" + fullscreen
-//					+ ");$('#datasetCheckView').val(" + datasetCheckView + ");$('#mapType').val('" + mapType
-//					+ "');$('#showGraph').val('" + showGraph + "');$('#chart_total').val('" + total
-//					+ "');$('#chart_group').val('" + group + "');$('#showPrivateMap').val('" + showPrivateMap + "');"));
 			if (showPrivateMap != null) {
 				config_names_select.add(privatemaps_label);
 				response.render(
@@ -132,20 +122,12 @@ public class LocationServicePage extends BasePage {
 		} else {
 			response.render(OnDomReadyHeaderItem.forScript("$('#showGraph').val('false');$('#demo-panel').hide()"));
 		}
-//		if (value != null) {
-//			// response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
-//		}
-
 		if (dist != null) {
 			response.render(OnDomReadyHeaderItem.forScript("$('#geoCoordDistance').val(" + dist + ")"));
 		}
 		if (coords != null) {
-			// response.render(OnDomReadyHeaderItem.forScript("$('#mapZoomLevel').val('18');"));
 			String[] att = coords.substring(1, coords.length() - 1).split("\\),\\(");
-			// log.info("coords are: " + att.toString() + " with length: " + att.length);
-			// if (att.length == 1) {
-//				response.render(OnDomReadyHeaderItem
-//						.forScript("window.onload = function () {}"));
+
 			if (att.length != 1) {
 				String coords_format = "[" + coords.toString().replaceAll("\\(", "new L.LatLng(") + "]";
 				response.render(OnDomReadyHeaderItem
@@ -227,30 +209,14 @@ public class LocationServicePage extends BasePage {
 		return (rad * 180 / Math.PI);
 	}
 
-	// final Label locations_counter = new Label("locations_counter2",
-	// Model.of(""));
 	final ListView<LocationModel> lview = displayList("rows", list);
 
-	/*
-	 * @Override public void MemoryConsumed() { int mb = 1048576; Runtime runtime =
-	 * Runtime.getRuntime();
-	 * log.info("##### Heap utilization statistics [MB] #####");
-	 * log.info("Used Memory:" + (runtime.totalMemory() - runtime.freeMemory()) /
-	 * mb); log.info("Free Memory:" + runtime.freeMemory() / mb);
-	 * log.info("Total Memory:" + runtime.totalMemory() / mb);
-	 * log.info("Max Memory:" + runtime.maxMemory() / mb); }
-	 */
-
 	public LocationServicePage(PageParameters parameters) throws IOException {
-		// MemoryConsumed();
-//		setStatelessHint(false);
-//		setVersioned(false);
 
 		add(lview);
 		add(formSearch);
 
-		// String username = null;
-		WebSession session = WebSession.get();
+		final WebSession session = WebSession.get();
 		if (session.getAttribute("user_name") != null) {
 			username = session.getAttribute("user_name").toString();
 		}
@@ -281,7 +247,7 @@ public class LocationServicePage extends BasePage {
 		add(wmc2);
 
 		// origList = locationServiceDAO.readLocationModel();
-		origList.clear();
+		// origList.clear();
 		origList.addAll(LocationStaticData.loc);
 		// wmc2.add(locations_counter);
 
@@ -313,30 +279,25 @@ public class LocationServicePage extends BasePage {
 //			}
 //		}
 
-		StringValue value = parameters.get("value");
-		StringValue display = parameters.get("display");
-		if (!value.isNull()) {
+		String value = parameters.get("value").toString();
+		String display = parameters.get("display").toString();
+		if (value != null) {
 			list2.clear();
 			list.addAll(locationServiceDAO.searchLocationModel(value.toString()));
 			log.info("display is: " + display + ", value is " + value.toString() + ", list size: " + list.size());
 
 			String[] datafilesview = null;
-			if (!display.isNull())
+			if (display != null)
 				datafilesview = display.toString().toLowerCase().split(",");
 
 			for (LocationModel loc : list) {
 
 				String filename = loc.getFileName();
 				if (!names.contains(filename)) {
+
 					names.add(filename);
-					// namesSelect.add(filename);
 				}
-				if (!display.isNull()) {
-//					if (filename.toLowerCase().contentEquals(parameters.get("display").toString().toLowerCase())
-//							&& !namesSelect.contains(filename)) {
-//						namesSelect.add(filename);
-//					}
-					// for (int i = 0; i < datafilesview.length; i++) {
+				if (display != null) {
 
 					if (Arrays.asList(datafilesview).contains(filename.toLowerCase())) {
 						list2.add(loc);
@@ -344,11 +305,9 @@ public class LocationServicePage extends BasePage {
 							namesSelect.add(filename);
 						}
 					}
-					// }
-
 				}
 			}
-			if (!display.isNull()) {
+			if (display != null) {
 				list.clear();
 				list.addAll(list2);
 			}
@@ -393,6 +352,8 @@ public class LocationServicePage extends BasePage {
 				namesSelect.clear();
 
 				if (!polygonCoordInputValue.isEmpty()) {
+					List<String> tmpNames = new ArrayList<String>();
+
 					if (!parameters.get("display").isNull()) {
 
 						String filenames = parameters.get("display").toString().toLowerCase();
@@ -405,8 +366,8 @@ public class LocationServicePage extends BasePage {
 
 						for (LocationModel loc : list2) {
 
-//							log.info("Import: " + loc.getFileName().toLowerCase());
-//							log.info("Filename is:  " + loc.getFileName().toLowerCase());
+							// log.info("Import: " + loc.getFileName().toLowerCase());
+							// log.info("Filename is: " + loc.getFileName().toLowerCase());
 
 							if (filenames.contains(loc.getFileName().toLowerCase())) {
 								if (att.length == 1) {
@@ -425,10 +386,6 @@ public class LocationServicePage extends BasePage {
 								String fname = loc.getFileName();
 								if (!namesSelect.contains(fname)) {
 									namesSelect.add(fname);
-//								namesSelect.add("<span style=\"background-color: #" + loc.getIconmarker() + "\">"
-//										+ loc.getFileName() + "</span>");
-
-									// log.info("image to add is: " + loc.getIconmarker());
 								}
 
 							}
@@ -451,15 +408,30 @@ public class LocationServicePage extends BasePage {
 							}
 
 						}
-
+						tmpNames.clear();
 						for (int i = 0; i < list2.size(); i++) {
 							String filename = list2.get(i).getFileName();
 							if (!names.contains(filename)) {
 								names.add(filename);
+								tmpNames.add(filename + "##" + list2.get(i).getData().split("##").length);
 							}
+						}
+						// We sort both arrays so we can first display the files which have more content
+						Collections.sort(tmpNames, new Comparator<String>() {
+							@Override
+							public int compare(String s1, String s2) {
+								int i1 = Integer.parseInt(s1.split("##")[1]);
+								int i2 = Integer.parseInt(s2.split("##")[1]);
+								return Integer.compare(i1, i2);
+							}
+						});
+						names.clear();
+						for (int k = tmpNames.size() - 1; k >= 0; k--) {
+							names.add(tmpNames.get(k).split("##")[0]);
 						}
 
 					} else {
+
 						for (LocationModel loc : origList) {
 
 							if (att.length == 1) {
@@ -476,12 +448,26 @@ public class LocationServicePage extends BasePage {
 							}
 
 						}
-
+						tmpNames.clear();
 						for (int i = 0; i < list2.size(); i++) {
 							String filename = list2.get(i).getFileName();
 							if (!names.contains(filename)) {
 								names.add(filename);
+								tmpNames.add(filename + "##" + list2.get(i).getData().split("##").length);
 							}
+						}
+						// We sort both arrays so we can first display the files which have more content
+						Collections.sort(tmpNames, new Comparator<String>() {
+							@Override
+							public int compare(String s1, String s2) {
+								int i1 = Integer.parseInt(s1.split("##")[1]);
+								int i2 = Integer.parseInt(s2.split("##")[1]);
+								return Integer.compare(i1, i2);
+							}
+						});
+						names.clear();
+						for (int k = tmpNames.size() - 1; k >= 0; k--) {
+							names.add(tmpNames.get(k).split("##")[0]);
 						}
 					}
 				}
@@ -495,8 +481,6 @@ public class LocationServicePage extends BasePage {
 			boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
 					.toBoolean();
 			String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
-//			String datasetCheckView = RequestCycle.get().getRequest().getRequestParameters()
-//					.getParameterValue("display").toString();
 
 			@Override
 			public void populateItem(final ListItem<LocationModel> item) {
@@ -520,7 +504,6 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("name2").setVisible(false));
 				}
 				if (obj.getFileName() != null && !obj.getFileName().isEmpty()) {
-					// item.add(new Label("filenameTag2", "View all data: "));
 					item.add(
 							new Label("filename2",
 									"<a href='search?&value=" + obj.getFileName() + "&fullscreen=" + fullscreen
@@ -530,16 +513,6 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("filenameTag2").setVisible(false));
 					item.add(new Label("filename2").setVisible(false));
 				}
-				/*
-				 * if (obj.getCity() != null && !obj.getCity().isEmpty()) { item.add(new
-				 * Label("cityTag2", "Address: ")); item.add(new Label("city2",
-				 * obj.getAddress())); } else { item.add(new
-				 * Label("cityTag2").setVisible(false)); item.add(new
-				 * Label("city2").setVisible(false)); } if (obj.getPostcode() != null &&
-				 * !obj.getPostcode().isEmpty()) { item.add(new Label("postcode2",
-				 * obj.getPostcode())); } else { item.add(new
-				 * Label("postcode2").setVisible(false)); }
-				 */
 				if (obj.getLatitude() != null) {
 					item.add(new Label("coordsTag2", "Coords: "));
 					item.add(new Label("latitude2", obj.getLatitude().toString()));
@@ -581,12 +554,6 @@ public class LocationServicePage extends BasePage {
 					item.add(new Label("phoneTag2").setVisible(false));
 					item.add(new Label("phone2").setVisible(false));
 				}
-				/*
-				 * if (obj.getDate() != null && !obj.getDate().isEmpty()) { item.add(new
-				 * Label("dateTag2", "Date: ")); item.add(new Label("date2", obj.getDate())); }
-				 * else { item.add(new Label("dateTag2").setVisible(false)); item.add(new
-				 * Label("date2", obj).setVisible(false)); }
-				 */
 				if (obj.getSchedule() != null && !obj.getSchedule().isEmpty()) {
 					item.add(new Label("scheduleTag2", "Schedule: "));
 					item.add(new Label("schedule2", obj.getSchedule()));
@@ -596,7 +563,7 @@ public class LocationServicePage extends BasePage {
 				}
 				if (obj.getData() != null) {
 					item.add(new Label("otherTag2", "Dataset attributes search:"));
-					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
+					addlinks = new ArrayList<String>(Arrays.asList(obj.getData().split("##")));
 					String newinfo = "";
 
 					for (int i = 0; i < addlinks.size(); i++) {
@@ -662,10 +629,10 @@ public class LocationServicePage extends BasePage {
 
 		Date now = new Date();
 		SimpleDateFormat sdf = new SimpleDateFormat("ddMMyyyy'-'HHmm");
-		File saveVisibleLoc = new File(Files.createTempDir(), "view-" + sdf.format(now) + ".csv");
+		final File saveVisibleLoc = new File(Files.createTempDir(), "view-" + sdf.format(now) + ".csv");
 		locationsForm.add(new DownloadLink("saveVisibleLoc", saveVisibleLoc));
 
-		DecimalFormat df = new DecimalFormat(".######");
+		final DecimalFormat df = new DecimalFormat(".######");
 		final AjaxButton saveVisibleLocFile = new AjaxButton("saveVisibleLocFile") {
 
 			private static final long serialVersionUID = 1L;
@@ -757,7 +724,7 @@ public class LocationServicePage extends BasePage {
 		saveVisibleLocFile.setVisible(false);
 		locationsForm.add(saveVisibleLocFile);
 
-		File sqlLocBackup = new File(Files.createTempDir(), "backup-" + sdf.format(now) + ".sql");
+		final File sqlLocBackup = new File(Files.createTempDir(), "backup-" + sdf.format(now) + ".sql");
 		locationsForm.add(new DownloadLink("sqlLocBackup", sqlLocBackup));
 
 		final AjaxButton saveSqlLocBackup = new AjaxButton("saveSqlLocBackup") {
@@ -899,11 +866,6 @@ public class LocationServicePage extends BasePage {
 			active_user.setDefaultModelObject("Active user: " + WebSession.get().getAttribute("user_name"));
 		}
 
-//		for (int i = 0; i < names.size(); i++) {
-//			String filename = names.get(i);
-//			names.set(i, filename.substring(0, 1).toUpperCase() + filename.substring(1).toLowerCase());
-//		}
-
 //		if (username != null) {
 //
 //			for (int i = 0; i < origList.size(); i++) {
@@ -983,7 +945,6 @@ public class LocationServicePage extends BasePage {
 				String name = inputField.getModelObject();
 				String viewPanelsInputValue = viewPanels.getModelObject();
 				String mapTypeInputValue = mapType.getModelObject();
-				// String datasetCheckViewInputValue = datasetCheckView.getModelObject();
 				String showGraphInput = showGraph.getModelObject();
 				String chart_total = showChart_total.getModelObject();
 				String chart_group = showChart_group.getModelObject();
@@ -999,8 +960,6 @@ public class LocationServicePage extends BasePage {
 						pageParameters.set("fullscreen", viewPanelsInputValue);
 					if (!mapTypeInputValue.equals("null"))
 						pageParameters.set("map", mapTypeInputValue);
-//					if (datasetCheckViewInputValue != null)
-//						pageParameters.set("display", datasetCheckViewInputValue);
 					if (showGraphInput != null)
 						pageParameters.set("graph", showGraphInput);
 					if (chart_total != null)
@@ -1035,18 +994,13 @@ public class LocationServicePage extends BasePage {
 				String[] att = null;
 				String viewPanelsInputValue = viewPanels.getModelObject();
 				String mapTypeInputValue = mapType.getModelObject();
-				// String datasetCheckViewInputValue = datasetCheckView.getModelObject();
-				// String zoomLevelInputValue = mapZoomLevel.getModelObject();
 				String geoCoordDistanceValue = geoCoordDistance.getModelObject();
 				String showGraphValue = showGraph.getModelObject();
 				String chart_total = showChart_total.getModelObject();
 				String chart_group = showChart_group.getModelObject();
 				String showPrivateMapValue = showPrivateMap.getModelObject();
 				String polygonCoordInputValue = polygonCoordInput.getModelObject();
-				String dist = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("dist")
-						.toString();
 
-				// pageParameters.set("zoom", zoomLevelInputValue);
 				att = polygonCoordInputValue.substring(1, polygonCoordInputValue.length() - 1).split("\\),\\(");
 				if (att.length == 1)
 					pageParameters.set("dist", geoCoordDistanceValue);
@@ -1054,8 +1008,6 @@ public class LocationServicePage extends BasePage {
 					pageParameters.set("fullscreen", viewPanelsInputValue);
 				if (!mapTypeInputValue.equals("null"))
 					pageParameters.set("map", mapTypeInputValue);
-//				if (datasetCheckViewInputValue != null)
-//					pageParameters.set("view", datasetCheckViewInputValue);
 				if (showGraphValue != null)
 					pageParameters.set("graph", showGraphValue);
 				if (chart_total != null)
@@ -1075,7 +1027,6 @@ public class LocationServicePage extends BasePage {
 
 		formSearch.add(viewPanels);
 		formSearch.add(mapType);
-		// formSearch.add(datasetCheckView);
 		formSearch.add(mapZoomLevel);
 		formSearch.add(geoCoordDistance);
 		formSearch.add(polygonCoordInput);
@@ -1090,26 +1041,23 @@ public class LocationServicePage extends BasePage {
 
 	JSONArray json = new JSONArray();
 
-	public ListView<LocationModel> displayList(String id, List<LocationModel> list) throws IOException {
+	public ListView<LocationModel> displayList(String id, final List<LocationModel> list) throws IOException {
 
-		// String zoom =
-		// RequestCycle.get().getRequest().getRequestParameters().getParameterValue("zoom").toString();
-		boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
-				.toBoolean();
-		String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
-		String datasetCheckView = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("view")
+		final boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters()
+				.getParameterValue("fullscreen").toBoolean();
+		final String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map")
 				.toString();
-
-		boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
+		final boolean showGraph = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("graph")
 				.toBoolean();
-		String user = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user").toString();
-		String chart = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("total").toString();
-		String chart2 = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group").toString();
-
-		List<String> visited = new ArrayList<String>();
-		List<Integer> visited_id = new ArrayList<Integer>();
-		List<Integer> visited_sum = new ArrayList<Integer>();
-		List<Integer> valuerep = new ArrayList<Integer>();
+		final String user = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("user").toString();
+		final String chart = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("total")
+				.toString();
+		final String chart2 = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("group")
+				.toString();
+		final List<String> visited = new ArrayList<String>();
+		final List<Integer> visited_id = new ArrayList<Integer>();
+		final List<Integer> visited_sum = new ArrayList<Integer>();
+		final List<Integer> valuerep = new ArrayList<Integer>();
 
 		ListView<LocationModel> listView = new ListView<LocationModel>(id, list) {
 			private static final long serialVersionUID = 1L;
@@ -1124,7 +1072,6 @@ public class LocationServicePage extends BasePage {
 					datasetCheckView += namesSelect.get(j);
 					if (j < namesSelect.size() - 1)
 						datasetCheckView += ",";
-					// list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
 				super.renderHead(response);
 			}
@@ -1161,7 +1108,7 @@ public class LocationServicePage extends BasePage {
 				// if the marker is not in private mode (do not display it to the public) unless
 				// we are logged is as the marker owner
 				if (obj.getPrivate_mode() == false || obj.getUsername().equals(user)) {
-					o = new HashMap<>();
+					o = new HashMap<String, Object>();
 					o.put("id", obj.getId());
 					o.put("name", obj.getName());
 					o.put("icon", obj.getIconmarker());
@@ -1169,16 +1116,11 @@ public class LocationServicePage extends BasePage {
 					o.put("lng", obj.getLongitude());
 					json.add(o);
 				}
-//				if (count == list.size() - 1) {
-//					locations_counter.setMarkupId("locations_counter2");
-//					locations_counter.setDefaultModelObject("Total Markers: " + list.size());
-//					locations_counter.modelChanged();
-//				}
 
 				if (chart != null) {
 
 					listchart = new ArrayList<String>(Arrays.asList(chart.split(",")));
-					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
+					addlinks = new ArrayList<String>(Arrays.asList(obj.getData().split("##")));
 					for (int i = 0; i < listchart.size(); i++) {
 						for (int j = 0; j < addlinks.size(); j++) {
 							String[] values = addlinks.get(j).split(":");
@@ -1215,7 +1157,7 @@ public class LocationServicePage extends BasePage {
 				}
 				if (chart2 != null) {
 					listchart = new ArrayList<String>(Arrays.asList(chart2.split(",")));
-					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
+					addlinks = new ArrayList<String>(Arrays.asList(obj.getData().split("##")));
 					int id = Integer.valueOf(obj.getId().toString());
 
 					for (int i = 0; i < listchart.size(); i++) {
@@ -1265,7 +1207,7 @@ public class LocationServicePage extends BasePage {
 				}
 
 				if (showGraph) {
-					addlinks = new ArrayList<>(Arrays.asList(obj.getData().split("##")));
+					addlinks = new ArrayList<String>(Arrays.asList(obj.getData().split("##")));
 
 					for (int i = 0; i < addlinks.size(); i++) {
 
@@ -1356,44 +1298,16 @@ public class LocationServicePage extends BasePage {
 			username = session.getAttribute("user_name").toString();
 		}
 
-//		final CheckBoxMultipleChoice<String> listRemoveLocations = new CheckBoxMultipleChoice<String>("removeLocations",
-//				new Model<ArrayList<String>>(namesRemoveSelect), names);
-//		listRemoveLocations.setSuffix("<br />");
-//
-//		locationsForm.add(listRemoveLocations);
-//
-//		final Button removeSelected = new Button("removeSelected") {
-//
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void onSubmit() {
-//				super.onSubmit();
-//				for (int i = 0; i < namesRemoveSelect.size(); i++) {
-//					locationServiceDAO.removeLocationByName(namesRemoveSelect.get(i));
-//				}
-//				setResponsePage(getPage().getClass(), getPage().getPageParameters());
-//			}
-//		};
-//		locationsForm.add(removeSelected);
-
 		Label configLabel = new Label("configLabel", "Settings:");
 		Label importedFilesLabel = new Label("importedFilesLabel", "Nearby places:");
-		// Label removeSelectedLabel = new Label("removeSelectedLabel", "Remove
-		// files:");
 
 		if (names.isEmpty()) {
 			importedFilesLabel.setEscapeModelStrings(true).setVisible(false);
-			// removeSelectedLabel.setVisible(false);
-			// removeSelected.setVisible(false);
 		} else {
 			importedFilesLabel.setVisible(true);
-			// removeSelectedLabel.setVisible(true);
-			// removeSelected.setVisible(true);
 		}
 		locationsForm.add(configLabel);
 		locationsForm.add(importedFilesLabel);
-		// locationsForm.add(removeSelectedLabel);
 
 		final List<String> config_names = new ArrayList<String>();
 		config_names.add(fullscreen_label);
@@ -1402,7 +1316,6 @@ public class LocationServicePage extends BasePage {
 
 		CheckBoxMultipleChoice<String> listConfig = new CheckBoxMultipleChoice<String>("listConfig",
 				new Model<ArrayList<String>>(config_names_select), config_names);
-		// listConfig.setSuffix("<br />");
 		AjaxFormChoiceComponentUpdatingBehavior check2 = new AjaxFormChoiceComponentUpdatingBehavior() {
 
 			private static final long serialVersionUID = 1L;
@@ -1448,10 +1361,6 @@ public class LocationServicePage extends BasePage {
 			@Override
 			protected void onUpdate(AjaxRequestTarget target) {
 
-//				json.clear();
-//				list.clear();
-//				list2.clear();
-
 				// Retrieval when selecting the Nearby places (when checking or unchecking the
 				// selector fields)
 				for (int j = 0; j < namesSelect.size(); j++) {
@@ -1459,17 +1368,8 @@ public class LocationServicePage extends BasePage {
 					datasetCheckView += namesSelect.get(j);
 					if (j < namesSelect.size() - 1)
 						datasetCheckView += ",";
-					// list2.addAll(locationServiceDAO.searchLocationByFileName(namesSelect.get(j).toString()));
 				}
-//				if (list2.isEmpty()) {
-//					// we remove markers over the map in case they exist and we hide the markers
-//					// counter from the bottom-right corner
-//
-//					target.appendJavaScript("point_markers.remove();$('#locations_counter2').hide();");
-//
-//				} else {
-				// list.addAll(list2);
-				// String name = inputField.getModelObject();
+
 				String viewPanelsInputValue = viewPanels.getModelObject();
 				String mapTypeInputValue = mapType.getModelObject();
 				String showGraphInput = showGraph.getModelObject();
@@ -1481,9 +1381,6 @@ public class LocationServicePage extends BasePage {
 				String value = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("value")
 						.toString();
 
-				// if (name != null) {
-				// String searched_value = inputField.getModelObject();
-				// pageParameters.set("value", searched_value);
 				if (value != null)
 					pageParameters.set("value", value);
 				if (dist != null)
@@ -1503,10 +1400,6 @@ public class LocationServicePage extends BasePage {
 				if (datasetCheckView != null)
 					pageParameters.set("display", datasetCheckView);
 				setResponsePage(getPage().getClass(), pageParameters);
-//					}
-//					target.add(wmc2);
-//					setResponsePage(getPage());
-				// }
 			}
 		};
 		listLocations.add(check);
@@ -1600,33 +1493,6 @@ public class LocationServicePage extends BasePage {
 			}
 		};
 		editFormTriggerClick.add(editInfoButton);
-
-//		final Button displayLocations = new Button("displayLocations") {
-//
-//			private static final long serialVersionUID = 1L;
-//
-//			@Override
-//			public void onSubmit() {
-//
-//				names.clear();
-//				namesSelect.clear();
-//
-//				list.clear();
-//				tmp_list.clear();
-//
-//				for (int i = 0; i < origList.size(); i++) {
-//					for (int j = 0; j < namesSelect.size(); j++) {
-//						if (origList.get(i).getFileName().contentEquals(namesSelect.get(j).toString())) {
-//							tmp_list.add(origList.get(i));
-//						}
-//					}
-//				}
-//				list.addAll(tmp_list);
-//
-//				setResponsePage(getPage());
-//			}
-//		};
-//		displayLocations.setOutputMarkupId(true);
 	}
 
 	@Override
