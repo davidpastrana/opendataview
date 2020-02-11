@@ -119,36 +119,37 @@
 			></div>
 		</div>
 		<!-- google map script -->
-		<script src="https://maps.googleapis.com/maps/api/js?v=3.35&amp;key=AIzaSyCSC3VzPjDFDCOeJeN5_u4cZLuauIrk90o&amp;libraries=places,drawing&amp;language=en&amp;"></script>
 		<script>
 	      $(document).ready(function() {
-	        //Set the carousel options
-	        $('#quote-carousel').carousel({
-	          pause: true,
-	          interval: 4000,
-	        });
+	        
+		      var mymap = L.map('map-canvas', {
+		  	      center: [48.247618, 16.377332],
+			      minZoom: 2,
+			      maxZoom: 18,
+			      zoom: 15,
+			      zoomControl:true,
+			  });
+		      var tile = L.tileLayer('https://1.aerial.maps.cit.api.here.com' +
+		    	        '/maptile/2.1/maptile/newest/terrain.day/{z}/{x}/{y}/256/png' +
+		    	        '?app_id=DIMWjDXvm0l2iZDhQwLw&app_code=vJk4OzJfwR2tfUXA1TIc4g', {id: 'map-canvas', attribution: ''});
+
+		      tile.addTo(mymap);
+		      var LeafIcon = L.Icon.extend({
+		    	    options: {
+		    	        shadowUrl: '/images/icons/leaf-shadow.png',
+		    	        iconSize:     [38, 95],
+		    	        shadowSize:   [50, 64],
+		    	        iconAnchor:   [22, 94],
+		    	        shadowAnchor: [4, 62],
+		    	        popupAnchor:  [-3, -76]
+		    	    }
+		    	});
+		      var greenIcon = new LeafIcon({iconUrl: '/images/icons/leaf-green.png'});
+		      L.marker([48.247618, 16.377332], {icon: greenIcon}).addTo(mymap).bindPopup("Where OpenDataView was born.");
+	          $('.leaflet-control-attribution').hide();
 	      });
 	
-	      //google map
-	      function initialize() {
-	        var myLatlng = new google.maps.LatLng(48.247667, 16.377197);
-	        var mapOptions = {
-	          zoom: 15,
-	          center: myLatlng,
-	          scrollwheel : false,
-	          mapTypeControl: false,
-	          draggable: false,
-	          mapTypeId: google.maps.MapTypeId.ROADMAP
-	          
-	        }
-	        var map = new google.maps.Map(document.getElementById('map-canvas'), mapOptions);
-	        var marker = new google.maps.Marker({
-	          position: myLatlng,
-	          map: map,
-	          title: 'Contact'
-	        });
-	      }
-	      google.maps.event.addDomListener(window,'load',initialize);
+
 	    </script>
 		<!-- /.google map script -->
 		<a

@@ -1622,6 +1622,7 @@ input.selectCSV {
     padding: 2px;
     -webkit-appearance: none;
     background: transparent;
+    outline: none;
     border: none;
 }
 #delete-all-button {
@@ -1910,15 +1911,19 @@ input[type="checkbox"], input[type="radio"] {
    text-decoration: underline dashed;
 }
 .dataset-name {
-    position: fixed;
+	position: fixed;
     top: 48px;
     right: 3px;
-    background: #cc4646;
-    font-size: 19px;
+    background: #cc4646bd;
+    font-size: 15px;
     padding: 0px 12px;
-    border: 2px solid #444;
-    border-radius: 2px;
+    text-decoration: none;
 }
+
+.dataset-name a {
+   text-decoration: none;
+}
+
 .main-title a:hover {
    color: #fff;
    text-decoration: underline;

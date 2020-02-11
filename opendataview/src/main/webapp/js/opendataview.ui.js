@@ -208,6 +208,17 @@ var point_markers;
 var coordsatt;
 var mapatt;
 
+function findMe() {
+	  if (navigator.geolocation)  {
+		  var timeoutVal = 15000;
+		  navigator.geolocation.getCurrentPosition(
+		    displayPosition, 
+		    displayError,
+		    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
+		  );
+		} else alert("Geolocation is not supported by this browser");
+}
+
 $(function() {
 
 	if($('#mapid').length === 1) {
@@ -222,14 +233,7 @@ $(function() {
 	  mapatt = getSearchParams('map');
 	  
 	  if(coordsatt == null && getSearchParams("value") == null) {
-		  if (navigator.geolocation)  {
-			  var timeoutVal = 15000;
-			  navigator.geolocation.getCurrentPosition(
-			    displayPosition, 
-			    displayError,
-			    { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
-			  );
-			} else alert("Geolocation is not supported by this browser");
+		  findMe();
 	  }
 	  /*$('#help').click(function() {
 		    helpInit();
@@ -248,7 +252,7 @@ $(function() {
 	      			    tileSize: 512,
 	      			    zoomOffset: -1,
 	      			    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://www.mapbox.com/tos/">Mapbox</a>'
-	      			});
+	      			}),
 	      light = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {id: 'mapid', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'}),
 	      dark = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {id: 'mapid', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'}),
 	      openstreetmap = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {id: 'mapid', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}),
@@ -257,7 +261,7 @@ $(function() {
 	  	  terrain = L.tileLayer('https://1.aerial.maps.cit.api.here.com' +
 	    	        '/maptile/2.1/maptile/newest/terrain.day/{z}/{x}/{y}/256/png' +
 	    	        '?app_id=DIMWjDXvm0l2iZDhQwLw&app_code=vJk4OzJfwR2tfUXA1TIc4g', {id: 'mapid', attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://legal.here.com/en-gb/terms">HERE</a>'}),
-	    transport = L.tileLayer('https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=977ed3be832a4b4ebab0039809d88978', {
+	      transport = L.tileLayer('https://tile.thunderforest.com/transport/{z}/{x}/{y}.png?apikey=977ed3be832a4b4ebab0039809d88978', {
 	      		attribution: 'Map data: &copy; <a href="http://thunderforest.com/">Thunderforest</a> contributors'
 	      	});
 	  	var OpenPtMap = L.tileLayer('http://openptmap.org/tiles/{z}/{x}/{y}.png', {
@@ -330,10 +334,12 @@ $(function() {
 				};
 		  layerControl = L.control.layers(baseLayers, overlayLayers,{collapsed:true, position: 'bottomright'}).addTo(map2);
 			$('#icon-findmylocation').on('click', function(){
-				//map2.locate({setView: true, maxZoom: 15});
+				//map2.locate({setView: true});
 			    //map2.on('locationfound', onLocationFound);
 				//map2.on('locationerror', onLocationError);
-			    localStorage['location'] = 'true';
+			    //localStorage['location'] = 'true';
+				findMe();
+				showCurrentLocationMarker();
 			});
 
 		  	if(mapatt != undefined) {	 
@@ -601,7 +607,6 @@ $(function() {
 			     
 			     $(".slider").slider({
 			         create: function() {
-			        	 console.log("actvie:'"+activeValue+"'");
 			              if(activeValue == '') handle.text("0.2"); else handle.text(activeValue);
 			           },
 			           range: "min",

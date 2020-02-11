@@ -47,6 +47,7 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.file.File;
+import org.apache.wicket.util.string.StringValue;
 import org.json.simple.JSONArray;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -279,15 +280,16 @@ public class LocationServicePage extends BasePage {
 //			}
 //		}
 
-		String value = parameters.get("value").toString();
-		String display = parameters.get("display").toString();
-		if (value != null) {
+		StringValue value = parameters.get("value");
+		StringValue display = parameters.get("display");
+		if (!value.isNull()) {
 			list2.clear();
 			list.addAll(locationServiceDAO.searchLocationModel(value.toString()));
-			log.info("display is: " + display + ", value is " + value.toString() + ", list size: " + list.size());
+			// log.info("display is: " + display + ", value is " + value.toString() + ",
+			// list size: " + list.size());
 
 			String[] datafilesview = null;
-			if (display != null)
+			if (!display.isNull())
 				datafilesview = display.toString().toLowerCase().split(",");
 
 			for (LocationModel loc : list) {
@@ -297,7 +299,7 @@ public class LocationServicePage extends BasePage {
 
 					names.add(filename);
 				}
-				if (display != null) {
+				if (!display.isNull()) {
 
 					if (Arrays.asList(datafilesview).contains(filename.toLowerCase())) {
 						list2.add(loc);
@@ -307,7 +309,7 @@ public class LocationServicePage extends BasePage {
 					}
 				}
 			}
-			if (display != null) {
+			if (!display.isNull()) {
 				list.clear();
 				list.addAll(list2);
 			}
@@ -478,9 +480,10 @@ public class LocationServicePage extends BasePage {
 
 			private static final long serialVersionUID = 1L;
 
-			boolean fullscreen = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("fullscreen")
-					.toBoolean();
-			String maptype = RequestCycle.get().getRequest().getRequestParameters().getParameterValue("map").toString();
+			boolean fullscreen = parameters.get("fullscreen").toBoolean();
+			final String maptype = parameters.get("map").toString();
+			final String coords = parameters.get("coords").toString();
+			final String dist = parameters.get("dist").toString();
 
 			@Override
 			public void populateItem(final ListItem<LocationModel> item) {
@@ -510,7 +513,6 @@ public class LocationServicePage extends BasePage {
 											+ "&map=" + maptype + "'>" + obj.getFileName() + "</a>")
 													.setEscapeModelStrings(false));
 				} else {
-					item.add(new Label("filenameTag2").setVisible(false));
 					item.add(new Label("filename2").setVisible(false));
 				}
 				if (obj.getLatitude() != null) {
