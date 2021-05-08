@@ -28,7 +28,7 @@
 	</licenses>
 	<properties>
 		<java.version>12</java.version>
-		<wicket.version>8.7.0</wicket.version>
+		<wicket.version>8.9.0</wicket.version>
 		<wicketstuff.version>8.7.0</wicketstuff.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M12</wicket-bootstrap-extensions.version>
 		<jetty-maven-plugin.version>9.4.25.v20191220</jetty-maven-plugin.version>
