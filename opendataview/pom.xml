@@ -40,7 +40,7 @@
 		<postgresql.version>42.2.9</postgresql.version>
 		<!--  <wordutils.version>3.8.1</wordutils.version>-->
 		<slf4j.version>1.7.30</slf4j.version>
-		<log4j.version>2.13.0</log4j.version>
+		<log4j.version>2.17.1</log4j.version>
 		<geonames.version>1.0</geonames.version>
 		<!--  <nominatim.version>1.9.4</nominatim.version>-->
 		<fileutils.version>2.6</fileutils.version>
