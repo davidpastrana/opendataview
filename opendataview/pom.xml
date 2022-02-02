@@ -37,7 +37,7 @@
 		<spring.version>5.2.2.RELEASE</spring.version>
 		<hibernate.version>5.4.9.Final</hibernate.version>
 		<dbcp.version>1.4</dbcp.version>
-		<postgresql.version>42.2.9</postgresql.version>
+		<postgresql.version>42.2.25</postgresql.version>
 		<!--  <wordutils.version>3.8.1</wordutils.version>-->
 		<slf4j.version>1.7.30</slf4j.version>
 		<log4j.version>2.13.0</log4j.version>
