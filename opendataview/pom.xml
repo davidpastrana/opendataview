@@ -34,7 +34,7 @@
 		<jetty-maven-plugin.version>9.4.25.v20191220</jetty-maven-plugin.version>
 		<junit.version>4.13</junit.version>
 		<!--  <servlet-api.version>3.1.0</servlet-api.version>-->
-		<spring.version>5.2.2.RELEASE</spring.version>
+		<spring.version>5.2.22.RELEASE</spring.version>
 		<hibernate.version>5.4.9.Final</hibernate.version>
 		<dbcp.version>1.4</dbcp.version>
 		<postgresql.version>42.2.9</postgresql.version>
