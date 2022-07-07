@@ -31,7 +31,7 @@
 		<wicket.version>8.7.0</wicket.version>
 		<wicketstuff.version>8.7.0</wicketstuff.version>
 		<wicket-bootstrap-extensions.version>3.0.0-M12</wicket-bootstrap-extensions.version>
-		<jetty-maven-plugin.version>9.4.25.v20191220</jetty-maven-plugin.version>
+		<jetty-maven-plugin.version>10.0.10</jetty-maven-plugin.version>
 		<junit.version>4.13</junit.version>
 		<!--  <servlet-api.version>3.1.0</servlet-api.version>-->
 		<spring.version>5.2.2.RELEASE</spring.version>
